@@ -1,0 +1,11 @@
+{
+  "name": "myDMS-UI",
+  "description": "Using angular-seed as template for the myDMS UI",
+  "devDependencies": {
+        "phantomjs" : "*",
+        "karma" : "*",
+        "karma-junit-reporter" : "*",    
+        "karma-jasmine" : "*",
+        "karma-ng-scenario" : "*"
+    }
+}
