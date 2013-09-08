@@ -23,6 +23,7 @@
   </head>
 
   <body>
+    {{=<% %>=}}
 
     <!-- Fixed navbar -->
     <div class="navbar navbar-default navbar-fixed-top">
@@ -37,43 +38,68 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#/">Home</a></li>
 
             <li><a href="#/view1">view1</a></li>
-    		<li><a href="#/view2">view2</a></li>
+    		    <li><a href="#/view2">view2</a></li>
 
            
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#">User</a></li>
           </ul>
+          <form class="navbar-form navbar-right" role="search">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Search">
+            </div>
+            <button type="button" class="btn btn-success btn-sm">
+              <span class="glyphicon glyphicon-search"></span>
+              Search
+            </button>
+          </form>
+          
         </div><!--/.nav-collapse -->
       </div>
     </div>
 
+
     <div class="container">
 
-      <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron">
-        <h1>Navbar example</h1>
-        <p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-        <p>To see the difference between static and fixed top navbars, just scroll.</p>
-        
+      <div class="row row-offcanvas row-offcanvas-right">
+        <div class="col-xs-12 col-sm-9">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle Tags</button>
+          </p>
 
-        <p ng-view>
-        </p>
+          main content
 
-      </div>
+          <!-- angular content here -->
+          <p ng-view>
+          </p>
+
+
+        </div>
+
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+          <div class="well sidebar-nav" ng-controller="TagsCtrl">
+
+            <ul class="unstyled">
+              <li ng-repeat="tag in tags">
+                <span class="">{{ tag.text }}</span>
+              </li>
+            </ul>
+
+          </div><!--/.well -->
+        </div><!--/span-->
+      </div><!--/row-->
+
+      <hr/>
 
       <footer>
-      	 <div>Angular seed app: v<span app-version></span></div>
-		 <div>{{test}}</div>
+         <small>Angular seed app: v<span app-version></span> using templates: <% templates %></small>
       </footer>
 
-    </div> <!-- /container -->
+    </div>
 
-
-   
 
 	<!-- In production use:
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
@@ -81,7 +107,8 @@
 	<script src="./ui/lib/angular/angular.js"></script>
 	<script src="./ui/js/app.js"></script>
 	<script src="./ui/js/services.js"></script>
-	<script src="./ui/js/controllers.js"></script>
+	<script src="./ui/js/controllers/main.js"></script>
+  <script src="./ui/js/controllers/tags.js"></script>
 	<script src="./ui/js/filters.js"></script>
 	<script src="./ui/js/directives.js"></script>
 
