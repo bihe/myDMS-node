@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="myDMS">
+<html lang="en" >
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,12 @@
     <!--<link rel="shortcut icon" href="../../assets/ico/favicon.png">-->
 
     <title>myDMS</title>
+
+    <style>
+    [ng-cloak] {
+      display: none;
+    }
+    </style>
 
     <!-- Bootstrap core CSS -->
     <link href="/ui/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -22,7 +28,7 @@
     <![endif]-->
   </head>
 
-  <body>
+  <body ng-cloak>
     {{=<% %>=}}
 
     <!-- Fixed navbar -->
@@ -84,7 +90,7 @@
 
             <ul class="unstyled">
               <li ng-repeat="tag in tags">
-                <span class="">{{ tag.text }}</span>
+                <span class="">{{ tag }}</span>
               </li>
             </ul>
 
@@ -104,14 +110,8 @@
 	<!-- In production use:
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
 	-->
-	<script src="./ui/lib/angular/angular.js"></script>
-	<script src="./ui/js/app.js"></script>
-	<script src="./ui/js/services.js"></script>
-	<script src="./ui/js/controllers/main.js"></script>
-  <script src="./ui/js/controllers/tags.js"></script>
-	<script src="./ui/js/filters.js"></script>
-	<script src="./ui/js/directives.js"></script>
-
+    <script type="text/javascript" src="/ui/lib/angular/asyncloader.js"></script>
+    <script type="text/javascript" src="/ui/js/main.js"></script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

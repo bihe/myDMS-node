@@ -2,7 +2,7 @@
 
 
 // Declare app level module which depends on filters, and services
-angular.module('myDMS', ['myDMS.filters', 'myDMS.services', 'myDMS.directives', 'myDMS.controllers']).
+angular.module('myDMS', ['myDMS.services', 'myDMS.directives', 'myDMS.controllers', 'myDMS.filters']).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/view1', {templateUrl: '/ui/partials/partial1.html', controller: 'MyCtrl1'});
     $routeProvider.when('/view2', {templateUrl: '/ui/partials/partial2.html', controller: 'MyCtrl2'});
