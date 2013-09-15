@@ -17,9 +17,8 @@
 
     <!-- Bootstrap core CSS -->
     <link href="/ui/bootstrap/css/bootstrap.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
     <link href="/ui/css/navbar-fixed-top.css" rel="stylesheet">
+    <link href="/ui/css/overwrite.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -76,7 +75,39 @@
             <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle Tags</button>
           </p>
 
-          main content
+          
+          <form class="form-inline" role="form">
+            <div class="form-group">
+              <div class="input-group" style="width:60px">
+                <label class="sr-only" for="daterangeFrom">Date from</label>
+                <input type="date" class="form-control" id="daterangeFrom" placeholder="Date from">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+
+            </div>
+            <div class="form-group">
+              <div class="input-group" style="width:60px">
+                <label class="sr-only" for="daterangeTo">Date to</label>
+                <input type="date" class="form-control" id="daterangeTo" placeholder="Date to">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="senders">Senders</label>
+              <select class="form-control" id="senders">
+                <option value="">Select a sender</option>
+              </select>
+            </div>
+            
+          </form>
+
+          <hr>
+
+
 
           <!-- angular content here -->
           <p ng-view>
@@ -86,11 +117,12 @@
         </div>
 
         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
-          <div class="well sidebar-nav" ng-controller="TagsCtrl">
+          <div class="well sidebar-nav well-220" ng-controller="TagsCtrl">
 
-            <ul class="unstyled">
+            <ul class="unstyled items">
               <li ng-repeat="tag in tags">
-                <span class="">{{ tag }}</span>
+
+                <span class="label label-normal label-primary">{{ tag }}</span>&nbsp;
               </li>
             </ul>
 
@@ -101,7 +133,7 @@
       <hr/>
 
       <footer>
-         <small>Angular seed app: v<span app-version></span> using templates: <% templates %></small>
+         <small>myDMS application <span app-version></span></small>
       </footer>
 
     </div>

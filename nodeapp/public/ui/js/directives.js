@@ -4,8 +4,10 @@
 
 
 angular.module('myDMS.directives', []).
-  directive('appVersion', ['version', function(version) {
+  directive('appVersion', ['versionService', function(versionService) {
     return function(scope, elm, attrs) {
-      elm.text(version);
+      versionService.version(function(data) {
+				elm.text(data);
+      });
     };
   }]);

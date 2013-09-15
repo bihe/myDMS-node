@@ -3,13 +3,11 @@
 /* Controllers */
 
 angular.module('myDMS.controllers').
-	controller('TagsCtrl', ['$scope', 'tagService', function($scope, tagService) {
-
-		tagService.getTags(function(data) {
-			$scope.tags = data;
+	controller('DocCtrl', ['$scope', 'documentServiceMock', function($scope, docService) {
+		docService.getDocuments(function(data) {
+			$scope.documents = data;
 		}, function(data, status, headers) {
 			alert('Error: ' + data + '\nHTTP-Status: ' + status);
 		});
 
- 	}]
-);
+	}]);

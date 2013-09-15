@@ -4,6 +4,13 @@
  */
 'use strict';
 
+var version = require('../config/version');
+
 exports.index = function(req, res){
   res.render('index', {templates: 'mustache template'});
+};
+
+exports.version = function(req, res) {
+	res.write(version.number);
+	res.end();
 };

@@ -10,7 +10,9 @@ $script([
   './ui/js/filters.js',
 
   './ui/js/tags/services.js',     
-  './ui/js/tags/controllers.js'
+  './ui/js/tags/controllers.js',
+  './ui/js/documents/services.js',     
+  './ui/js/documents/controllers.js'
 ], function() {
   // when all is done, execute bootstrap angular application
   angular.bootstrap(document, ['myDMS']);

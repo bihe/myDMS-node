@@ -20,7 +20,7 @@ module.factory('tagService', ['$http', function($http) {
   var tagService = {};
 
   tagService.getTags = function(success, error) {
-		$http.get('./tags').success(success).error(error);
+		$http.get('./api/1.0/tags').success(success).error(error);
   };
 
   return tagService;
