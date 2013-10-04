@@ -22,6 +22,15 @@ ul.items li
 	font-size: inhert;
 }
 
+.label-big {
+  font-size: 14px;
+  margin: 2px;
+}
+
+.double-line {
+  line-height: 2.5;
+}
+
 .clear { clear: both; }
 
 .well-220 {

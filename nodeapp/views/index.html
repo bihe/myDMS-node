@@ -117,17 +117,16 @@
         </div>
 
         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
-          <div class="well sidebar-nav well-220" ng-controller="TagsCtrl">
-
-            <ul class="unstyled items">
-              <li ng-repeat="tag in tags">
-
-                <span class="label label-normal label-primary">{{ tag }}</span>&nbsp;
-              </li>
-            </ul>
+          <div class="well sidebar-nav well-220 double-line" ng-controller="TagsCtrl" >
+            
+            <span ng-repeat="tag in tags" >
+              <a class="label label-primary label-big" href="#" > {{ tag }}</a>
+            </span>
 
           </div><!--/.well -->
+          
         </div><!--/span-->
+
       </div><!--/row-->
 
       <hr/>
