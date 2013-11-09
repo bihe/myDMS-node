@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "test": "make test"
+    "test": "node test/run.js"
   },
   "dependencies": {
     "express": "3.x",
@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "mocha": "1.x",
-    "should": "2.x"
+    "should": "2.x",
+	"mocha-runner": "*"
   }
 }
