@@ -3,12 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node app"
+    "start": "node app",
+    "test": "make test"
   },
   "dependencies": {
     "express": "3.x",
     "consolidate": "*",
     "mustache": "*",
-    "strftime": "0.5.1"
+    "strftime": "0.5.1",
+    "sqlite3": "2.x"
+  },
+  "devDependencies": {
+    "mocha": "1.x",
+    "should": "2.x"
   }
 }
