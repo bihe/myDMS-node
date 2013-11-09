@@ -6,10 +6,12 @@
 
 var version = require('../config/version');
 
+// the index path - render the mustache template
 exports.index = function(req, res){
   res.render('index', {templates: 'mustache template'});
 };
 
+// return the current version as plain/text
 exports.version = function(req, res) {
 	res.write(version.number);
 	res.end();

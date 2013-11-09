@@ -1,5 +1,5 @@
 <ul class="bs-documents" >
-	<li class="document" ng-repeat="doc in documents">
+	<li class="document" ng-repeat="doc in documents track by $index">
 		{{ doc }}
 	</li>
 </ul>

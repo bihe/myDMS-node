@@ -1,7 +1,19 @@
+body {
+  min-height: 1000px;
+  padding-top: 70px;
+}
+
+
+.full-container {
+  padding: 0 15px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
 .container {
-	margin-right: 10px;
-	margin-left: 10px;
-	max-width:100%;
+  margin-right: 10px;
+  margin-left: 10px;
+  max-width:100%;
 }
 
 ul.items
@@ -18,8 +30,8 @@ ul.items li
 }
 
 .label-normal {
-	font-weight: normal;  
-	font-size: inhert;
+  font-weight: normal;  
+  font-size: inhert;
 }
 
 .label-big {
@@ -34,7 +46,7 @@ ul.items li
 .clear { clear: both; }
 
 .well-220 {
-	min-width: 220px;
+  min-width: 220px;
 }
 
 
