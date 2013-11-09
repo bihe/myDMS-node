@@ -16,7 +16,7 @@ new Runner ({
     //If this property is set, "exclude" is ignored
     //include: ["file1", "file2"],
 
-    tests: ["test-master", "test-sqlite"]
+    tests: ["test-sqlite"]
 }).run (function (error){
     //It's not the Mocha stderr
     if (error) console.log (error);
