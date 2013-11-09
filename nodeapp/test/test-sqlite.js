@@ -53,8 +53,6 @@ describe('sqlite', function() {
 			count.should.eql(retrieved);
 		});
 
-		after(function(done) {
-			db.close(done);
-		});
+		
 	});
 });
