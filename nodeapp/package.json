@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "test": "node ./test/run.js"
+    "test": "node ./node_modules/mocha/bin/mocha --reporter spec test"
   },
   "dependencies": {
     "express": "3.x",
@@ -15,7 +15,6 @@
   },
   "devDependencies": {
     "mocha": "1.x",
-    "should": "2.x",
-	"mocha-runner": "*"
+    "should": "2.x"
   }
 }
