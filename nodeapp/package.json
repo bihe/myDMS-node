@@ -11,7 +11,8 @@
     "consolidate": "*",
     "mustache": "*",
     "strftime": "0.5.1",
-    "sqlite3": "2.x"
+    "sqlite3": "2.x",
+    "q": "~0.9.7"
   },
   "devDependencies": {
     "mocha": "1.x",

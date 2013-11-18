@@ -31,18 +31,21 @@ describe('models', function() {
       var tagDao = new TagDao(dbConfig.path, exists);
       var tag = new Tag(1, 'testtag');
 
-      tagDao.add(tag, function(id) {
-        id.should.eql(1);
-        tagDao.add(tag, function(id) {
-          id.should.eql(2);
+      tagDao.add(tag).then(function(id) {
+        assert.equal(id, 1, 'The inserted id does not match');
 
-          tagDao.list(function(result) {
-            assert.equal(result.length, 2, 'Number of retrieved elements not equal!')
-          });
+        return tagDao.add(tag);
 
-        });
-        
-      });
+      }).then(function(id) {
+        assert.equal(id, 2, 'The inserted id does not match');
+
+        return tagDao.list();
+
+      }).then(function(result) {
+        assert.equal(result.length, 2, 'Number of retrieved elements not equal!');
+
+      })
+      .done();
 
     });
 

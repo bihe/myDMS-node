@@ -1,11 +1,18 @@
-// doa implementation to access the data in the tags table
+/**
+ * doa implementation to access the data in the tags table
+ */
 'use strict';
 
 var sqlite3 = require('sqlite3').verbose();
+var q = require('q');
 var Tag = require('./tag');
 
-// crud operation for tags
-// --------------------------------------------------------------------------
+/**
+ * a class impementing a data access object
+ * @constructor 
+ * @param {string} path - the path to the database file
+ * @param {bool} exists - create the table
+ */
 function TagDao(path, exists) {
   this.db = new sqlite3.Database(path);
   // this.db.on('trace', function(sql) {
@@ -21,37 +28,46 @@ function TagDao(path, exists) {
       }
     });
   }
-
 }
 
-// read all tag entries
-// --------------------------------------------------------------------------
-TagDao.prototype.add = function(tag, done) {
+/**
+ * @method add a tag to the store
+ * @param {Tag} tag - a Tag object
+ * @param {function(id)} done - a finish callback
+ * @returns {promise} a promise (Q)
+ */
+TagDao.prototype.add = function(tag) {
+  var deferred = q.defer();
   this.db.run('INSERT INTO tag (name) VALUES (?)', tag.name, function(err) {
     if (err) {
       console.log('add a tag: ' + err);
-      throw err;
+      return deferred.reject(err);
     }
-    done(this.lastID);
+    deferred.resolve(this.lastID);
   });
-
+  return deferred.promise;
 };
 
-// read all tag entries
-// --------------------------------------------------------------------------
+/**
+ * @method read all tag entries
+ * @param {function(list)} done - a finish callback
+ * @returns {promise} a promise (Q)
+ */
 TagDao.prototype.list = function(done) {
+  var deferred = q.defer();
   var result = [];
   this.db.all('SELECT id, name FROM tag', function(err, rows) {
     if (err) {
       console.log('select tags: '+ err);
-      throw err;
+      return deferred.reject(err);
     }
     for (var i = 0; i < rows.length; i++) {
       var tag = new Tag(rows[i].id, rows[i].name);
       result.push(tag);
     }
-    done(result);
+    deferred.resolve(result);
   });
+  return deferred.promise;
 };
 
 module.exports = TagDao;
