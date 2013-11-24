@@ -5,8 +5,10 @@
 var PersitenceModel = require('../models/persistenceModel');
 var Tag = require('../models/tag');
 var Sender = require('../models/sender');
+var Document = require('../models/document');
 var TagDao = require('../models/tagDao');
 var SenderDao = require('../models/senderDao');
+var DocumentDao = require('../models/documentDao');
 var assert = require('assert');
 var fs = require('fs');
 var randomstring = require("randomstring");
@@ -130,6 +132,27 @@ describe('models', function() {
 
     });
 
+  });
+
+  describe('Documents', function() {
+
+    it('should insert a new document', function() {
+      var docDao = new DocumentDao(':memory:', true);
+      var doc = new Document({title: 'testDoc', alternativeId: randomstring.generate(7), fileName: 'testFilename'});
+
+      docDao.add(doc).then(function(id) {
+        assert.equal(id, 1, 'The inserted id does not match');
+
+        return docDao.get(1);
+      }).then(function(doc) {
+
+        assert.equal(doc.id, 1, 'The id does not match');
+        assert.equal(doc.title, 'testDoc', 'The title does not macht');
+        assert.equal(doc.fileName, 'testFilename', 'The fileName does not macht');
+        assert(doc.alternativeId !== '', 'No alternative id available');
+      })
+      .done();
+    });
   });
 
 });

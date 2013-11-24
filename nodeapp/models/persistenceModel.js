@@ -60,7 +60,6 @@ var PersitenceModel = $class({
       db.exec('CREATE TABLE tag (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);', function(err) {
         if (err) {
           console.log('create table tag: ' + err);
-          //throw err;
           return deferred.reject(err);
         }
 
@@ -70,16 +69,27 @@ var PersitenceModel = $class({
         db.exec('CREATE TABLE sender (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);', function(err) {
           if (err) {
             console.log('create table sender: ' + err);
-            //throw err;
             return deferred.reject(err);
           }
 
           numberOfTables += 1;
 
-          deferred.resolve( (numberOfTables === 2) );
-        });
+          db.exec('CREATE TABLE document (id INTEGER PRIMARY KEY AUTOINCREMENT, alternativeId TEXT NOT NULL, title TEXT NOT NULL, fileName TEXT NOT NULL, previewLink TEXT, created datetime default current_timestamp);', function(err) {
+            if (err) {
+              console.log('create table document: ' + err);
+              return deferred.reject(err);
+            }
 
-        db.close();
+            numberOfTables += 1;
+
+            deferred.resolve( (numberOfTables === 3) );
+
+            db.close();
+
+          });
+          
+        });
+        
       });
     }
 
