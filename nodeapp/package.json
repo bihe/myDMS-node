@@ -12,10 +12,11 @@
     "mustache": "*",
     "strftime": "0.5.1",
     "sqlite3": "2.x",
-    "q": "~0.9.7"
+    "q": "~0.9.7",
+    "class4js": "~1.10.3",
+    "randomstring": "~1.0.2"
   },
   "devDependencies": {
-    "mocha": "1.x",
-    "should": "2.x"
+    "mocha": "1.x"
   }
 }

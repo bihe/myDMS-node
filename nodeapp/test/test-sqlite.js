@@ -3,7 +3,6 @@
 'use strict';
 
 var sqlite3 = require('sqlite3');
-var should = require('should');
 var assert = require('assert');
 
 describe('sqlite', function() {
@@ -36,23 +35,15 @@ describe('sqlite', function() {
 				db.all('SELECT txt, num, flt, blb FROM foo ORDER BY num', function(err, rows) {
 					if (err) throw err;
 					for (var i = 0; i < rows.length; i++) {
-						rows[i].txt.should.eql('String ' + i);
-						rows[i].num.should.eql(i);
-						rows[i].flt.should.eql(i * Math.PI);
+						assert.equal(rows[i].txt, 'String ' + i, 'String does not match!');
+						assert.equal(rows[i].num, i, 'Incorrect num value');
+						assert.equal(rows[i].flt, i * Math.PI, 'Incorrect flt value');
 						assert.equal(rows[i].blb, null);
 						retrieved++;
 					}
 					done();
 				});
 			});
-		});
-
-
-		it('should have inserted and retrieved all rows', function() {
-			count.should.eql(inserted);
-			count.should.eql(retrieved);
-		});
-
-		
+		});		
 	});
 });

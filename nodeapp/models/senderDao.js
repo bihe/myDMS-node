@@ -1,11 +1,11 @@
 /**
- * doa implementation to access the data in the tags table
+ * doa implementation to access the data in the senders table
  */
 'use strict';
 
 var sqlite3 = require('sqlite3').verbose();
 var q = require('q');
-var Tag = require('./tag');
+var Sender = require('./sender');
 
 /**
  * a class impementing a data access object
@@ -13,30 +13,30 @@ var Tag = require('./tag');
  * @param {string} path - the path to the database file
  * @param {bool} create - create the table for testing purpose
  */
-function TagDao(path, create) {
+function SenderDao(path, create) {
   this.db = new sqlite3.Database(path);
   if(create) {
-    this.db.exec('CREATE TABLE tag (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);', function(err) {
+    this.db.exec('CREATE TABLE sender (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);', function(err) {
       if (err) {
-        console.log('create table tag: ' + err);
+        console.log('create table sender: ' + err);
         throw err;
       }
     });
   }
 }
 
-TagDao.prototype = {
+SenderDao.prototype = {
 
   /**
-   * @method add a tag to the store
-   * @param {Tag} tag - a Tag object
+   * @method add a sender to the store
+   * @param {Sender} sender - a Sender object
    * @returns {promise: function(insertedId)} a promise (Q)
    */
-  add: function(tag) {
+  add: function(sender) {
     var deferred = q.defer();
-    this.db.run('INSERT INTO tag (name) VALUES (?)', tag.name, function(err) {
+    this.db.run('INSERT INTO sender (name) VALUES (?)', sender.name, function(err) {
       if (err) {
-        console.log('add a tag: ' + err);
+        console.log('add a sender: ' + err);
         return deferred.reject(err);
       }
       deferred.resolve(this.lastID);
@@ -45,15 +45,15 @@ TagDao.prototype = {
   },
 
   /**
-   * @method delete a tag by its id
-   * @param {int} id - the id of the tag to delete
+   * @method delete a sender by its id
+   * @param {int} id - the id of the sender to delete
    * @returns {promise: function(changes)} a promise (Q)
    */
   delete: function(id) {
     var deferred = q.defer();
-    this.db.run('DELETE from tag WHERE id = ?', id, function(err) {
+    this.db.run('DELETE from sender WHERE id = ?', id, function(err) {
       if(err) {
-        console.log('delete a tag: ' + err);
+        console.log('delete a sender: ' + err);
         return deferred.reject(err);
       }
       deferred.resolve(this.changes);
@@ -62,29 +62,29 @@ TagDao.prototype = {
   },
 
   /**
-   * @method read all tag entries
-   * @param {string} search - search for tags with the given name
-   * @returns {promise: function(Tag[])} a promise (Q)
+   * @method read all sender entries
+   * @param {string} search - search for senders with the given name
+   * @returns {promise: function(Sender[])} a promise (Q)
    */
   list: function(search) {
     var deferred = q.defer();
     var result = [];
 
-    var query = 'SELECT id, name FROM tag';
+    var query = 'SELECT id, name FROM sender';
     var params = [];
     if(search) {
-      query = 'SELECT id, name FROM tag WHERE name LIKE ?';
+      query = 'SELECT id, name FROM sender WHERE name LIKE ?';
       params.push('%' + search + '%');
     }
 
     this.db.all(query, params, function(err, rows) {
       if (err) {
-        console.log('select tags: '+ err);
+        console.log('select senders: '+ err);
         return deferred.reject(err);
       }
       for (var i = 0; i < rows.length; i++) {
-        var tag = new Tag(rows[i].id, rows[i].name);
-        result.push(tag);
+        var sender = new Sender(rows[i].id, rows[i].name);
+        result.push(sender);
       }
       deferred.resolve(result);
     });
@@ -99,4 +99,4 @@ TagDao.prototype = {
   }
 };
 
-module.exports = TagDao;
+module.exports = SenderDao;

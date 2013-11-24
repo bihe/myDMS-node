@@ -2,27 +2,26 @@
 
 'use strict';
 
-var fs = require("fs");
+var PersitenceModel = require('./models/persistenceModel');
+var dbConfig = require('./config/database');
+var Tag = require('./models/tag');
+var TagDao = require('./models/tagDao');
 
-var dbConfig = require('../config/database');
-var Tag = require('../models/tag');
-var TagDao = require('../models/tagDao');
+var pm = new PersitenceModel(dbConfig.path, true);
 
-var exists = false; //fs.existsSync(dbConfig.path);
+pm.setup().then(function() {
+  console.log('after setup');
+  var tagDao = new TagDao(dbConfig.path);
+  var tag = new Tag(1, 'testtag');
 
-if(!exists) {
-  console.log("+ Creating DB file.");
-  fs.openSync(dbConfig.path, "w");
-}
+  tagDao.add(tag).then(function(id) {
+    console.log('    + done add tag');
 
-var tagDao = new TagDao(dbConfig.path, exists);
-var tag = new Tag(1, 'testtag');
+    return tagDao.list();
 
-tagDao.add(tag, function() {
-  console.log('    + done add tag');
-
-  tagDao.list(function(result) {
-  console.log('    + done list tags');
+  }).then(function(result) {
+    console.log('    + done list tags');
     console.log(result);
+    
   });
 });
