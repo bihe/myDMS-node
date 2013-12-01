@@ -4,24 +4,27 @@
 
 'use strict';
 
-function Document() {
-	this.id = -1;
-	this.alternativeId = '';
-	this.fileName = '';
-	this.title = '';
-	this.previewLink = '';
-	// use the format yyyy-MM-dd
-	this.created = '';
-	this.amount = 0.0;
-	this.senders = [];
-	this.tags = [];
-}
+require('class4js');
 
-/**
- * document including meta-data
- * @coonstructor
- */
-Document.prototype = {
+var Document = $class({
+	
+	/**
+	 * document including meta-data
+	 * @coonstructor
+	 */
+	__construct__: function () {
+		this.id = -1;
+		this.alternativeId = '';
+		this.fileName = '';
+		this.title = '';
+		this.previewLink = '';
+		// use the format yyyy-MM-dd
+		this.created = '';
+		this.amount = 0.0;
+		this.senders = [];
+		this.tags = [];
+	},
+
 	/**
 	 * string representation of a document
 	 * @returns {string}
@@ -29,6 +32,6 @@ Document.prototype = {
 	toString: function() {
 		return this.id + ': ' + this.title;
 	}
-};
+});
 
 module.exports = Document;
