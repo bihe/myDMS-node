@@ -11,17 +11,13 @@ var Sender = require('./sender');
  * a class impementing a data access object
  * @constructor 
  * @param {string} path - the path to the database file
- * @param {bool} create - create the table for testing purpose
+ * @param {sqlite.Database} db - a databse object
  */
-function SenderDao(path, create) {
-  this.db = new sqlite3.Database(path);
-  if(create) {
-    this.db.exec('CREATE TABLE sender (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);', function(err) {
-      if (err) {
-        console.log('create table sender: ' + err);
-        throw err;
-      }
-    });
+function SenderDao(path, db) {
+  if(db) {
+    this.db = db;
+  } else {
+    this.db = new sqlite3.Database(path);
   }
 }
 

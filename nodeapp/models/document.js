@@ -20,6 +20,7 @@ var Document = $class({
 		this.previewLink = '';
 		// use the format yyyy-MM-dd
 		this.created = '';
+		this.amount = 0.0;
 		this.senders = [];
 		this.tags = [];
 	},

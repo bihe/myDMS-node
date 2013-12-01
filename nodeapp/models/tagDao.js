@@ -11,17 +11,13 @@ var Tag = require('./tag');
  * a class impementing a data access object
  * @constructor 
  * @param {string} path - the path to the database file
- * @param {bool} create - create the table for testing purpose
+ * @param {sqlite.Database} db - a databse object
  */
-function TagDao(path, create) {
-  this.db = new sqlite3.Database(path);
-  if(create) {
-    this.db.exec('CREATE TABLE tag (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);', function(err) {
-      if (err) {
-        console.log('create table tag: ' + err);
-        throw err;
-      }
-    });
+function TagDao(path, db) {
+  if(db) {
+    this.db = db;
+  } else {
+    this.db = new sqlite3.Database(path);
   }
 }
 
@@ -58,6 +54,33 @@ TagDao.prototype = {
       }
       deferred.resolve(this.changes);
     });
+    return deferred.promise;
+  },
+
+  /**
+   * @method return the tag by the given name
+   * @param {string} tagName - search for the given name
+   * @returns {promise: function(Tag)} a promise (Q)
+   */
+  byName: function(tagName) {
+    var deferred = q.defer();
+    var tag = new Tag();
+
+    var query = 'SELECT * FROM tag WHERE lower(name) = ?';
+    this.db.get(query, tagName.toLowerCase(), function(err, row) {
+      if (err) {
+        console.log('byName tag: '+ err);
+        return deferred.reject(err);
+      }
+      if(row) {
+        tag = new Tag(row.id, row.name);
+        deferred.resolve(tag);
+      } else {
+        tag = new Tag(-1, null);
+        return deferred.resolve(tag);
+      }  
+    });
+
     return deferred.promise;
   },
 

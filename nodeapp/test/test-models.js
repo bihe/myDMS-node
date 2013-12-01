@@ -26,6 +26,8 @@ describe('models', function() {
 
       assert(result, 'Could not create the necessary tables');
 
+      pm.close();
+
       console.log('Remove the temp-db: ' + tempDB);
 
       fs.unlinkSync(tempDB);
@@ -45,9 +47,13 @@ describe('models', function() {
     it('should support basic crud operations', function() {
 
       var sender = new Sender(1, 'sender1');
-      var senderDao= new SenderDao(':memory:', true);
-      
-      senderDao.add(sender).then(function(id) {
+      var senderDao;
+      var pm = new PersitenceModel(':memory:', true);
+      pm.setup().then(function(result) {
+        senderDao = new SenderDao('', pm.db);
+        return senderDao.add(sender);
+
+      }).then(function(id) {
 
         assert.equal(id, 1, 'The inserted id does not match');
         sender.name = 'sender2';
@@ -95,11 +101,14 @@ describe('models', function() {
 
     it('should support basic crud operations', function() {
       
-      var tagDao;
       var tag = new Tag(1, 'testtag1');
-      var tagDao = new TagDao(':memory:', true);
-        
-      tagDao.add(tag).then(function(id) {
+      var tagDao;
+      var pm = new PersitenceModel(':memory:', true);
+      pm.setup().then(function(result) {
+        tagDao = new TagDao('', pm.db);
+        return tagDao.add(tag);
+
+      }).then(function(id) {
         assert.equal(id, 1, 'The inserted id does not match');
         tag.name = 'tag2';
         return tagDao.add(tag);
@@ -115,7 +124,7 @@ describe('models', function() {
         return tagDao.list('ag2');
       }).then(function(result) {
         assert.equal(result.length, 1, 'Number of retrieved elements not equal!');
-        assert.equal(result[0].name, 'tag2', 'Number of retrieved elements not equal!');
+        assert.equal(result[0].name, 'tag2', 'Tagname does not match!');
 
         return tagDao.delete(1);
       }).then(function(changes) {
@@ -125,8 +134,18 @@ describe('models', function() {
       }).then(function(result) {
 
         assert.equal(result.length, 1, 'Number of retrieved elements not equal!');
-        assert.equal(result[0].name, 'tag2', 'Number of retrieved elements not equal!');
+        assert.equal(result[0].name, 'tag2', 'Tagname does not match!');
+
+        return tagDao.byName('tag2');
         
+      }).then(function(tag) {
+        assert.equal(tag.name, 'tag2', 'Tagname does not match!');
+
+        return tagDao.byName('tag1');
+      }).then(function(tag) {
+
+        assert.equal(tag.id, -1, 'TagID does not match!');
+        assert.equal(tag.name, null, 'Tagname does not match!');
       })
       .done();
 
@@ -137,18 +156,56 @@ describe('models', function() {
   describe('Documents', function() {
 
     it('should insert a new document', function() {
-      var docDao = new DocumentDao(':memory:', true);
-      var doc = new Document({title: 'testDoc', alternativeId: randomstring.generate(7), fileName: 'testFilename'});
 
-      docDao.add(doc).then(function(id) {
+      var docDao;
+      var doc = new Document({title: 'testDoc', alternativeId: randomstring.generate(7), fileName: 'testFilename', amount: 100.7});
+      var tag = new Tag(1, 'test');
+      var tag1 = new Tag(2, 'test1');
+      doc.tags.push(tag);
+      doc.tags.push(tag1);
+
+      var pm = new PersitenceModel(':memory:', true);
+      pm.setup().then(function(result) {
+        docDao = new DocumentDao('', pm.db);
+        return docDao.add(doc);
+
+      }).then(function(id) {
+        
         assert.equal(id, 1, 'The inserted id does not match');
+
+        var tagDao = new TagDao('', pm.db);
+        tagDao.list().then(function(result) {
+          assert.equal(result.length, 2, 'Number of tags is wrong');
+        });
 
         return docDao.get(1);
       }).then(function(doc) {
 
         assert.equal(doc.id, 1, 'The id does not match');
         assert.equal(doc.title, 'testDoc', 'The title does not macht');
+        assert.equal(doc.amount, 100.7, 'The amount does not macht');
         assert.equal(doc.fileName, 'testFilename', 'The fileName does not macht');
+        assert(doc.alternativeId !== '', 'No alternative id available');
+
+
+        doc.title = 'update1';
+        doc.amount = 1000;
+        doc.previewLink = 'update1';
+        doc.fileName = 'update1';
+
+        return docDao.update(doc);
+
+      }).then(function(numchanges) {
+        assert.equal(numchanges, 1, 'Number of changes done wrong');
+
+        return docDao.get(1);
+      }).then(function(doc) {
+
+        assert.equal(doc.id, 1, 'The id does not match');
+        assert.equal(doc.title, 'update1', 'The title does not macht');
+        assert.equal(doc.amount, 1000, 'The amount does not macht');
+        assert.equal(doc.fileName, 'update1', 'The fileName does not macht');
+        assert.equal(doc.previewLink, 'update1', 'The previewLink does not macht');
         assert(doc.alternativeId !== '', 'No alternative id available');
       })
       .done();
