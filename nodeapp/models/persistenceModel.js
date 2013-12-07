@@ -23,7 +23,7 @@ PersitenceModel.prototype = {
    * @method setup the necessary tables if the store is not available
    * @returns {promise} a promise (Q)
    */
-  setup: function(done) {
+  setup: function() {
 
     var deferred = q.defer();
 
@@ -31,6 +31,7 @@ PersitenceModel.prototype = {
     if(this.dbPath !== ':memory:') {
 
       exists = fs.existsSync(this.dbPath);
+
       if(exists && !this.forceNew) {
         deferred.resolve();
         return deferred.promise;
@@ -45,11 +46,20 @@ PersitenceModel.prototype = {
 
     var self = this;
     if(!exists) {
-      if(this.dbPath !== ':memory:') {
+
+      if(self.dbPath !== ':memory:') {
         fs.openSync(this.dbPath, 'w');
       }
       self.db = new sqlite3.Database(this.dbPath);
+
+      // self.db.on('trace', function(param) {
+      //   if(self.dbPath !== ':memory:') {
+      //     console.log(':: trace: ' + param);
+      //   }
+      // });
+
       var numberOfTables = 0;
+
       //console.log('    + db does not exist - create the tables');
 
       //console.log('    + create table tag');
@@ -70,36 +80,22 @@ PersitenceModel.prototype = {
 
           numberOfTables += 1;
 
-          self.db.exec('CREATE TABLE document (id INTEGER PRIMARY KEY AUTOINCREMENT, alternativeId TEXT NOT NULL, title TEXT NOT NULL, fileName TEXT NOT NULL, previewLink TEXT, created datetime default current_timestamp, amount numeric);', function(err) {
+          var __db = self.db.exec('CREATE TABLE document (id INTEGER PRIMARY KEY AUTOINCREMENT, alternativeId TEXT NOT NULL, title TEXT NOT NULL, fileName TEXT NOT NULL, previewLink TEXT, created datetime default current_timestamp, amount numeric);'
+            + ' CREATE TABLE document_tags (doc_id INTEGER NOT NULL, tag_id INTEGER NOT NULL);'
+            + ' CREATE TABLE document_senders (doc_id INTEGER NOT NULL, sender_id INTEGER NOT NULL);', function(err) {
+            
             if (err) {
               console.log('create table document: ' + err);
               return deferred.reject(err);
             }
 
-            numberOfTables += 1;
+            numberOfTables += 3;
+            deferred.resolve( (numberOfTables === 5) );
 
-            self.db.exec('CREATE TABLE document_tags (doc_id INTEGER NOT NULL, tag_id INTEGER NOT NULL);', function(err) {
-              if (err) {
-                console.log('create table document_tags: ' + err);
-                return deferred.reject(err);
-              }
+          });
 
-              numberOfTables += 1;
-
-              self.db.exec('CREATE TABLE document_senders (doc_id INTEGER NOT NULL, sender_id INTEGER NOT NULL);', function(err) {
-                if (err) {
-                  console.log('create table document_senders: ' + err);
-                  return deferred.reject(err);
-                }
-
-                numberOfTables += 1;
-
-                deferred.resolve( (numberOfTables === 5) );
-
-              });
-
-            });
-
+          __db.on('error', function(param) {
+            console.log('error: ' + param);
           });
           
         });

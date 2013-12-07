@@ -59,7 +59,7 @@ DocumentDao.prototype = {
 
             if(t.id > -1) {
 
-              self.db.run('INSERT INTO document_tags (doc_id, tag_id) VALUES (?, ?)', docId, t.id, function(er) {
+              self.db.run('INSERT INTO document_tags (doc_id, tag_id) VALUES (?, ?)', docId, t.id, function(err) {
                 if (err) {
                   console.log('add document_tags: ' + err);
                   return deferred.reject(err);
@@ -69,15 +69,18 @@ DocumentDao.prototype = {
 
                 //console.log('counter: ' +  counter + ' / length: ' +  length);
                 if(counter === length) {
-                  console.log('resolve the promise!');
+                  console.log('[' + new Date().getTime() + '] resolve the promise!');
                   deferred.resolve(docId);
                 }
               });
 
             } else {
+              
               // no tag available, add one
               tagDao.add(tag).then(function(tagId) {
-                self.db.run('INSERT INTO document_tags (doc_id, tag_id) VALUES (?, ?)', docId, tagId, function(er) {
+
+                self.db.run('INSERT INTO document_tags (doc_id, tag_id) VALUES (?, ?)', docId, tagId, function(err) {
+
                   if (err) {
                     console.log('add document_tags: ' + err);
                     return deferred.reject(err);
@@ -87,7 +90,7 @@ DocumentDao.prototype = {
 
                   //console.log('counter: ' +  counter + ' / length: ' +  length);
                   if(counter === length) {
-                    console.log('resolve the promise!');
+                    console.log('[' + new Date().getTime() + '] resolve the promise!');
                     deferred.resolve(docId);
                   }
 
@@ -97,7 +100,7 @@ DocumentDao.prototype = {
             }
             
           }).fail(function(error) {
-            return deferred.reject(err);
+            return deferred.reject(error);
           });
 
         });
@@ -145,7 +148,7 @@ DocumentDao.prototype = {
       deferred.resolve(doc);
     });
     return deferred.promise;
-  }, 
+  },
 
   /**
    * @method delete a document by its id

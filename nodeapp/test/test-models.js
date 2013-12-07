@@ -16,24 +16,38 @@ var randomstring = require("randomstring");
 
 describe('models', function() {
 
-  var tempDB = '';
-  it('create a physical database file', function() {
+  describe('Filesystem', function() {
+    var tempDB = '';
+    var pm;
 
-    tempDB = 'test/tmp/' + randomstring.generate(7);
+    describe('File', function() {
+      it('create a physical database file', function(done) {
 
-    var pm = new PersitenceModel(tempDB, true);
-    pm.setup().then(function(result) {
+        tempDB = 'test/tmp/' + randomstring.generate(7);
+       
+        pm = new PersitenceModel(tempDB, true);
+        pm.setup().then(function(result) {
 
-      assert(result, 'Could not create the necessary tables');
+          assert(result, 'Could not create the necessary tables');
 
-      pm.close();
+          done();
 
-      console.log('Remove the temp-db: ' + tempDB);
+        }, function(err) {
+          console.log(err);
+        }).done();
 
-      fs.unlinkSync(tempDB);
+      });
+    });
+
+    // clean up our mess ;)
+    after(function(done) {
       
-    }).done();
+      pm.close();
+      console.log('\t - Remove the temp-db: ' + tempDB);
+      fs.unlinkSync(tempDB);
 
+      done();
+    });
   });
 
   describe('Senders', function() {
@@ -166,6 +180,13 @@ describe('models', function() {
 
       var pm = new PersitenceModel(':memory:', true);
       pm.setup().then(function(result) {
+
+        pm.db.on('trace', function(param) {
+          
+          console.log('[' + new Date().getTime() + '] :: trace: ' + param);
+          
+        });
+
         docDao = new DocumentDao('', pm.db);
         return docDao.add(doc);
 
@@ -173,10 +194,11 @@ describe('models', function() {
         
         assert.equal(id, 1, 'The inserted id does not match');
 
+        // todo: retrieve the number of tags with the document objct
         var tagDao = new TagDao('', pm.db);
         tagDao.list().then(function(result) {
           assert.equal(result.length, 2, 'Number of tags is wrong');
-        });
+        }).done();
 
         return docDao.get(1);
       }).then(function(doc) {

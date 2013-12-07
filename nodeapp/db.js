@@ -16,6 +16,7 @@ pm.setup().then(function() {
 
   tagDao.add(tag).then(function(id) {
     console.log('    + done add tag');
+    console.log(id);
 
     return tagDao.list();
 
