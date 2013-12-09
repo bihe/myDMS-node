@@ -181,11 +181,11 @@ describe('models', function() {
       var pm = new PersitenceModel(':memory:', true);
       pm.setup().then(function(result) {
 
-        pm.db.on('trace', function(param) {
+        // pm.db.on('trace', function(param) {
           
-          console.log('[' + new Date().getTime() + '] :: trace: ' + param);
+        //   console.log('[' + new Date().getTime() + '] :: trace: ' + param);
           
-        });
+        // });
 
         docDao = new DocumentDao('', pm.db);
         return docDao.add(doc);

@@ -6,6 +6,7 @@
 var sqlite3 = require('sqlite3').verbose();
 var q = require('q');
 var _ = require('lodash');
+var async = require('async');
 var Document = require('./document');
 var Tag = require('./tag');
 var TagDao = require('./tagDao');
@@ -43,67 +44,9 @@ DocumentDao.prototype = {
       var docId = this.lastID;
 
       if(document.tags && document.tags.length > 0) {
+        document.id = docId;
+        self.__handleTags(document, deferred, self, function() { deferred.resolve(docId); });
 
-        //console.log('Will process the tags: ' + document.tags.length);
-
-        // process tags
-        // if a tag is not available, create it, then reference it
-
-        var tagDao = new TagDao('', self.db);
-        var tag;
-        var length = document.tags.length;
-        var counter = 0;
-        _.forEach(document.tags, function(tag) {
-          
-          tagDao.byName(tag.name).then(function(t) {
-
-            if(t.id > -1) {
-
-              self.db.run('INSERT INTO document_tags (doc_id, tag_id) VALUES (?, ?)', docId, t.id, function(err) {
-                if (err) {
-                  console.log('add document_tags: ' + err);
-                  return deferred.reject(err);
-                }
-
-                counter += 1;
-
-                //console.log('counter: ' +  counter + ' / length: ' +  length);
-                if(counter === length) {
-                  console.log('[' + new Date().getTime() + '] resolve the promise!');
-                  deferred.resolve(docId);
-                }
-              });
-
-            } else {
-              
-              // no tag available, add one
-              tagDao.add(tag).then(function(tagId) {
-
-                self.db.run('INSERT INTO document_tags (doc_id, tag_id) VALUES (?, ?)', docId, tagId, function(err) {
-
-                  if (err) {
-                    console.log('add document_tags: ' + err);
-                    return deferred.reject(err);
-                  }
-
-                  counter += 1;
-
-                  //console.log('counter: ' +  counter + ' / length: ' +  length);
-                  if(counter === length) {
-                    console.log('[' + new Date().getTime() + '] resolve the promise!');
-                    deferred.resolve(docId);
-                  }
-
-                });
-              });
-
-            }
-            
-          }).fail(function(error) {
-            return deferred.reject(error);
-          });
-
-        });
       } else {
         deferred.resolve(docId);
       }
@@ -204,6 +147,93 @@ DocumentDao.prototype = {
    */
   close: function() {
     this.db.close();
+  },
+
+
+  /**
+   * @method private helper to manage tag handling for a document
+   * @param {Document} document - the document object
+   * @param {promise - Q} deferred - a promise to resolve
+   * @param {this} self - the reference to the instance
+   * @param {function} done - a callback once finished
+   */
+  __handleTags: function(document, deferred, self, done) {
+
+    var docId = document.id;
+    var tagIds = [];
+    var tagNames = [];
+    var tagDao = new TagDao('', self.db);
+
+    async.series([
+        // check for existing tags
+        function(callback) {
+
+          _.forEach(document.tags, function(tag, index) {
+            tagDao.byName(tag.name).then(function(t) {
+              
+              if(t.id > -1) {
+                tagIds.push(t.id);
+              } else {
+                // tag.name not found, we need to create the tag
+                tagNames.push(tag.name);
+              }
+              if(index === document.tags.length -1) {
+                
+                callback(null);
+              }
+            }).fail(function(error) {
+              callback(error);
+            });
+          });
+        },
+        // add the tags to the store
+        function(callback) {
+          
+          _.forEach(tagNames, function(name, index) {
+            var tag = new Tag(-1, name);
+            tagDao.add(tag).then(function(tagId) {
+              
+              tagIds.push(tagId);
+              if(index === tagNames.length -1) {
+                callback(null);
+              }
+            }).fail(function(error) {
+              callback(error);
+            });
+          });
+        },
+        // got the ids of the tags -- add to the document relation
+        function(callback) {
+          
+          _.forEach(tagIds, function(id, index) {
+            self.db.run('INSERT INTO document_tags (doc_id, tag_id) VALUES (?, ?)', docId, id, function(err) {
+              if (err) {
+                console.log('add document_tags: ' + err);
+                return callback('add document_tags: ' + err);
+              }
+
+              if(index === tagIds.length -1) {
+                callback(null);
+              }
+            });
+            
+          });
+        }
+      ],
+      function(error, result) {
+        if(error) {
+          return deferred.reject(error);
+        }
+
+        // console.log(tagNames);
+        // console.log(tagIds);
+        // console.log('resolve the promise');
+
+        // reached the end of the functions - resolve the promise
+        done();
+      }
+    );
+
   }
 };
 
