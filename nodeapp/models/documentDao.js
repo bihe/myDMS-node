@@ -45,7 +45,7 @@ DocumentDao.prototype = {
 
       if(document.tags && document.tags.length > 0) {
         document.id = docId;
-        self.__handleTags(document, deferred, self, function() { deferred.resolve(docId); });
+        self.__handleTags(document, deferred, function() { deferred.resolve(docId); });
 
       } else {
         deferred.resolve(docId);
@@ -154,11 +154,11 @@ DocumentDao.prototype = {
    * @method private helper to manage tag handling for a document
    * @param {Document} document - the document object
    * @param {promise - Q} deferred - a promise to resolve
-   * @param {this} self - the reference to the instance
    * @param {function} done - a callback once finished
    */
-  __handleTags: function(document, deferred, self, done) {
+  __handleTags: function(document, deferred, done) {
 
+    var self = this;
     var docId = document.id;
     var tagIds = [];
     var tagNames = [];
