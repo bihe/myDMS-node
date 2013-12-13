@@ -35,6 +35,9 @@ DocumentDao.prototype = {
   add: function(document) {
     var deferred = q.defer();
     var self = this;
+
+    // TODO: serial SQL, use tx
+
     self.db.run('INSERT INTO document (alternativeId, title, fileName, previewLink, amount) VALUES (?, ?, ?, ?, ?)', document.alternativeId, document.title, document.fileName, document.previewLink, document.amount, function(err) {
       if (err) {
         console.log('add a document: ' + err);
