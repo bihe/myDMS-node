@@ -36,24 +36,37 @@ DocumentDao.prototype = {
     var deferred = q.defer();
     var self = this;
 
-    // TODO: serial SQL, use tx
+    self.db.serialize(function() { 
 
-    self.db.run('INSERT INTO document (alternativeId, title, fileName, previewLink, amount) VALUES (?, ?, ?, ?, ?)', document.alternativeId, document.title, document.fileName, document.previewLink, document.amount, function(err) {
-      if (err) {
-        console.log('add a document: ' + err);
-        return deferred.reject(err);
-      }
+      self.db.run('BEGIN');
 
-      var docId = this.lastID;
+      self.db.run('INSERT INTO document (alternativeId, title, fileName, previewLink, amount) VALUES (?, ?, ?, ?, ?)', document.alternativeId, document.title, document.fileName, document.previewLink, document.amount, function(err) {
+        if (err) {
+          console.log('add a document: ' + err);
+          return deferred.reject(err);
+        }
 
-      if(document.tags && document.tags.length > 0) {
-        document.id = docId;
-        self.__handleTags(document, deferred, function() { deferred.resolve(docId); });
+        var docId = this.lastID;
 
-      } else {
-        deferred.resolve(docId);
-      }
-      
+        if(document.tags && document.tags.length > 0) {
+          document.id = docId;
+          self.__handleTags(document, deferred, function(error) {
+            if(error) {
+              self.db.run('ROLLBACK');
+              return deferred.reject(error);
+            } else {
+              self.db.run('COMMIT');
+              deferred.resolve(docId);
+            } 
+          });
+
+        } else {
+          self.db.run('COMMIT');
+          deferred.resolve(docId);
+        }
+        
+      });
+
     });
 
     return deferred.promise;
@@ -66,12 +79,41 @@ DocumentDao.prototype = {
    */
   update: function(document) {
     var deferred = q.defer();
-    this.db.run('UPDATE document SET title = ?, fileName = ?, previewLink = ?, amount = ? WHERE id = ?', document.title, document.fileName, document.previewLink, document.amount, document.id, function(err) {
-      if (err) {
-        console.log('update a document: ' + err);
-        return deferred.reject(err);
-      }
-      deferred.resolve(this.changes);
+
+    var self = this;
+
+    self.db.serialize(function() { 
+
+      self.db.run('BEGIN');
+
+      self.db.run('UPDATE document SET title = ?, fileName = ?, previewLink = ?, amount = ? WHERE id = ?', document.title, document.fileName, document.previewLink, document.amount, document.id, function(err) {
+        if (err) {
+          console.log('update a document: ' + err);
+          self.db.run('ROLLBACK');
+          return deferred.reject(err);
+        }
+
+        var changes = this.changes;
+
+        if(document.tags && document.tags.length > 0) {
+          
+          self.__handleTags(document, deferred, function(error) {
+            if(error) {
+              self.db.run('ROLLBACK');
+              return deferred.reject(error);
+            } else {
+              self.db.run('COMMIT');
+              deferred.resolve(changes);
+            } 
+          });
+
+        } else {
+          self.db.run('COMMIT');
+          deferred.resolve(changes);
+        }
+
+      });
+
     });
     return deferred.promise;
   },
@@ -88,6 +130,8 @@ DocumentDao.prototype = {
         console.log('add a document: ' + err);
         return deferred.reject(err);
       }
+
+      // todo: get tags, senders for docID
 
       var doc = new Document({id: row.id, title: row.title, alternativeId: row.alternativeId, fileName: row.fileName, previewLink: row.previewLink, created: row.created, amount: row.amount});
 
@@ -136,9 +180,14 @@ DocumentDao.prototype = {
         return deferred.reject(err);
       }
       for (var i = 0; i < rows.length; i++) {
+
+        // todo: get tags, senders for docID
+        
         var row = rows[i];
         var doc = new Document({id: row.id, title: row.title, alternativeId: row.alternativeId, fileName: row.fileName, previewLink: row.previewLink, created: row.created, amount: row.amount});
         result.push(doc);
+
+
       }
       deferred.resolve(result);
     });
@@ -168,6 +217,18 @@ DocumentDao.prototype = {
     var tagDao = new TagDao('', self.db);
 
     async.series([
+
+        // remove document_tag references
+        function(callback) {
+          self.db.run('DELETE FROM document_tags WHERE doc_id = ?', docId, function(err) {
+            if (err) {
+              console.log('delete document_tags: ' + err);
+              return callback('delete document_tags: ' + err);
+            }
+            callback(null);
+          });
+        },
+
         // check for existing tags
         function(callback) {
 
@@ -192,18 +253,23 @@ DocumentDao.prototype = {
         // add the tags to the store
         function(callback) {
           
-          _.forEach(tagNames, function(name, index) {
-            var tag = new Tag(-1, name);
-            tagDao.add(tag).then(function(tagId) {
-              
-              tagIds.push(tagId);
-              if(index === tagNames.length -1) {
-                callback(null);
-              }
-            }).fail(function(error) {
-              callback(error);
+          if( tagNames.length > 0 ) {
+            _.forEach(tagNames, function(name, index) {
+              var tag = new Tag(-1, name);
+              tagDao.add(tag).then(function(tagId) {
+                
+                tagIds.push(tagId);
+                if(index === tagNames.length -1) {
+                  callback(null);
+                }
+              }).fail(function(error) {
+                callback(error);
+              });
             });
-          });
+          } else {
+            // no new tags
+            callback(null);
+          }
         },
         // got the ids of the tags -- add to the document relation
         function(callback) {
@@ -212,7 +278,8 @@ DocumentDao.prototype = {
             self.db.run('INSERT INTO document_tags (doc_id, tag_id) VALUES (?, ?)', docId, id, function(err) {
               if (err) {
                 console.log('add document_tags: ' + err);
-                return callback('add document_tags: ' + err);
+                callback('add document_tags: ' + err);
+                return false;
               }
 
               if(index === tagIds.length -1) {
@@ -224,16 +291,7 @@ DocumentDao.prototype = {
         }
       ],
       function(error, result) {
-        if(error) {
-          return deferred.reject(error);
-        }
-
-        // console.log(tagNames);
-        // console.log(tagIds);
-        // console.log('resolve the promise');
-
-        // reached the end of the functions - resolve the promise
-        done();
+        done(error);
       }
     );
 

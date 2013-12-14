@@ -181,11 +181,11 @@ describe('models', function() {
       var pm = new PersitenceModel(':memory:', true);
       pm.setup().then(function(result) {
 
-        // pm.db.on('trace', function(param) {
+        pm.db.on('trace', function(param) {
           
-        //   console.log('[' + new Date().getTime() + '] :: trace: ' + param);
+          console.log('[' + new Date().getTime() + '] :: trace: ' + param);
           
-        // });
+        });
 
         docDao = new DocumentDao('', pm.db);
         return docDao.add(doc);
@@ -214,6 +214,9 @@ describe('models', function() {
         doc.amount = 1000;
         doc.previewLink = 'update1';
         doc.fileName = 'update1';
+        // todo: tags should be read from model
+        doc.tags.push(tag);
+        doc.tags.push(tag1);
 
         return docDao.update(doc);
 
