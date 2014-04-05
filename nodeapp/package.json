@@ -16,7 +16,8 @@
     "randomstring": "~1.0.2",
     "lodash": "~2.4.0",
     "class4js": "~1.10.3",
-    "async": "~0.2.9"
+    "async": "~0.2.9",
+    "mongoose": "3.8.x"
   },
   "devDependencies": {
     "mocha": "1.x"
