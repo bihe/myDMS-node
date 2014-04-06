@@ -11,7 +11,6 @@
     "consolidate": "*",
     "mustache": "*",
     "strftime": "0.5.1",
-    "sqlite3": "2.x",
     "q": "~0.9.7",
     "randomstring": "~1.0.2",
     "lodash": "~2.4.0",

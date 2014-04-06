@@ -16,40 +16,6 @@ var randomstring = require("randomstring");
 
 describe('models', function() {
 
-  describe('Filesystem', function() {
-    var tempDB = '';
-    var pm;
-
-    describe('File', function() {
-      it('create a physical database file', function(done) {
-
-        tempDB = 'test/tmp/' + randomstring.generate(7);
-       
-        pm = new PersitenceModel(tempDB, true);
-        pm.setup().then(function(result) {
-
-          assert(result, 'Could not create the necessary tables');
-
-          done();
-
-        }, function(err) {
-          console.log(err);
-        }).done();
-
-      });
-    });
-
-    // clean up our mess ;)
-    after(function(done) {
-      
-      pm.close();
-      console.log('\t - Remove the temp-db: ' + tempDB);
-      fs.unlinkSync(tempDB);
-
-      done();
-    });
-  });
-
   describe('Senders', function() {
 
     it('instantiate a new sender', function() {
