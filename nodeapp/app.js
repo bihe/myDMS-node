@@ -9,8 +9,8 @@ var express = require('express');
 var cons = require('consolidate');
 var http = require('http');
 var path = require('path');
-var routes = require('./routes');
-var config = require('./config/application');
+var routes = require('./app/routes');
+var config = require('./app/config/application');
 
 var app = express();
 
@@ -20,7 +20,7 @@ app.configure(function(){
 
   app.set('port', process.env.PORT || 3000);
   app.set('host', '127.0.0.1');
-  app.set('views', __dirname + '/views');
+  app.set('views', __dirname + '/app/views');
   app.set('view engine', 'html');
 
   app.use(express.favicon());
@@ -30,7 +30,7 @@ app.configure(function(){
   app.use(express.cookieParser(config.application.secret));
   app.use(express.session());
   app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.join(__dirname, 'public/webapp')));
 });
 
 // pretty HTML formating for output

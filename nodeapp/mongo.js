@@ -3,15 +3,15 @@
 
 'use strict';
 
-var database = require('./config/database');
-var mongoose = require ('mongoose');
+var database = require('./app/config/database');
+var mongoose = require('mongoose');
 
 var uristring = database.uri;
 mongoose.connect(uristring, function (err, res) {
   if (err) {
-    console.log ('ERROR connecting to: ' + uristring + '. ' + err);
+    console.log('ERROR connecting to: ' + uristring + '. ' + err);
   } else {
-    console.log ('Succeeded connected to: ' + uristring);
+    console.log('Succeeded connected to: ' + uristring);
   }
 });
 
@@ -37,16 +37,16 @@ var item = new Entry({
 });
 
 
-Entry.remove({ age: 45 }, function(err) {
+Entry.remove({ age: 45 }, function (err) {
   // save the entry to the mongodb
   item.save(function (err) {
     if (err) {
-      console.log ('Error on save!');
+      console.log('Error on save!');
     } else {
       console.log('item saved');
 
       // find the entry
-      Entry.find({}).exec(function(err, result) {
+      Entry.find({}).exec(function (err, result) {
         if (!err) {
           // handle result
           console.log('found result: ' + result.length);

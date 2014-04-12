@@ -1,0 +1,23 @@
+{
+    "global": {
+        "title": "myDMS",
+        "browsehappy": "Sie benutzen einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/\">aktualisieren Sie Ihren Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
+        "menu": {
+            "home": "Startseite",
+            "account": {
+                "main": "Zugang",
+                "login": "Anmelden",
+                "logout": "Abmelden"
+            },
+            "language": "Sprache"
+        },
+        "language": {
+            "en": "Englisch",
+            "de": "Deutsch"            
+        }
+    },
+    "main": {
+        "title": "Wilkommen, myDMS!",
+        "subtitle": "Dies ist Ihre Hauptseite"
+    }
+}

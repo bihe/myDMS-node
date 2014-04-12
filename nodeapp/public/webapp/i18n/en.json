@@ -1,0 +1,23 @@
+{
+    "global": {
+        "title": "myDMS",
+        "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> to improve your experience.",
+        "menu": {
+            "home": "Home",
+            "account": {
+                "main": "Account",
+                "login": "Authenticate",
+                "logout": "Log out"
+            },
+            "language": "Language"
+        },
+        "language": {
+            "en": "English",
+            "de": "German"
+        }
+    },
+    "main": {
+        "title": "Welcome, myDMS!",
+        "subtitle": "This is your homepage"
+    }
+}
