@@ -116,9 +116,8 @@ nodeapp/.DS_Store
 nodeapp/public/dist/
 nodeapp/public/node_modules/
 
-a.sublime-workspace
-
-a.sublime-workspace
+*.sublime-project
+*.sublime-workspace
 
 data
 nodeapp/debug-tests.sh

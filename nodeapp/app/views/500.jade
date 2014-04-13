@@ -1,0 +1,28 @@
+doctype html
+html(lang="en")
+    head
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        title 500: Error occured!
+        
+        link(href="#{basePath}bower_components/bootstrap/dist/css/bootstrap.css", rel="stylesheet")
+        
+        
+        |<!--[if lt IE 9]>
+        |<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        |<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        |<![endif]-->
+        
+    body(style="padding-top:40px;")
+        .container
+            .jumbotron
+                h1 500: Unexpected error occured!
+                h3 Error:
+                p= error.message
+                if settings['error-stack']
+                    h3 Details:
+                    pre= error.stack
+        script(src="#{basePath}bower_components/jquery/jquery.js")
+        script(src="#{basePath}bower_components/bootstrap/dist/js/bootstrap.js")
+<!-- IE needs 512+ bytes: http://blogs.msdn.com/b/ieinternals/archive/2010/08/19/http-error-pages-in-internet-explorer.aspx -->

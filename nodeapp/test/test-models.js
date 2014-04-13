@@ -3,14 +3,14 @@
 'use strict';
 
 var assert = require('assert');
-var randomstring = require('randomstring');
 var Tag = require('../app/models/tag.js');
 var Sender = require('../app/models/sender.js');
+var Document = require('../app/models/document.js');
 var database = require('../app/config/database');
 var mongoose = require('mongoose');
 
 var uristring = database.uri;
-mongoose.connect(uristring, function (err, res) {
+mongoose.connect(uristring, function (err) {
   if (err) {
     console.log('ERROR connecting to: ' + uristring + '. ' + err);
   } else {
@@ -19,6 +19,33 @@ mongoose.connect(uristring, function (err, res) {
 });
 
 describe('models', function() {
+
+  before(function(){
+    // clean house before starting tests
+    Tag.remove({}, function(err) {
+      if(err) {
+        console.log(err);
+      }
+    });
+
+    Sender.remove({}, function(err) {
+      if(err) {
+        console.log(err);
+      }
+    });
+
+    Document.remove({}, function(err) {
+      if(err) {
+        console.log(err);
+      }
+    });
+  });
+
+  // close the mongo connection - not strictly necessary but
+  // keep your  house clean
+  after(function() {
+    mongoose.connection.close();
+  });
 
   describe('Senders', function() {
 
@@ -34,11 +61,11 @@ describe('models', function() {
       assert.equal(sender.name, 'testsender', 'Sender has no name!');
 
       sender.save(function (err) {
-        assert(!err, 'Could not save');
+        assert(!err, err);
         
         // find the entry again
         Sender.findOne({}).exec(function (err, foundSender) {
-          assert(!err, 'Could not fetch');
+          assert(!err, err);
           assert.equal(foundSender.name, 'testsender', 'Sender has no name!');
           console.info('Found sender ' + foundSender.toString());
           done();
@@ -64,11 +91,11 @@ describe('models', function() {
       assert.equal(tag.name, 'testtag', 'Tag has no name!');
 
       tag.save(function (err) {
-        assert(!err, 'Could not save');
+        assert(!err, err);
         
         // find the entry again
         Tag.findOne({}).exec(function (err, foundTag) {
-          assert(!err, 'Could not fetch');
+          assert(!err, err);
           assert.equal(foundTag.name, 'testtag', 'Tag has no name!');
           console.info('Found tag ' + foundTag.toString());
           done();
@@ -79,7 +106,57 @@ describe('models', function() {
   });
 
   describe('Documents', function() {
+    it('instantiate a new document', function() {
+      var doc = new Document({title: 'testdocument'});
+      
+      assert(doc, 'No doc!');
+      assert.equal(doc.title, 'testdocument', 'Doc has no title!');
+    });
 
+    it('should support basic crud operations', function(done) {
+      var doc = new Document({title: 'testdocument'});
+      
+      assert(doc, 'No doc!');
+      assert.equal(doc.title, 'testdocument', 'Doc has no title!');
+
+      doc.fileName = 'test.pdf';
+
+
+      var tag = new Tag({ name: 'testtag1'});
+      tag.save(function(err){
+        assert(!err, err);
+        console.log('use tagId: ' + tag._id);
+        doc.tags.push(tag._id);
+
+        doc.save(function(err) {
+          assert(!err, err);
+
+          assert.notEqual(doc.alternativeId, '', 'Pre save magic did not work!');
+
+          Document.findOne({ title: 'testdocument'}).exec(function (err, foundDoc) {
+            assert(!err, err);
+            assert.equal(foundDoc.title, 'testdocument', 'Document has no name!');
+            console.info('Found document ' + foundDoc.toString());
+
+            // use the reference to find the selected tag
+            var objectId = doc.tags[0];
+            Tag.findOne( { _id: objectId }).exec(function(err, foundTag) {
+              assert(!err, err);
+              assert(foundTag, 'Tag not found');
+              assert.equal(foundTag.name, 'testtag1', 'Tag name does not match!');
+
+              console.info('Found tag ' + foundTag.toString());
+            });
+
+            done();
+          });
+        });
+
+      });
+
+      
+
+    });
   });
 
 });

@@ -4,10 +4,19 @@
  */
 'use strict';
 
-exports.index = function(req, res){
-  res.json(
-		[
-			"Abfertigung", "Abo", "Apple", "Arzt", "Asus", "Auto", "BC400", "Family", "Finanzamt", "Firma", "Garantie", "Handy", "Haus", "Heidi", "Heizung", "IBIS", "IPad", "Jahreskarte", "Kaminkehrer", "Kirche", "Laptop", "Mama", "Max", "Neukirchen", "Notar", "Onlineshop", "Palfinger", "S-Bahn", "Tobi", "Unfallversicherung", "Urlaub", "Versicherung", "XBox", "Zahnarzt", "Zeitung" 
-	  ]
-  	);
+var Tag = require('../models/tag.js');
+
+/*
+ * url: /tags
+ * called without any parameters just returns all of the available tags in 
+ * alphabetical order
+ */
+exports.index = function( req, res ) {
+  Tag.find( { $query: { }, $orderby: { name : 1 } } ).exec(function (err, tags) {
+    if(err) {
+      //handleError(err);
+    }
+
+    res.json(tags);
+  });
 };
