@@ -6,6 +6,7 @@
 
 var baseController = require('../controllers/base');
 var tagsController = require('../controllers/tags');
+var documentsController = require('../controllers/documents');
 var API = require('../config/version').api;
 
 // setup the routes and delegate logic to the controllers 
@@ -15,4 +16,5 @@ exports.setup = function(app) {
 
 	app.get('/api/' + API + '/version', baseController.version);
 	app.get('/api/' + API + '/tags', tagsController.index);
+  app.get('/api/' + API + '/documents', documentsController.index);
 };

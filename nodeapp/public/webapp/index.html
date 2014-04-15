@@ -123,7 +123,7 @@
     <div class="full-container">
 
         <div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-10">
+            <div class="col-xs-12 col-sm-6 col-md-8">
                 
                 <form class="form-inline" role="form" id="filterForm">
                     <div class="form-group col-md-2">
@@ -166,11 +166,11 @@
 
             </div>
 
-            <div class="col-xs-6 col-md-2" id="sidebar" role="navigation">
-                <div class="well sidebar-nav well-220 double-line" ng-controller="TagsCtrl" >
+            <div class="col-xs-6 col-md-4" id="sidebar" role="navigation">
+                <div class="well sidebar-nav well double-line" ng-controller="TagsController" >
                 
                 <span ng-repeat="tag in tags" >
-                  <a class="label label-primary label-big" href="#" > <i class="fa fa-tag"></i> {{ tag }}</a>
+                  <a class="label label-primary label-big" href="#" id="{{ tag._id }}"> <i class="fa fa-tag"></i> {{ tag.name }}</a>
                 </span>
 
                 </div><!--/.well -->
@@ -203,7 +203,6 @@
         <script src="bower_components/angular-translate-storage-cookie/angular-translate-storage-cookie.js"></script>
         <script src="bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
         
-        <script src="scripts/http-auth-interceptor.js"></script>
         <script src="scripts/main.js"></script>
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers.js"></script>
