@@ -16,3 +16,11 @@ exports.version = function(req, res) {
 	res.write(version.number);
 	res.end();
 };
+
+// common error handle
+exports.handleError = function( req, res, next, err ) {
+  console.error('An error occured: ' + err.message);
+  console.error('Stack: ' + err.stack);
+
+  return next(err);
+};

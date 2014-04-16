@@ -8,11 +8,14 @@ mydmsApp
     .config(['$routeProvider', '$httpProvider', '$translateProvider',
         function ($routeProvider, $httpProvider, $translateProvider) {
             $routeProvider
-                /*.when('/login', {
-                   templateUrl: 'views/login.html',
-                    controller: 'LoginController'
+                .when('/document/add', {
+                    templateUrl: 'views/document.html',
+                    controller: 'DocumentController'
                 })
-                */
+                .when('/document/edit/:documentId', {
+                    templateUrl: 'views/document.html',
+                    controller: 'DocumentController'
+                })
                 .otherwise({
                     templateUrl: 'views/main.html',
                     controller: 'MainController'

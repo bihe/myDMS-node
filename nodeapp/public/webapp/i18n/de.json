@@ -14,10 +14,17 @@
         "language": {
             "en": "Englisch",
             "de": "Deutsch"            
-        }
+        },
+        "settings": "Settings"
     },
     "main": {
         "title": "Willkommen, myDMS!",
-        "subtitle": "Dies ist Ihre Hauptseite"
+        "subtitle": "Dies ist Ihre Hauptseite",
+        "search": "Suche!",
+        "addDoc": "Neues Dokument"
+    },
+    "document": {
+        "new": "Neues Dokument hinzufügen",
+        "edit": "Bearbeitung des Dokumentes"
     }
 }

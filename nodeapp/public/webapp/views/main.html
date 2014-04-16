@@ -1,5 +1,51 @@
-<div ng-cloak>
-    <div class="row">
+
+<div class="row" ng-cloak>
+    <div class="col-xs-12 col-sm-6 col-md-8">
+        
+        <form class="form-inline" role="form" id="filterForm">
+            <div class="form-group col-md-2">
+                <div class="input-group"  >
+                    <label class="sr-only" for="daterangeFrom">Date from</label>
+                    <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                </div>
+
+            </div>
+            <div class="form-group col-md-2">
+                <div class="input-group">
+                    <label class="sr-only" for="daterangeTo">Date to</label>
+                    <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                </div>
+            </div>
+            <div class="form-group" >
+              <div>
+                  <label class="sr-only" for="senders">Senders</label>
+                  <select class="form-control" id="senders">
+                      <option value="">Select a sender</option>
+                  </select>
+                </div>
+            </div>
+			<div class="form-group" >
+              <div>
+				<label class="sr-only" for="search">Seach</label>
+				<input type="text" class="form-control" placeholder="Search" id="search">
+				<button type="button" class="btn btn-success btn-sm" translate="main.search">
+	                <span class="glyphicon glyphicon-search"></span>
+	                Search
+	            </button>
+              </div>
+            </div>
+           
+        </form>
+
+        <hr>
+        
+        <div class="row">
         <div class="col-md-12">
             <h1 translate="main.title">Welcome, to myDMS</h1>
 
@@ -8,4 +54,18 @@
              </span>
         </div>
     </div>
-</div>
+
+    </div>
+
+    <div class="col-xs-6 col-md-4" id="sidebar" role="navigation">
+        <div class="well sidebar-nav well double-line" >
+        
+        <span ng-repeat="tag in tags" >
+          <a class="label label-primary label-big" href="#" id="{{ tag._id }}"> <i class="fa fa-tag"></i> {{ tag.name }}</a>
+        </span>
+
+        </div><!--/.well -->
+
+    </div><!--/span-->
+
+</div><!--/row-->
