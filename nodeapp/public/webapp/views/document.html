@@ -33,40 +33,60 @@
 		<form role="form">
 			<div class="form-group">
 				<label for="senders" translate="document.senders">Senders</label>
-		   		<select id="senders" class="form-control" ng-model="selectedSender" ng-options="s._id as s.name for s in senders">
-		   			<option/>
-		   		</select>
+		   		
+				<div style="margin-bottom: 20px;" ng-if="selectedSender.originalObject">
+					<a class="label label-info label-big label-tag" href="#" id="{{ selectedSender.originalObject._id }}"> <i class="fa fa-tag"></i> {{ selectedSender.originalObject.name }}</a>
+				</div>
+
+
+					<angucomplete-alt id="senderSelector"
+		              placeholder="Search senders"
+		              pause="400"
+		              selected-object="selectedSender"
+		              remote-url="/api/1.0/senders/?q="
+		              title-field="name"
+		        	  input-class="form-control"
+		        	  clear-selected="true"/>
+	        	
 			</div>
+
+
+
+			
 
 			<div class="form-group">
 				<label for="tags" translate="document.tags">Tags</label>
+
+				<div style="margin-bottom: 20px;">
+					<span ng-repeat="tag in document.tags">
+						<a class="label label-primary label-big label-tag" href="#" id="{{ tag._id }}"> <i class="fa fa-tag"></i> {{ tag.name }}</a>
+					</span>
+				</div>
 		   		
-				<angucomplete-alt id="members"
-	              placeholder="Search members"
+				<angucomplete-alt id="tagSelector"
+	              placeholder="Search tags"
 	              pause="400"
 	              selected-object="selectedTag"
-	              remote-url="http://localhost:3000/api/1.0/tags/?q="
+	              remote-url="/api/1.0/tags/?q="
 	              title-field="name"
 	        	  input-class="form-control"
 	        	  clear-selected="true"/>
 
-	        	
-
-
 			</div>
-			<div ng-repeat="tag in document.tags" >
-			<span>Tag: {{ tag.name }}, {{ tag._id }}</span>
-			</div>
+			
+			
+
 		</form>
 	</div>
 </div>
 
 <div class="row">
-	<div class="col-xs-12 col-sm-12 col-md-6">
-		<button type="button" class="btn btn-primary btn-lg" translate="global.cancel" id="btnCancel" ng-click="cancel('/')">Cancel</button>
-	</div>
+	
 
-	<div class="col-xs-12 col-sm-12 col-md-6 ">
+	<div class="col-xs-12 col-sm-12 col-md-12 ">
+		<div class="pull-left">
+		<button type="button" class="btn btn-primary btn-lg" translate="global.cancel" id="btnCancel" ng-click="cancel('/')">Cancel</button>
+		</div>
 		<div class="pull-right">
 		<button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave">Save</button>
 		</div>

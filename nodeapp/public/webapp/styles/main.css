@@ -73,3 +73,8 @@ ul.items li
   margin: 5px 5px  10px;
   font-size: 24px;
 }
+
+.label-tag {
+  font-size: 14pt;
+  margin: 3px;
+}
