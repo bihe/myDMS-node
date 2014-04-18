@@ -16,6 +16,11 @@ var database = require('./app/config/database');
 
 var app = express();
 
+
+// --------------------------------------------------------------------------
+// Application setup
+// --------------------------------------------------------------------------
+
 app.configure(function(){
   app.set('view engine', 'jade');
 
@@ -30,8 +35,21 @@ app.configure(function(){
   app.use(express.cookieParser(config.application.secret));
   app.use(express.session());
   app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public/webapp')));
+
+  if(!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    app.use(express.static(path.join(__dirname, 'public/webapp')));
+  } else if(process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'public/webapp/dist')));
+  }
 });
+
+// pretty HTML formating for output
+app.locals.pretty = true;
+
+
+// --------------------------------------------------------------------------
+// error handling
+// --------------------------------------------------------------------------
 
 // the following snippets of code was found here:
 // http://runnable.com/UTlPPV-f2W1TAAEf/custom-error-pages-in-express-for-node-js
@@ -88,17 +106,47 @@ app.use(function(req, res, next){
 });
 
 
+// --------------------------------------------------------------------------
+// Mongoose connection handling
+// --------------------------------------------------------------------------
+
 var uristring = database.uri;
-mongoose.connect(uristring, function (err) {
-  if (err) {
-    console.log('ERROR connecting to: ' + uristring + '. ' + err);
-  } else {
-    console.log('Succeeded connected to: ' + uristring);
-  }
+mongoose.connect(uristring);
+
+// CONNECTION EVENTS
+// When successfully connected
+mongoose.connection.on('connected', function () {
+  console.log('Mongoose default connection open to ' + uristring);
 });
 
-// pretty HTML formating for output
-app.locals.pretty = true;
+// If the connection throws an error
+mongoose.connection.on('error',function (err) {
+  console.log('Mongoose default connection error: ' + err);
+});
+
+// When the connection is disconnected
+mongoose.connection.on('disconnected', function () {
+  console.log('Mongoose default connection disconnected!');
+
+  // try each 15seconds to reestablish a connection
+  setTimeout(function() {
+    console.log('Re-Open a Mongoose connection!');
+    mongoose.connect(uristring);
+  }, 15000);
+});
+
+// If the Node process ends, close the Mongoose connection
+process.on('SIGINT', function() {
+  mongoose.connection.close(function () {
+    console.log('Mongoose default connection disconnected through app termination');
+    process.exit(0);
+  });
+});
+
+
+// --------------------------------------------------------------------------
+// Development specific stuff
+// --------------------------------------------------------------------------
 
 app.configure('development', function(){
   app.use(express.errorHandler());
@@ -120,10 +168,16 @@ app.configure('development', function(){
 });
 
 
-
+// --------------------------------------------------------------------------
+// routes
+// --------------------------------------------------------------------------
 
 routes.setup(app);
 
+
+// --------------------------------------------------------------------------
+// finally the HTTP server
+// --------------------------------------------------------------------------
 
 http.createServer(app).listen(app.get('port'), app.get('host'),  function(){
   console.log('node.js is run in mode ' + process.env.NODE_ENV);

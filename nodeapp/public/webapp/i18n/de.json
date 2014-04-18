@@ -17,7 +17,9 @@
         },
         "settings": "Settings",
         "cancel": "Abbrechen",
-        "save": "Speichern"
+        "save": "Speichern",
+        "noresults": "Keine Ergebnisse",
+        "addentry": "Eintrag hinzufügen"
     },
     "main": {
         "title": "Willkommen, myDMS!",
