@@ -2,9 +2,10 @@
 
 /* App Module */
 
-var mydmsApp = angular.module('mydmsApp', ['ngResource', 'ngRoute', 'ngCookies', 'pascalprecht.translate']);
+var mydmsApp = angular.module('mydmsApp', ['ngResource', 'ngRoute', 'ngCookies', 'pascalprecht.translate', 'angucomplete-alt']);
 
 mydmsApp
+    .constant('_', window._)
     .config(['$routeProvider', '$httpProvider', '$translateProvider',
         function ($routeProvider, $httpProvider, $translateProvider) {
             $routeProvider

@@ -1,6 +1,6 @@
 /*
- * basic controller logic to display the different templates
- * base.js created by Henrik Binggl
+ * handling of tags
+ * tags.js created by Henrik Binggl
  */
 'use strict';
 

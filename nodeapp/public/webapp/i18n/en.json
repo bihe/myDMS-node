@@ -15,7 +15,9 @@
             "en": "English",
             "de": "German"
         },
-        "settings": "Settings"
+        "settings": "Settings",
+        "cancel": "Cancel",
+        "save": "Save"
     },
     "main": {
         "title": "Welcome, myDMS!",
@@ -25,6 +27,10 @@
     },
     "document": {
         "new": "Add a new document",
-        "edit": "Edit the document"
+        "edit": "Edit the document",
+        "title": "Title",
+        "amount": "Amount",
+        "senders": "Sender",
+        "tags": "Tags"
     }
 }
