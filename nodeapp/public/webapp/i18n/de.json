@@ -19,7 +19,8 @@
         "cancel": "Abbrechen",
         "save": "Speichern",
         "noresults": "Keine Ergebnisse",
-        "addentry": "Eintrag hinzufügen"
+        "addentry": "Eintrag hinzufügen",
+        "invalidForm": "Eingaben ungültig oder unvollständig, bitte erneut überprüfen!" 
     },
     "main": {
         "title": "Willkommen, myDMS!",
@@ -33,6 +34,11 @@
         "title": "Titel",
         "amount": "Betrag",
         "senders": "Absender",
-        "tags": "Tags"
+        "tags": "Tags",
+        "upload": {
+            "title": "Dokumenten Upload",
+            "error": "Ein Fehler beim Upload!",
+            "hint": "Erlaubt sind PDF und Bilder"
+        }
     }
 }

@@ -121,3 +121,5 @@ nodeapp/public/node_modules/
 
 data
 nodeapp/debug-tests.sh
+nodeapp/public/webapp/bower_components/
+nodeapp/upload/

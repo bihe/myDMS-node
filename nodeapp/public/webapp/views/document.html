@@ -1,28 +1,52 @@
 <div class="row" ng-cloak>
 	<div class="col-xs-12 col-sm-12 col-md-12">
-		<h3 ng-if="document.id === -1" translate="document.new">Create a new document</h3>
-		<h3 ng-if="document.id !== -1" translate="document.edit">Edit the document</h3>
+
+		<div class="page-header">
+  		<h1 ng-if="document.id === -1" translate="document.new">Create a new document</h1>
+			<h1 ng-if="document.id !== -1" translate="document.edit">Edit the document</h1>
+		</div>
+
+		<div class="alert alert-warning" ng-if="formValidationError" style="margin-top: 10px">
+  		<span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+  		<strong translate="global.invalidForm">Form Error!</strong>
+		</div>
 
 		
 	</div>
 </div>
 <div class="row">
 	<div class="col-xs-12 col-sm-12 col-md-8">
-		<form role="form">
-		  <div class="form-group">
-		    <label for="title" translate="document.title">Title</label>
-		    <input type="text" class="form-control" id="titel" placeholder="Titel">
+		<form role="form" name="form1" novalidate>
+		   
+		  <div class="form-group has-feedback" ng-class="{'has-error': form1.title.$invalid && formValidationError}" >
+		    <label class="control-label" for="title" translate="document.title">Title</label>
+		    <input type="text" class="form-control" id="titel" name="title" placeholder="Titel" ng-model="document.title" required>
 		  </div>
 		  
 		  <div class="form-group">
-		    <label for="exampleInputFile">File input</label>
-		    <input type="file" id="exampleInputFile">
-		    <p class="help-block">Example block-level help text here.</p>
+		    <label for="fileUpload" translate="document.upload.title">File input</label>
+		    
+				<div 	id="fileUpload"
+							ng-file-drop="onFileSelect($files)" 
+							ng-file-drag-over-class="upload-drop-area-drag"
+        			ng-show="dropSupported"
+        			ng-file-drop-available="dropSupported=true"
+        			ng-model="myModelObj"
+        			class="upload-drop-area" ng-class="{'upload-drop-area-invalid': (!document.originalFilename || document.originalFilename === '') && formValidationError}">
+        			drop files here
+        </div>
+
+				<div class="alert alert-danger" ng-if="uploadError" style="margin-top: 10px">
+      		<strong translate="document.upload.error">Upload error!</strong> {{ uploadError }}
+    		</div>
+    		<p class="help-block" translate="document.upload.hint">Upload hint.</p>
+    		<span class="label label-info label-big" ng-if="document.originalFilename"> <i class="fa fa-file"></i> {{ document.originalFilename }} </span>
+		    
 		  </div>
 
-		  <div class="form-group">
-		    <label for="amount" translate="document.amount">amount</label>		    
-		    <input type="text" class="form-control" id="amount" placeholder="0,0" style="width:100px">
+		  <div class="form-group has-feedback" ng-class="{'has-error': form1.amount.$invalid && formValidationError}">
+		    <label for="amount" class="control-label" translate="document.amount">amount</label>		    
+		    <input type="text" class="form-control" id="amount" name="amount" placeholder="0,0" style="width:100px" ng-model="document.amount" required>
 		  </div>
 		  
 		  
@@ -30,14 +54,16 @@
 	</div>
 
 	<div class="col-xs-12 col-sm-12 col-md-4">
-		<form role="form">
-			<div class="form-group">
-				<label for="senders" translate="document.senders">Senders</label>
-		   		
-				<div style="margin-bottom: 20px;" ng-if="selectedSender.originalObject">
-					<span class="label label-info label-big label-tag" href="#" id="{{ selectedSender.originalObject._id }}"> <i class="fa fa-truck"></i> {{ selectedSender.originalObject.name }}</span>
-				</div>
+		<form role="form" name="form2" novalidate>
 
+			<div class="form-group has-feedback" ng-class="{'has-error': form2.sender.$invalid && formValidationError}">
+				<label class="control-label" for="senders" translate="document.senders">Senders</label>
+		   	
+		   	<input type="hidden" name="sender" ng-model="selectedSender" required/>
+				<div style="margin-bottom: 20px;" ng-if="document.sender.length > 0">
+					<span class="label label-info label-big label-tag" href="#" id="{{ selectedSender.originalObject._id }}"> <i class="fa fa-truck tag-padding"></i> {{ document.sender[0].name }}</span>
+				</div>
+				
 
 				<angucomplete-alt id="senderSelector"
 	              placeholder="Search senders"
@@ -46,16 +72,18 @@
 	              remote-url="/api/1.0/senders/?q="
 	              title-field="name"
 	        	  input-class="form-control"
-	        	  clear-selected="true"/>
+	        	  clear-selected="true"
+	        	  callback-new="addNewSenderCallback(text)"/>
 	        	
 			</div>
 
-			<div class="form-group">
-				<label for="tags" translate="document.tags">Tags</label>
+			<div class="form-group has-feedback" ng-class="{'has-error': form2.tags.$invalid && formValidationError}">
+				<label class="control-label" for="tags" translate="document.tags">Tags</label>
 
+				<input type="hidden" name="tags" ng-model="selectedTag" required/>
 				<div style="margin-bottom: 20px;" ng-if="document.tags.length > 0">
 					<span ng-repeat="tag in document.tags">
-						<span class="label label-primary label-big label-tag" id="{{ tag._id }}" ng-click="removeTag(tag._id)"> <i class="fa fa-tag"></i> {{ tag.name }}</span>
+						<span class="label label-primary label-big label-tag" id="{{ tag._id }}" ng-click="removeTag(tag._id)"> <i class="fa fa-tag tag-padding"></i> {{ tag.name }}</span>
 					</span>
 				</div>
 		   		
@@ -85,7 +113,7 @@
 		<button type="button" class="btn btn-primary btn-lg" translate="global.cancel" id="btnCancel" ng-click="cancel('/')">Cancel</button>
 		</div>
 		<div class="pull-right">
-		<button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave">Save</button>
+		<button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave" ng-click="save(form1.$valid && form2.$valid)">Save</button>
 		</div>
 	</div>
 </div>

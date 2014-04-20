@@ -164,17 +164,18 @@ angular.module('angucomplete-alt', [] ).directive('angucompleteAlt', ['$parse', 
       // new method to add an entry
       scope.addEntry = function() {
         var text = scope.searchStr;
-
-        scope.selectedObject = {
-          title: text,
-          description: '',
-          image: ''
-        };
-        // call parent function to deal with additions
-        scope.callbackNew({text: text});
-        
-        if (scope.clearSelected) {
-          scope.searchStr = null;
+        if( text && text !== '' ) {
+          scope.selectedObject = {
+            title: text,
+            description: '',
+            image: ''
+          };
+          // call parent function to deal with additions
+          scope.callbackNew({text: text});
+          
+          if (scope.clearSelected) {
+            scope.searchStr = null;
+          }
         }
       };
 

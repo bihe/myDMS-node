@@ -78,3 +78,33 @@ ul.items li
   font-size: 14pt;
   margin: 3px;
 }
+
+.tag-padding {
+  margin-top: 20px;
+}
+
+.upload-drop-area {
+  padding: 15px;
+  border: 2px dashed #cccccc;
+  width: 300px;
+  font-weight: bold;
+  font-style: italic;
+  font-size: medium;
+  text-align: center;
+  color: #999999;
+}
+
+.upload-drop-area-invalid {
+  color: #a94442;
+  border: 2px dashed #a94442;
+}
+
+.upload-drop-area-drag {
+  border: 2px dashed #428bca;
+  color: #428bca;
+}
+
+.label-big {
+  font-size: 14pt;
+  margin: 3px;
+}

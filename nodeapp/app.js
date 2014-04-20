@@ -6,7 +6,6 @@
 'use strict';
 
 var express = require('express');
-var cons = require('consolidate');
 var http = require('http');
 var path = require('path');
 var mongoose = require('mongoose');
@@ -30,7 +29,9 @@ app.configure(function(){
   
   app.use(express.favicon());
   app.use(express.logger('dev'));
-  app.use(express.bodyParser());
+  app.use(express.json());
+  app.use(express.urlencoded());
+  app.use(require('connect-multiparty')());
   app.use(express.methodOverride());
   app.use(express.cookieParser(config.application.secret));
   app.use(express.session());
