@@ -1,0 +1,45 @@
+{
+    "global": {
+        "title": "myDMS",
+        "browsehappy": "Sie benutzen einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/\">aktualisieren Sie Ihren Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
+        "menu": {
+            "home": "Startseite",
+            "account": {
+                "main": "Zugang",
+                "login": "Anmelden",
+                "logout": "Abmelden"
+            },
+            "language": "Sprache"
+        },
+        "language": {
+            "en": "Englisch",
+            "de": "Deutsch"            
+        },
+        "settings": "Settings",
+        "cancel": "Abbrechen",
+        "save": "Speichern",
+        "noresults": "Keine Ergebnisse",
+        "addentry": "Eintrag hinzufügen",
+        "invalidForm": "Eingaben ungültig oder unvollständig, bitte erneut überprüfen!",
+        "saveError": "Fehler beim Speichern!"
+    },
+    "main": {
+        "title": "Willkommen, myDMS!",
+        "subtitle": "Dies ist Ihre Hauptseite",
+        "search": "Suche!",
+        "addDoc": "Neues Dokument"
+    },
+    "document": {
+        "new": "Neues Dokument hinzufügen",
+        "edit": "Bearbeitung des Dokumentes",
+        "title": "Titel",
+        "amount": "Betrag",
+        "senders": "Absender",
+        "tags": "Tags",
+        "upload": {
+            "title": "Dokumenten Upload",
+            "error": "Ein Fehler beim Upload!",
+            "hint": "Erlaubt sind PDF und Bilder"
+        }
+    }
+}

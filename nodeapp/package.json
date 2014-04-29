@@ -8,15 +8,14 @@
   },
   "dependencies": {
     "express": "3.x",
-    "consolidate": "*",
-    "mustache": "*",
+    "connect-multiparty": "~1.0.3",
+    "jade": "*",
     "strftime": "0.5.1",
-    "sqlite3": "2.x",
     "q": "~0.9.7",
     "randomstring": "~1.0.2",
     "lodash": "~2.4.0",
-    "class4js": "~1.10.3",
-    "async": "~0.2.9"
+    "async": "~0.2.9",
+    "mongoose": "3.8.x"
   },
   "devDependencies": {
     "mocha": "1.x"
