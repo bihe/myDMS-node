@@ -20,7 +20,8 @@
         "save": "Speichern",
         "noresults": "Keine Ergebnisse",
         "addentry": "Eintrag hinzufügen",
-        "invalidForm": "Eingaben ungültig oder unvollständig, bitte erneut überprüfen!" 
+        "invalidForm": "Eingaben ungültig oder unvollständig, bitte erneut überprüfen!",
+        "saveError": "Fehler beim Speichern!"
     },
     "main": {
         "title": "Willkommen, myDMS!",

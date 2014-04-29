@@ -40,6 +40,8 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
   // ------------------------------------------------------------------------
   // initialisation
   // ------------------------------------------------------------------------
+  $scope.saveSuccess = null;
+  $scope.saveErrorMessage = null;
   $scope.uploadError = null;
   $scope.formValidationError = false;
   $scope.document = {};
@@ -114,16 +116,38 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
 
   // save the document
   $scope.save = function(valid) {
+    var postData = '';
+
     $scope.formValidationError = false;
     if(!valid) {
       $scope.formValidationError = true;
+      return;
     }
 
-    // $scope.document.title = '';
-    // $scope.document.fileName = '';
-    // $scope.document.amount = 0.0;
-    // $scope.document.sender = [];
-    // $scope.document.tags = [];
+    $scope.saveSuccess = null;
+    $scope.saveErrorMessage = null;
+
+    postData = JSON.stringify($scope.document);
+    // either this is an update or we need to create a new entry
+    // it's dependant on the availability of a document-id
+    if($scope.document.id !== -1) {
+      // PUT
+    } else {
+      // POST
+      // create a new entry
+      $http({
+            url: './api/1.0/document/',
+            method: 'POST',
+            data: postData,
+            headers: {'Content-Type': 'application/json'}
+      }).success(function (data, status, headers, config) {
+        $scope.saveSuccess = true;
+      }).error(function (data, status, headers, config) {
+        $scope.saveSuccess = false;
+        $scope.saveErrorMessage = data;
+      });
+    }
+
   };
 
 
@@ -176,7 +200,7 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
     for (var i = 0; i < $files.length; i++) {
       var file = $files[i];
       $scope.upload = $upload.upload({
-        url: '/api/1.0/documents/upload', //upload.php script, node.js route, or servlet url
+        url: '/api/1.0/document/upload', //upload.php script, node.js route, or servlet url
         // method: POST or PUT,
         // headers: {'header-key': 'header-value'},
         // withCredentials: true,

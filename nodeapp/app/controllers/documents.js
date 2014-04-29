@@ -5,22 +5,35 @@
 
 var base = require('./base');
 var logger = require('../util/logger' );
+var utils = require('../util/utils' );
 var config = require('../config/application');
 var Document = require('../models/document.js');
 var randomstring = require('randomstring');
+var async = require('async');
 var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
 
 
 // --------------------------------------------------------------------------
-// helpers
+// internal logic
 // --------------------------------------------------------------------------
-
-function getExtension( filename ) {
-  var i = filename.lastIndexOf('.');
-  return (i < 0) ? '' : filename.substr(i);
+function handleSenderAsync( senderObject, done ) {
+  // use async library to handle the sender
+  async.series([
+    function( callback ) {
+      callback( null );
+    },
+    function( callback ) {
+      callback( null );
+    }
+  ],
+  function( error, result ) {
+    done(error);
+  });
 }
+
+
 
 
 /*
@@ -37,7 +50,7 @@ exports.index = function( req, res, next ) {
 };
 
 /* 
- * url: /documents/upload
+ * url: /document/upload
  * upload a binary document and store it temporarily, when the 
  * document is saved later on move the temp file to the target location
  */
@@ -67,7 +80,7 @@ exports.upload = function( req, res, next ) {
   }
   // check for file-extensions
   wrongExtension = true;
-  fileExt = getExtension( fileObject.originalFilename );
+  fileExt = utils.getExtension( fileObject.originalFilename );
   _.forEach( config.application.upload.extensions, function( ext ) {
     if( fileExt.indexOf( ext ) > -1 ) {
       if( wrongExtension ) {
@@ -98,4 +111,31 @@ exports.upload = function( req, res, next ) {
       res.json(result);
     });
   });
+};
+
+/* 
+ * url: /document/
+ * create a new document and save it in the backend
+ */
+exports.newDocument = function( req, res, next ) {
+  var document = {};
+  var tags = [];
+  var sender = null;
+
+  document = req.body;
+  logger.dump( document );
+
+  // do a server-side validation
+  if(!document.title || !document.amount || !document.originalFilename || !document.tempFilename ||
+    document.tags.length === 0 || document.sender.length === 0) {
+    return res.send( 'Invalid data supplied!', 500 );
+  }
+
+  handleSenderAsync( document.sender[0] );
+  // handle sender and tags
+  if(document.sender[0]._id === -1) {
+
+  }
+
+  return res.send( 'Cannot save a new document!', 500 );
 };

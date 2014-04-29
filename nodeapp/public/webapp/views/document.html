@@ -11,6 +11,12 @@
   		<strong translate="global.invalidForm">Form Error!</strong>
 		</div>
 
+
+		<div class="alert alert-danger" ng-if="saveSuccess === false" style="margin-top: 10px">
+  		<span class="fa fa-flash form-control-feedback"></span>
+  		<strong translate="global.saveError">Form Error!</strong>
+  		<p>{{ saveErrorMessage }}</p>
+		</div>
 		
 	</div>
 </div>
@@ -35,6 +41,7 @@
         			class="upload-drop-area" ng-class="{'upload-drop-area-invalid': (!document.originalFilename || document.originalFilename === '') && formValidationError}">
         			drop files here
         </div>
+        <input type="hidden" name="originalFilename" id="originalFilename" ng-model="document.originalFilename" required />
 
 				<div class="alert alert-danger" ng-if="uploadError" style="margin-top: 10px">
       		<strong translate="document.upload.error">Upload error!</strong> {{ uploadError }}
