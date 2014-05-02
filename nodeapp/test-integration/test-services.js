@@ -8,7 +8,7 @@ var Sender = require('../app/models/sender.js');
 var Document = require('../app/models/document.js');
 var database = require('../app/config/database');
 var mongoose = require('mongoose');
-var SenderService = require('../app/services/senderService');
+var MasterDataService = require('../app/services/masterDataService');
 
 var uristring = database.uri;
 mongoose.connect(uristring, function (err) {
@@ -39,7 +39,7 @@ describe('models', function() {
 
     it('should handle a list of senders', function(done) {
       var objectList = [],
-          senderService = new SenderService();
+          dataService = new MasterDataService();
 
       objectList.push({ _id: -1, name: 'Sender1' }); // new one
       // find the entry
@@ -47,7 +47,7 @@ describe('models', function() {
         assert(!err, err);
         objectList.push(foundSender);
         
-        senderService.createAndGetSenders(objectList).then(function(senderList) {
+        dataService.createAndGetSenders(objectList).then(function(senderList) {
           assert(senderList, 'No Senders returned !' );
           assert.equal(senderList.length, 2, 'Number of senders');
 
