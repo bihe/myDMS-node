@@ -63,7 +63,13 @@ MasterDataService.prototype = {
         item,
         model,
         items = [],
-        totalLenght = objectList.length;
+        totalLenght = 0;
+
+    if(!objectList || objectList.length === 0) {
+      return deferred.reject( new Error('empty list supplied!') );
+    }
+
+    totalLenght = objectList.length;
 
     // create an alias
     if( type === 'sender' ) {
@@ -74,45 +80,49 @@ MasterDataService.prototype = {
 
     async.series([
       function( callback ) {
-        _.forEach( objectList, function( object, index ) {
-          if( object._id === -1 ) {
-            // those entries will be created
-            if( type === 'sender' ) {
-              item = new Sender( { name: object.name } );
-            } else if( type === 'tag') {
-              item = new Tag( { name: object.name } );
+        try {
+          _.forEach( objectList, function( object, index ) {
+            if( object._id === -1 ) {
+              // those entries will be created
+              if( type === 'sender' ) {
+                item = new Sender( { name: object.name } );
+              } else if( type === 'tag') {
+                item = new Tag( { name: object.name } );
+              }
+              
+              item.save(function( err, s ) {
+                if( err ) {
+                  // indicate an error
+                  return callback( err );
+                }
+                items.push( s );
+                // if this is the last index we are done here
+                if( index === (totalLenght - 1) ) {
+                  callback( null ); // done
+                }
+
+              });
+
+            } else {
+
+              // existing entries supplied by UI 
+              // I am not sure of that - check again if those entries are real!
+              model.findById( object._id ).exec(function ( err, s ) {
+                if( err ) {
+                  // indicate an error
+                  return callback( err );
+                }
+                items.push( s );
+                // if this is the last index we are done here
+                if( index === (totalLenght - 1) ) {
+                  callback( null ); // done
+                }
+              });
             }
-            
-            item.save(function( err, s ) {
-              if( err ) {
-                // indicate an error
-                return callback( err );
-              }
-              items.push( s );
-              // if this is the last index we are done here
-              if( index === (totalLenght - 1) ) {
-                callback( null ); // done
-              }
-
-            });
-
-          } else {
-
-            // existing entries supplied by UI 
-            // I am not sure of that - check again if those entries are real!
-            model.findById( object._id ).exec(function ( err, s ) {
-              if( err ) {
-                // indicate an error
-                return callback( err );
-              }
-              items.push( s );
-              // if this is the last index we are done here
-              if( index === (totalLenght - 1) ) {
-                callback( null ); // done
-              }
-            });
-          }
-        });
+          });
+        } catch (err) {
+          callback( err );
+        }
       }
     ],
     function( error, result ) {

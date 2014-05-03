@@ -11,18 +11,26 @@ var mongoose = require('mongoose');
 var MasterDataService = require('../app/services/masterDataService');
 
 var uristring = database.uri;
-mongoose.connect(uristring, function (err) {
-  if (err) {
-    console.log('ERROR connecting to: ' + uristring + '. ' + err);
-  } else {
-    console.log('Succeeded connected to: ' + uristring);
-  }
-});
+if(mongoose.connection.readyState !== 1) {
+  mongoose.connect(uristring, function (err) {
+    if (err) {
+      console.log('ERROR connecting to: ' + uristring + '. ' + err);
+      return;
+    }
+  });
+}
 
-describe('models', function() {
+
+describe('Services', function() {
 
   before(function(){
     Sender.remove({name: 'Sender1'}, function(err) {
+      if(err) {
+        console.log(err);
+      }
+    });
+
+    Tag.remove({name: 'Tag1'}, function(err) {
       if(err) {
         console.log(err);
       }
@@ -48,10 +56,10 @@ describe('models', function() {
         objectList.push(foundSender);
         
         dataService.createAndGetSenders(objectList).then(function(senderList) {
-          assert(senderList, 'No Senders returned !' );
+          assert(senderList, 'No senders returned !' );
           assert.equal(senderList.length, 2, 'Number of senders');
 
-          console.log(senderList);
+          console.log('\n' + senderList);
 
           assert.notEqual(senderList[0]._id, -1, 'Wrong id');
           assert.equal(senderList[1].name, 'testsender', 'Wrong name');
@@ -67,6 +75,37 @@ describe('models', function() {
 
       });
 
+    });
+
+    it('should handle a list of tags', function(done) {
+      var objectList = [],
+          dataService = new MasterDataService();
+
+      objectList.push({ _id: -1, name: 'Tag1' }); // new one
+      // find the entry
+      Tag.findOne({name: 'testtag'}).exec(function (err, foundTag) {
+        assert(!err, err);
+        objectList.push(foundTag);
+        
+        dataService.createAndGetTags(objectList).then(function(tagList) {
+          assert(tagList, 'No tags returned !' );
+          assert.equal(tagList.length, 2, 'Number of tags');
+
+          console.log('\n' + tagList);
+
+          assert.notEqual(tagList[0]._id, -1, 'Wrong id');
+          assert.equal(tagList[1].name, 'testtag', 'Wrong name');
+
+          done();
+        })
+        .catch(function(error) {
+          console.log(error.stack);
+          // Handle any error from all above steps
+          assert(!error, 'Error thrown!');
+        })
+        .done();
+
+      });
     });
 
   });

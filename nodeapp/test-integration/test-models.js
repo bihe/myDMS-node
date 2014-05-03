@@ -10,15 +10,16 @@ var database = require('../app/config/database');
 var mongoose = require('mongoose');
 
 var uristring = database.uri;
-mongoose.connect(uristring, function (err) {
-  if (err) {
-    console.log('ERROR connecting to: ' + uristring + '. ' + err);
-  } else {
-    console.log('Succeeded connected to: ' + uristring);
-  }
-});
+if(mongoose.connection.readyState !== 1) {
+  mongoose.connect(uristring, function (err) {
+    if (err) {
+      console.log('ERROR connecting to: ' + uristring + '. ' + err);
+      return;
+    }
+  });
+}
 
-describe('models', function() {
+describe('Models', function() {
 
   before(function(){
     // clean house before starting tests
