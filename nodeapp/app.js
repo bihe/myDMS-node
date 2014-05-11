@@ -9,9 +9,12 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var mongoose = require('mongoose');
+var winston = require('winston');
+var FileStore = require('connect-session-file');
 var routes = require('./app/routes');
 var config = require('./app/config/application');
 var database = require('./app/config/database');
+var env = process.env.NODE_ENV || 'development';
 
 var app = express();
 
@@ -28,13 +31,41 @@ app.configure(function(){
   app.set('views', __dirname + '/app/views');
   
   app.use(express.favicon());
-  app.use(express.logger('dev'));
+
+  // Logging
+  // Use winston on production
+  // and default express.logger on dev
+  var log;
+  if (env !== 'development') {
+    winston.add(winston.transports.File, { filename: 'mydms.log' });
+    winston.remove(winston.transports.Console);
+    log = {
+      stream: {
+        write: function (message, encoding) {
+          winston.info(message);
+        }
+      }
+    };
+  } else {
+    log = 'dev';
+  }
+  // Don't log during tests
+  if (env !== 'test') app.use(express.logger(log));
+
+
   app.use(express.json());
   app.use(express.urlencoded());
   app.use(require('connect-multiparty')());
   app.use(express.methodOverride());
   app.use(express.cookieParser(config.application.secret));
   app.use(express.session());
+
+  app.use(express.session({
+    secret: config.application.secret,
+    store: new FileStore({path: path.join(__dirname, 'session'), printDebug: false, useAsync: true})
+  }));
+
+
   app.use(app.router);
 
   if(!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
@@ -44,8 +75,6 @@ app.configure(function(){
   }
 });
 
-// pretty HTML formating for output
-app.locals.pretty = true;
 
 
 // --------------------------------------------------------------------------
@@ -112,7 +141,7 @@ app.use(function(req, res, next){
 // --------------------------------------------------------------------------
 
 var uristring = database.uri;
-mongoose.connect(uristring);
+mongoose.connect(uristring, { server: { socketOptions: { keepAlive: 1 } } });
 
 // CONNECTION EVENTS
 // When successfully connected
@@ -144,12 +173,21 @@ process.on('SIGINT', function() {
   });
 });
 
+// --------------------------------------------------------------------------
+// routes
+// --------------------------------------------------------------------------
+
+routes.setup(app);
+
 
 // --------------------------------------------------------------------------
 // Development specific stuff
 // --------------------------------------------------------------------------
 
-app.configure('development', function(){
+// development specific stuff
+app.configure('development', function () {
+  app.locals.pretty = true;
+
   app.use(express.errorHandler());
 
   // test the custom error page
@@ -170,17 +208,10 @@ app.configure('development', function(){
 
 
 // --------------------------------------------------------------------------
-// routes
-// --------------------------------------------------------------------------
-
-routes.setup(app);
-
-
-// --------------------------------------------------------------------------
 // finally the HTTP server
 // --------------------------------------------------------------------------
 
 http.createServer(app).listen(app.get('port'), app.get('host'),  function(){
-  console.log('node.js is run in mode ' + process.env.NODE_ENV);
+  console.log('node.js is run in mode ' + env);
   console.log('Express server listening on port ' + app.get('port'));
 });

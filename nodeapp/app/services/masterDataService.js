@@ -29,7 +29,7 @@ MasterDataService.prototype = {
    * handle existing and new Senders and return a
    * consolidated list
    *
-   * @return {deferred} a promis with a list of sender-objects
+   * @return {deferred} a promise with a list of sender-objects
    */
   createAndGetSenders: function( objectList ) {
     return this.__handleSendersAndTags( objectList, 'sender' );
@@ -39,7 +39,7 @@ MasterDataService.prototype = {
    * handle existing and new Tags and return a
    * consolidated list
    *
-   * @return {deferred} a promis with a list of sender-objects
+   * @return {deferred} a promise with a list of sender-objects
    */
   createAndGetTags: function( objectList ) {
     return this.__handleSendersAndTags( objectList, 'tag' );
@@ -53,7 +53,7 @@ MasterDataService.prototype = {
    * return a list of resulting sender-objects
    *
    * @param {String} type - which type to handle sender|tag
-   * @return {deferred} a promis with a list of sender-objects
+   * @return {deferred} a promise with a list of sender-objects
    */
   __handleSendersAndTags: function( objectList, type ) {
     // the objectList needs to be iterated, check each entry

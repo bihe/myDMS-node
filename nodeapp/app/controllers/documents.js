@@ -15,27 +15,6 @@ var fs = require('fs');
 var path = require('path');
 
 
-// --------------------------------------------------------------------------
-// internal logic
-// --------------------------------------------------------------------------
-function handleSenderAsync( senderObject, done ) {
-  // use async library to handle the sender
-  async.series([
-    function( callback ) {
-      callback( null );
-    },
-    function( callback ) {
-      callback( null );
-    }
-  ],
-  function( error, result ) {
-    done(error);
-  });
-}
-
-
-
-
 /*
  * url: /documents
  * called without any parameters just returns all of the available documents 
@@ -120,7 +99,7 @@ exports.upload = function( req, res, next ) {
 exports.newDocument = function( req, res, next ) {
   var document = {};
   var tags = [];
-  var sender = null;
+  var sender = [];
 
   document = req.body;
   logger.dump( document );
@@ -131,11 +110,11 @@ exports.newDocument = function( req, res, next ) {
     return res.send( 'Invalid data supplied!', 500 );
   }
 
-  handleSenderAsync( document.sender[0] );
-  // handle sender and tags
-  if(document.sender[0]._id === -1) {
+  // //handleSenderAsync( document.sender[0] );
+  // // handle sender and tags
+  // if(document.sender[0]._id === -1) {
 
-  }
+  // }
 
   return res.send( 'Cannot save a new document!', 500 );
 };

@@ -9,6 +9,7 @@ var Document = require('../app/models/document.js');
 var database = require('../app/config/database');
 var mongoose = require('mongoose');
 var MasterDataService = require('../app/services/masterDataService');
+var DocumentService = require('../app/services/documentService');
 
 var uristring = database.uri;
 if(mongoose.connection.readyState !== 1) {
@@ -35,6 +36,13 @@ describe('Services', function() {
         console.log(err);
       }
     });
+
+    Document.remove({name: 'DocumentIntegration'}, function(err) {
+      if(err) {
+        console.log(err);
+      }
+    });
+
   });
 
   // close the mongo connection - not strictly necessary but
@@ -106,6 +114,56 @@ describe('Services', function() {
         .done();
 
       });
+    });
+
+    it('should save a document object', function(done) {
+      var documentService = new DocumentService(),
+          document = null,
+          testData;
+
+      // use JSON testdata
+      /*jshint multistr: true */
+      testData = '{\
+        "_id": -1,\
+        "title": "TEST",\
+        "fileName": "",\
+        "amount": "1",\
+        "sender": [\
+            {\
+                "name": "testsender",\
+                "_id": "536f87504ceb582118439bd5",\
+                "__v": 0,\
+                "created": "2014-05-11T14:21:04.451Z"\
+            }\
+        ],\
+        "tags": [\
+            {\
+                "name": "testtag",\
+                "_id": "536f87504ceb582118439bd7",\
+                "__v": 0,\
+                "created": "2014-05-11T14:21:04.473Z",\
+                "$$hashKey": "01A"\
+            }\
+        ],\
+        "originalFilename": "20050714Bewerbung.pdf",\
+        "tempFilename": "dEOqGvoe.pdf",\
+        "size": 37415\
+      }';
+
+      document = JSON.parse(testData);
+
+      documentService.save(document).then(function(doc) {
+        assert(doc, 'No document returned !' );
+
+        done();
+      })
+     .catch(function(error) {
+        console.log(error.stack);
+        // Handle any error from all above steps
+        assert(!error, 'Error thrown!');
+      })
+      .done();
+
     });
 
   });
