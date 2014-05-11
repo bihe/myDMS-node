@@ -45,11 +45,11 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
   $scope.uploadError = null;
   $scope.formValidationError = false;
   $scope.document = {};
-  $scope.document.id = -1;
+  $scope.document._id = -1;
   $scope.document.title = '';
   $scope.document.fileName = '';
   $scope.document.amount = null;
-  $scope.document.sender = [];
+  $scope.document.senders = [];
   $scope.document.tags = [];
 
   if($routeParams && $routeParams.documentId) {
@@ -108,8 +108,8 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
         var sender = {};
         sender.name = text;
         sender._id = -1;
-        $scope.document.sender = [];
-        $scope.document.sender.push(sender);
+        $scope.document.senders = [];
+        $scope.document.senders.push(sender);
       }
     }
   };
@@ -174,11 +174,11 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
   $scope.$watch('selectedSender', function (newValue) {
     if(newValue) {
       if(newValue.originalObject) {
-        var found = _.find( $scope.document.sender, function( sender ) {
+        var found = _.find( $scope.document.senders, function( sender ) {
           return sender._id === newValue.originalObject._id;
         });
         if(!found) {
-          $scope.document.sender.push( newValue.originalObject );
+          $scope.document.senders.push( newValue.originalObject );
         }
       }
       console.log('selectedSender changed!' + newValue);

@@ -8,6 +8,7 @@ var Sender = require('../app/models/sender.js');
 var Document = require('../app/models/document.js');
 var database = require('../app/config/database');
 var mongoose = require('mongoose');
+var logger = require('../app/util/logger');
 var MasterDataService = require('../app/services/masterDataService');
 var DocumentService = require('../app/services/documentService');
 
@@ -20,6 +21,31 @@ if(mongoose.connection.readyState !== 1) {
     }
   });
 }
+
+// use JSON testdata
+/*jshint multistr: true */
+var testData = '{\
+  "_id": -1,\
+  "title": "TEST",\
+  "fileName": "20050714Bewerbung.pdf",\
+  "amount": "1",\
+  "senders": [\
+      {\
+          "name": "Sender1",\
+          "_id": -1\
+      }\
+  ],\
+  "tags": [\
+      {\
+          "name": "Tag1",\
+          "_id": -1\
+      }\
+  ],\
+  "originalFilename": "20050714Bewerbung.pdf",\
+  "tempFilename": "dEOqGvoe.pdf",\
+  "size": 37415\
+}';
+var testDocument = JSON.parse(testData);
 
 
 describe('Services', function() {
@@ -37,7 +63,7 @@ describe('Services', function() {
       }
     });
 
-    Document.remove({name: 'DocumentIntegration'}, function(err) {
+    Document.remove({title: 'TEST'}, function(err) {
       if(err) {
         console.log(err);
       }
@@ -116,44 +142,37 @@ describe('Services', function() {
       });
     });
 
-    it('should save a document object', function(done) {
+    it('should save a NEW document object', function(done) {
       var documentService = new DocumentService(),
-          document = null,
-          testData;
+          dataService = new MasterDataService(),
+          tagList,
+          senderList;
 
-      // use JSON testdata
-      /*jshint multistr: true */
-      testData = '{\
-        "_id": -1,\
-        "title": "TEST",\
-        "fileName": "",\
-        "amount": "1",\
-        "sender": [\
-            {\
-                "name": "testsender",\
-                "_id": "536f87504ceb582118439bd5",\
-                "__v": 0,\
-                "created": "2014-05-11T14:21:04.451Z"\
-            }\
-        ],\
-        "tags": [\
-            {\
-                "name": "testtag",\
-                "_id": "536f87504ceb582118439bd7",\
-                "__v": 0,\
-                "created": "2014-05-11T14:21:04.473Z",\
-                "$$hashKey": "01A"\
-            }\
-        ],\
-        "originalFilename": "20050714Bewerbung.pdf",\
-        "tempFilename": "dEOqGvoe.pdf",\
-        "size": 37415\
-      }';
+      dataService.createAndGetTags(testDocument.tags).then(function(list) {
+        tagList = list;
 
-      document = JSON.parse(testData);
+        assert(list, 'No tags supplied');
 
-      documentService.save(document).then(function(doc) {
+        return dataService.createAndGetSenders(testDocument.senders);
+      })
+      .then(function(list) {
+        senderList = list;
+
+        assert(list, 'No senders supplied');
+
+        testDocument.tags = tagList;
+        testDocument.senders = senderList;
+
+        return documentService.save(testDocument);
+      })
+      .then(function(doc) {
         assert(doc, 'No document returned !' );
+        assert.equal(doc.title, 'TEST', 'Wrong title');
+        assert.equal(doc.senders.length, 1, 'Wrong number of senders');
+
+
+        console.log('\n' + doc);
+        logger.dump(doc);
 
         done();
       })
@@ -166,5 +185,58 @@ describe('Services', function() {
 
     });
 
+
+    it('should update a document object', function(done) {
+      var documentService = new DocumentService(),
+          dataService = new MasterDataService(),
+          tagList,
+          senderList;
+
+      Document.findOne({title: 'testdocument'}).exec(function (err, foundDoc) {
+        assert(!err, err);
+
+        testDocument._id = foundDoc._id;
+        testDocument.title = foundDoc.title;
+        testDocument.amount = foundDoc.amount;
+
+        dataService.createAndGetTags(testDocument.tags).then(function(list) {
+          tagList = list;
+
+          assert(list, 'No tags supplied');
+
+          return dataService.createAndGetSenders(testDocument.senders);
+        })
+        .then(function(list) {
+          senderList = list;
+
+          assert(list, 'No senders supplied');
+
+          testDocument.tags = tagList;
+          testDocument.senders = senderList;
+
+          return documentService.save(testDocument);
+        })
+        .then(function(doc) {
+          assert(doc, 'No document returned !' );
+          assert.equal(doc.title, 'testdocument', 'Wrong title');
+          assert.equal(doc.senders.length, 1, 'Wrong number of senders');
+
+
+          console.log('\n' + doc);
+          logger.dump(doc);
+
+          done();
+        })
+       .catch(function(error) {
+          console.log(error.stack);
+          // Handle any error from all above steps
+          assert(!error, 'Error thrown!');
+        })
+        .done();
+
+      });
+
+    });
+      
   });
 });

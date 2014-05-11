@@ -36,6 +36,10 @@ var documentSchema = new Schema({
 		type: Date,
 		default: Date.now
 	},
+  modified: {
+    type: Date,
+    default: Date.now
+  },
 	senders: [{ type: Schema.Types.ObjectId, ref: 'Sender' }],
 	tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }]
 
@@ -47,6 +51,7 @@ documentSchema.pre('save', function (next) {
 		// create and set an alternative id
 		this.alternativeId = randomstring.generate(8);
   }
+  this.modified = Date.now;
   next();
 });
 
