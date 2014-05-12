@@ -54,6 +54,10 @@ DocumentService.prototype = {
                 return callback(err);
               }
 
+              if(!foundDoc) {
+                return callback(new Error('No entry found'));
+              }
+
               doc = foundDoc;
               callback(null);
             });
@@ -76,6 +80,10 @@ DocumentService.prototype = {
           doc.save(function(err, d) {
             if(err) {
               return callback(err);
+            }
+
+            if(!d) {
+              return callback(new Error('Item not saved!'));
             }
 
             doc = d;

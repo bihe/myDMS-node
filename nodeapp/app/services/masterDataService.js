@@ -95,6 +95,11 @@ MasterDataService.prototype = {
                   // indicate an error
                   return callback( err );
                 }
+
+                if(!s) {
+                  return callback(new Error('Item not saved!'));
+                }
+
                 items.push( s );
                 // if this is the last index we are done here
                 if( index === (totalLenght - 1) ) {
@@ -112,6 +117,11 @@ MasterDataService.prototype = {
                   // indicate an error
                   return callback( err );
                 }
+
+                if(!s) {
+                  return callback(new Error('No entry found'));
+                }
+
                 items.push( s );
                 // if this is the last index we are done here
                 if( index === (totalLenght - 1) ) {
