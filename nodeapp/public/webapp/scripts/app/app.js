@@ -13,7 +13,7 @@ mydmsApp
                     templateUrl: 'views/document.html',
                     controller: 'DocumentController'
                 })
-                .when('/document/edit/:documentId', {
+                .when('/document/:documentId', {
                     templateUrl: 'views/document.html',
                     controller: 'DocumentController'
                 })

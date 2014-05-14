@@ -19,6 +19,8 @@ exports.setup = function(app) {
 	app.get('/api/' + API + '/tags', tagsController.index);
   app.get('/api/' + API + '/senders', senderController.index);
   app.get('/api/' + API + '/documents', documentsController.index);
-  app.post('/api/' + API + '/document/', documentsController.newDocument);
+  app.get('/api/' + API + '/document/:id', documentsController.document);
+  app.post('/api/' + API + '/document/', documentsController.saveDocument);
+  app.put('/api/' + API + '/document/', documentsController.saveDocument);
   app.post('/api/' + API + '/document/upload', documentsController.upload);
 };

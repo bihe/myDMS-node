@@ -2,8 +2,8 @@
 	<div class="col-xs-12 col-sm-12 col-md-12">
 
 		<div class="page-header">
-  		<h1 ng-if="document.id === -1" translate="document.new">Create a new document</h1>
-			<h1 ng-if="document.id !== -1" translate="document.edit">Edit the document</h1>
+  		<h2 ng-if="document._id === -1" translate="document.new">Create a new document</h2>
+			<h2 ng-if="document._id !== -1"><span translate="document.edit">Edit the document</span><small> {{ document.title }}</small></h2>
 		</div>
 
 		<div class="alert alert-warning" ng-if="formValidationError" style="margin-top: 10px">
@@ -28,34 +28,58 @@
 		    <label class="control-label" for="title" translate="document.title">Title</label>
 		    <input type="text" class="form-control" id="titel" name="title" placeholder="Titel" ng-model="document.title" required>
 		  </div>
-		  
-		  <div class="form-group">
-		    <label for="fileUpload" translate="document.upload.title">File input</label>
-		    
-				<div 	id="fileUpload"
-							ng-file-drop="onFileSelect($files)" 
-							ng-file-drag-over-class="upload-drop-area-drag"
-        			ng-show="dropSupported"
-        			ng-file-drop-available="dropSupported=true"
-        			ng-model="myModelObj"
-        			class="upload-drop-area" ng-class="{'upload-drop-area-invalid': (!document.originalFilename || document.originalFilename === '') && formValidationError}">
-        			drop files here
-        </div>
-        <input type="hidden" name="originalFilename" id="originalFilename" ng-model="document.originalFilename" required />
 
-				<div class="alert alert-danger" ng-if="uploadError" style="margin-top: 10px">
-      		<strong translate="document.upload.error">Upload error!</strong> {{ uploadError }}
-    		</div>
-    		<p class="help-block" translate="document.upload.hint">Upload hint.</p>
-    		<span class="label label-info label-big" ng-if="document.originalFilename"> <i class="fa fa-file"></i> {{ document.originalFilename }} </span>
-		    
-		  </div>
+		  <div class="row">
+		  	<div class="col-md-6">
+		  		
+		  		<div class="form-group">
+				    <label for="fileUpload" translate="document.upload.title">File input</label>
+				    
+				    <div style="margin-top: 10px;margin-bottom: 20px;" ng-if="document.fileName !== ''">
+						<span class="label label-info label-big" ng-if="document.fileName"> <i class="fa fa-file"></i> {{ document.fileName }} </span>
+				    </div>
 
-		  <div class="form-group has-feedback" ng-class="{'has-error': form1.amount.$invalid && formValidationError}">
-		    <label for="amount" class="control-label" translate="document.amount">amount</label>		    
-		    <input type="text" class="form-control" id="amount" name="amount" placeholder="0,0" style="width:100px" ng-model="document.amount" required>
+					<div 	id="fileUpload"
+								ng-file-drop="onFileSelect($files)" 
+								ng-file-drag-over-class="upload-drop-area-drag"
+		    			ng-show="dropSupported"
+		    			ng-file-drop-available="dropSupported=true"
+		    			ng-model="myModelObj"
+		    			class="upload-drop-area" ng-class="{'upload-drop-area-invalid': (!document.fileName || document.fileName === '') && formValidationError}">
+		    			drop files here
+		        	</div>
+		        	<input type="hidden" name="fileName" id="fileName" ng-model="document.fileName" required />
+
+					<div class="alert alert-danger" ng-if="uploadError" style="margin-top: 10px">
+		      		<strong translate="document.upload.error">Upload error!</strong> {{ uploadError }}
+		    		</div>
+		    		<p class="help-block" translate="document.upload.hint">Upload hint.</p>
+		    		
+				    
+				    <div ng-if="document.modified">
+					    <span translate="">c</span>: <span class="badge">{{ document.created | date : 'dd.MM.yyyy' }}</span>
+			    		<span translate="">m</span>: <span class="badge">{{ document.modified | date : 'dd.MM.yyyy' }}</span>
+			    	</div>
+
+				</div>
+
+		  	</div>
+
+		  	<div class="col-md-6">
+		  		
+		  		<div class="form-group has-feedback" ng-class="{'has-error': form1.amount.$invalid && formValidationError}">
+				    <label for="amount" class="control-label" translate="document.amount">amount</label>		    
+				   
+				    <div class="input-group input-group-lg">
+					  <span class="input-group-addon ">&euro;</span>
+					  <input type="text" class="form-control" id="amount" name="amount" placeholder="0,0" style="width:100px" ng-model="document.amount" required>
+					</div>
+				    
+				</div>
+
+		  	</div>		  	
+
 		  </div>
-		  
 		  
 		</form>
 	</div>
@@ -67,8 +91,8 @@
 				<label class="control-label" for="senders" translate="document.senders">Senders</label>
 		   	
 		   	<input type="hidden" name="sender" ng-model="selectedSender" required/>
-				<div style="margin-bottom: 20px;" ng-if="document.sender.length > 0">
-					<span class="label label-info label-big label-tag" href="#" id="{{ selectedSender.originalObject._id }}"> <i class="fa fa-truck tag-padding"></i> {{ document.sender[0].name }}</span>
+				<div style="margin-bottom: 20px;" ng-if="document.senders.length > 0">
+					<span class="label label-info label-big label-tag" href="#" id="{{ selectedSender.originalObject._id }}"> <i class="fa fa-truck tag-padding"></i> {{ document.senders[0].name }}</span>
 				</div>
 				
 

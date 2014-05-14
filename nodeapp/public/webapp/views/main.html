@@ -50,7 +50,7 @@
             <h1 translate="main.title">Welcome, to myDMS</h1>
 
             <span ng-repeat="doc in documents" >
-                  <a class="label label-primary label-big" href="#" id="{{ doc._id }}"> <i class="fa fa-tag"></i> {{ doc.title }}</a>
+                  <a class="label label-primary label-big" href="#/document/{{ doc._id }}" id="{{ doc._id }}"> <i class="fa fa-tag"></i> {{ doc.title }}</a>
              </span>
         </div>
     </div>

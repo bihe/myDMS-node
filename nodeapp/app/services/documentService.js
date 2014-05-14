@@ -24,9 +24,8 @@ function DocumentService() {
 DocumentService.prototype = {
 
   /**
-   * a document object is supplied which should be saved
-   * based on the supplied id either a new document
-   * has to be created, or an existing one has to be updated
+   * save the document or create a new one, depending on the 
+   * supplied id
    *
    * @return {deferred} a promise with the saved document
    */

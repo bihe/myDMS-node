@@ -17,7 +17,8 @@
     "async": "~0.2.9",
     "mongoose": "3.8.x",
     "winston": "~0.7.3",
-    "connect-session-file": "~1.0.4"
+    "connect-session-file": "~1.0.4",
+    "mv": "~2.0.0"
   },
   "devDependencies": {
     "mocha": "1.x"

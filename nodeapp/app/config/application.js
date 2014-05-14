@@ -19,6 +19,7 @@ config.application.upload.extensions = ['pdf', 'png', 'jpeg', 'jpg', 'tiff', 'ti
 // 10 MB
 config.application.upload.maxFileSize = 10485760;
 config.application.upload.tempFilePath = 'upload';
+config.application.upload.filePath = 'files';
 
 // specify if error stack-trace should be displayed
 // config.errorDetails = 'error-stack';

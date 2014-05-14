@@ -2,36 +2,6 @@
 
 /* Controllers */
 
-mydmsApp.controller('LanguageController', ['$scope', '$translate', function ($scope, $translate) {
-  $scope.changeLanguage = function (languageKey) {
-    $translate.uses(languageKey);
-  };
-}]);
-
-mydmsApp.controller('MenuController', ['$scope', function ($scope) {
-}]);
-
-/*
- * handel the main screen
- */
-mydmsApp.controller('MainController', ['$scope', '$http', function ($scope, $http) {
-
-  // retrieve the documents on load
-  $http.get('./api/1.0/documents').success( function(data) {
-    $scope.documents = data;
-  }).error( function(data, status, headers) {
-    alert('Error: ' + data + '\nHTTP-Status: ' + status);
-  });
-
-  // retrieve the tags on load
-  $http.get('./api/1.0/tags').success( function(data) {
-    $scope.tags = data;
-  }).error( function(data, status, headers) {
-    alert('Error: ' + data + '\nHTTP-Status: ' + status);
-  });
-
-}]);
-
 /*
  * handle the documents
  */
@@ -49,21 +19,51 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
   $scope.document.title = '';
   $scope.document.fileName = '';
   $scope.document.amount = null;
+  $scope.document.modified = null;
+  $scope.document.created = null;
   $scope.document.senders = [];
   $scope.document.tags = [];
 
   if($routeParams && $routeParams.documentId) {
-    $scope.document.id = $routeParams.documentId;
+    $scope.document._id = $routeParams.documentId;
   }
 
-  console.log($routeParams);
+  // ------------------------------------------------------------------------
+  // startup - fetch remote data
+  // ------------------------------------------------------------------------  
 
   // retrieve the senders on load
-  $http.get('./api/1.0/senders').success( function( data ) {
+  $http.get('./api/1.0/senders').success(function(data) {
     $scope.senders = data;
   }).error( function( data, status, headers ) {
     alert('Error: ' + data + '\nHTTP-Status: ' + status);
   });
+
+  if($scope.document._id !== -1) {
+    $http.get('./api/1.0/document/' + $scope.document._id).success(function(data) {
+
+      // got the data - preset the selection
+      $scope.document.title = data.title;
+      $scope.document.fileName = data.fileName;
+      $scope.document.amount = data.amount;
+      $scope.document.senders = data.senders;
+      $scope.document.tags = data.tags;
+      $scope.document.modified = data.modified;
+      $scope.document.created = data.created;
+
+      // setup custom objects for the autocompletion logic
+      $scope.selectedSender = {};
+      $scope.selectedSender.title = data.senders[0].name;
+      $scope.selectedSender.originalObject = data.senders[0];
+      $scope.selectedTag = {};
+      $scope.selectedTag.title = data.tags[0].name;
+      $scope.selectedTag.originalObject = data.tags[0];
+
+    })
+    .error( function(data, status, headers) {
+      alert('Error: ' + data + '\nHTTP-Status: ' + status);
+    });
+  }
 
 
   // ------------------------------------------------------------------------
@@ -130,18 +130,34 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
     postData = JSON.stringify($scope.document);
     // either this is an update or we need to create a new entry
     // it's dependant on the availability of a document-id
-    if($scope.document.id !== -1) {
+    if($scope.document._id !== -1) {
       // PUT
+      // update existing entry
+      $http({
+        url: './api/1.0/document/',
+        method: 'PUT',
+        data: postData,
+        headers: {'Content-Type': 'application/json'}
+      }).success(function (data, status, headers, config) {
+        $scope.saveSuccess = true;
+
+        $location.path('/');
+      }).error(function (data, status, headers, config) {
+        $scope.saveSuccess = false;
+        $scope.saveErrorMessage = data;
+      });
     } else {
       // POST
       // create a new entry
       $http({
-            url: './api/1.0/document/',
-            method: 'POST',
-            data: postData,
-            headers: {'Content-Type': 'application/json'}
+        url: './api/1.0/document/',
+        method: 'POST',
+        data: postData,
+        headers: {'Content-Type': 'application/json'}
       }).success(function (data, status, headers, config) {
         $scope.saveSuccess = true;
+
+        $location.path('/');
       }).error(function (data, status, headers, config) {
         $scope.saveSuccess = false;
         $scope.saveErrorMessage = data;
@@ -192,7 +208,6 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
 
   $scope.onFileSelect = function($files) {
     $scope.uploadError = null;
-    $scope.document.originalFilename = null;
     $scope.document.tempFilename = null;
     $scope.document.size = null;
 
@@ -215,7 +230,7 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
       }).success(function(data, status, headers, config) {
         // file is uploaded successfully
         console.log(data);
-        $scope.document.originalFilename = data.originalFileName;
+        $scope.document.fileName = data.originalFileName;
         $scope.document.tempFilename = data.fileName;
         $scope.document.size = data.size;
 
@@ -237,8 +252,6 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
   // ------------------------------------------------------------------------
   // validation
   // ------------------------------------------------------------------------
-
-
 
 
 }]);

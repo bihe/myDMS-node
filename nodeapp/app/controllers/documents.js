@@ -9,10 +9,12 @@ var utils = require('../util/utils' );
 var config = require('../config/application');
 var Document = require('../models/document.js');
 var randomstring = require('randomstring');
-var async = require('async');
 var _ = require('lodash');
 var fs = require('fs');
+var mv = require('mv');
 var path = require('path');
+var DocumentService = require('../services/documentService');
+var MasterDataService = require('../services/masterDataService');
 
 
 /*
@@ -92,29 +94,105 @@ exports.upload = function( req, res, next ) {
   });
 };
 
+/*
+ * url: /document/:id
+ * get a document by the given id
+ */
+exports.document = function(req, res, next) {
+
+  console.log('Got param: ' + req.params.id);
+
+  Document.findById(req.params.id)
+  .populate('tags senders')
+  .exec(function (err, doc) {
+    if( err ) {
+      return base.handleError( req, res, next, err );
+    }
+    res.json(doc);
+  });
+};
+
 /* 
  * url: /document/
  * create a new document and save it in the backend
  */
-exports.newDocument = function( req, res, next ) {
-  var document = {};
-  var tags = [];
-  var sender = [];
+exports.saveDocument = function( req, res, next ) {
+  var document = {},
+      tagList = [],
+      senderList = [],
+      filePath,
+      uploadPath,
+      masterDataService = new MasterDataService(),
+      documentService = new DocumentService();
+  
+  try {
 
-  document = req.body;
-  logger.dump( document );
+    document = req.body;
+    logger.dump( document );
 
-  // do a server-side validation
-  if(!document.title || !document.amount || !document.originalFilename || !document.tempFilename ||
-    document.tags.length === 0 || document.sender.length === 0) {
-    return res.send( 'Invalid data supplied!', 500 );
+    // do a server-side validation
+    if(!document.title || !document.amount || !document.fileName || 
+      document.tags.length === 0 || document.senders.length === 0) {
+      return res.send( 'Invalid data supplied!', 500 );
+    }
+
+    // validation done - at least we do have some data
+    // use promises to handle tags, senders, and the document itself
+
+    masterDataService.createAndGetTags(document.tags).then(function(list) {
+      tagList = list;
+      // start the promise chain
+      return masterDataService.createAndGetSenders(document.senders);
+    })
+    .then(function(list) {
+      senderList = list;
+      // got both - overwrite the lists of the object
+      document.tags = tagList;
+      document.senders = senderList;
+
+      return documentService.save(document);
+    })
+    .then(function(doc) {
+      console.log('Saved the document: ' + doc);
+
+      // document was saved, I need to move the uploaded file from the temp-folder
+      // to the final document location
+
+      if(document.tempFilename && document.tempFilename !== '') {
+        uploadPath = path.join(__dirname, '../../', config.application.upload.tempFilePath) + '/' + document.tempFilename;
+        filePath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + document.fileName;
+        
+        console.log('Will move file from ' + uploadPath + ' to ' + filePath);
+
+        mv(uploadPath, filePath, function(error) {
+          if(error) {
+            console.log('Could not move file: ' + error);
+            console.log(error.stack);
+
+            throw error;
+          }
+
+          return res.send('Document saved!', 200);
+        });
+      } else {
+
+        // document not changed
+
+        return res.send('Document saved!', 200);
+      }
+
+    })
+    .catch(function(error) {
+      console.log(error.stack);
+      return res.send('Cannot save document! ' + error, 500);
+    })
+    .done();
+
+  } catch(err) {
+    console.log('Got an error: ' + err);
+    console.log(err.stack);
+
+    return res.send('Cannot save document! ' + err, 500);
   }
 
-  // //handleSenderAsync( document.sender[0] );
-  // // handle sender and tags
-  // if(document.sender[0]._id === -1) {
-
-  // }
-
-  return res.send( 'Cannot save a new document!', 500 );
 };

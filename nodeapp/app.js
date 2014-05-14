@@ -50,8 +50,9 @@ app.configure(function(){
     log = 'dev';
   }
   // Don't log during tests
-  if (env !== 'test') app.use(express.logger(log));
-
+  if (env !== 'test') {
+    app.use(express.logger(log));
+  }
 
   app.use(express.json());
   app.use(express.urlencoded());
@@ -65,12 +66,11 @@ app.configure(function(){
     store: new FileStore({path: path.join(__dirname, 'session'), printDebug: false, useAsync: true})
   }));
 
-
   app.use(app.router);
 
-  if(!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+  if(!env || env === 'development') {
     app.use(express.static(path.join(__dirname, 'public/webapp')));
-  } else if(process.env.NODE_ENV === 'production') {
+  } else if(env === 'production') {
     app.use(express.static(path.join(__dirname, 'public/webapp/dist')));
   }
 });
