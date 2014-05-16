@@ -90,12 +90,23 @@
 			<div class="form-group has-feedback" ng-class="{'has-error': form2.sender.$invalid && formValidationError}">
 				<label class="control-label" for="senders" translate="document.senders">Senders</label>
 		   	
-		   	<input type="hidden" name="sender" ng-model="selectedSender" required/>
+		   		<input type="hidden" name="sender" ng-model="selectedSender" required/>
+				
 				<div style="margin-bottom: 20px;" ng-if="document.senders.length > 0">
 					<span class="label label-info label-big label-tag" href="#" id="{{ selectedSender.originalObject._id }}"> <i class="fa fa-truck tag-padding"></i> {{ document.senders[0].name }}</span>
 				</div>
 				
+				<input type="text" id="senders" selectize 
+					data-remote="/api/1.0/senders/?q="
+					label="<span class='label label-info label-big label-tag' data-id='{_id}' data-text={name}><i class='fa fa-truck'></i> {name}</span>"
+					selected-object="selectedSender"
+					callback-new="addNewSenderCallback(text)"
+					/>
+				
+				<span>{{ selectedSender }}</span>
+				
 
+				  <!--
 				<angucomplete-alt id="senderSelector"
 	              placeholder="Search senders"
 	              pause="400"
@@ -105,6 +116,10 @@
 	        	  input-class="form-control"
 	        	  clear-selected="true"
 	        	  callback-new="addNewSenderCallback(text)"/>
+				-->
+
+
+	        	
 	        	
 			</div>
 

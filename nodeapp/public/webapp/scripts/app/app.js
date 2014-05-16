@@ -2,7 +2,15 @@
 
 /* App Module */
 
-var mydmsApp = angular.module('mydmsApp', ['ngResource', 'ngRoute', 'ngCookies', 'pascalprecht.translate', 'angucomplete-alt', 'angularFileUpload', 'chieffancypants.loadingBar']);
+var mydmsApp = angular.module('mydmsApp', [
+    'ngResource',
+    'ngRoute',
+    'ngCookies',
+    'pascalprecht.translate',           // translate angular elements
+    'angucomplete-alt',                 // autocomplete logic
+    'angularFileUpload',                // handel file-upload the angular way
+    'chieffancypants.loadingBar'        // loading indicator for xhr requests
+  ]);
 
 mydmsApp
     .constant('_', window._)
@@ -28,7 +36,8 @@ mydmsApp
                 suffix: '.json'
             });
 
-            $translateProvider.preferredLanguage('en');
+            //$translateProvider.preferredLanguage('en');
+            $translateProvider.determinePreferredLanguage();
 
             // remember language
             $translateProvider.useCookieStorage();
