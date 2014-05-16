@@ -2,7 +2,7 @@
 
 /* App Module */
 
-var mydmsApp = angular.module('mydmsApp', ['ngResource', 'ngRoute', 'ngCookies', 'pascalprecht.translate', 'angucomplete-alt', 'angularFileUpload']);
+var mydmsApp = angular.module('mydmsApp', ['ngResource', 'ngRoute', 'ngCookies', 'pascalprecht.translate', 'angucomplete-alt', 'angularFileUpload', 'chieffancypants.loadingBar']);
 
 mydmsApp
     .constant('_', window._)
