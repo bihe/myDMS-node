@@ -7,6 +7,7 @@
  */
 mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$routeParams', '_', '$upload', function ($scope, $http, $location, $routeParams, _, $upload) {
   
+  var items = '', index;
   // ------------------------------------------------------------------------
   // initialisation
   // ------------------------------------------------------------------------
@@ -23,6 +24,9 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
   $scope.document.created = null;
   $scope.document.senders = [];
   $scope.document.tags = [];
+
+  // $scope.selectedSenders = [];
+  // $scope.selectedTags = [];
 
   if($routeParams && $routeParams.documentId) {
     $scope.document._id = $routeParams.documentId;
@@ -51,13 +55,8 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
       $scope.document.modified = data.modified;
       $scope.document.created = data.created;
 
-      // setup custom objects for the autocompletion logic
-      $scope.selectedSender = {};
-      $scope.selectedSender.title = data.senders[0].name;
-      $scope.selectedSender.originalObject = data.senders[0];
-      $scope.selectedTag = {};
-      $scope.selectedTag.title = data.tags[0].name;
-      $scope.selectedTag.originalObject = data.tags[0];
+      $scope.selectedSenders = data.senders;
+      $scope.selectedTags = data.tags;
 
     })
     .error( function(data, status, headers) {
@@ -75,45 +74,6 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
     $location.path(path);
   };
 
-  // remove the tag from the list
-  $scope.removeTag = function(tagId) {
-    _.remove($scope.document.tags, function(tag) {
-      return tag._id === tagId;
-    });
-    $scope.selectedTag = null;
-  };
-
-  // callback is triggered from the autocomplete component
-  $scope.addNewTagCallback = function(text) {
-    if(text && text !== '') {
-      var found = _.find($scope.document.tags, function(tag) {
-        return tag.name === text;
-      });
-      if(!found) {
-        var tag = {};
-        tag.name = text;
-        tag._id = -1;
-        $scope.document.tags.push(tag);
-      }
-    }
-  };
-
-  // also handle the logic for senders
-  $scope.addNewSenderCallback = function(text) {
-    if(text && text !== '') {
-      var found = _.find($scope.document.sender, function(sender) {
-        return sender.name === text;
-      });
-      if(!found) {
-        var sender = {};
-        sender.name = text;
-        sender._id = -1;
-        $scope.document.senders = [];
-        $scope.document.senders.push(sender);
-      }
-    }
-  };
-
   // save the document
   $scope.save = function(valid) {
     var postData = '';
@@ -123,6 +83,9 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
       $scope.formValidationError = true;
       return;
     }
+
+    $scope.document.tags = $scope.selectedTags;
+    $scope.document.senders = $scope.selectedSenders;
 
     $scope.saveSuccess = null;
     $scope.saveErrorMessage = null;
@@ -171,35 +134,35 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
   // event handler
   // ------------------------------------------------------------------------
 
-  // watch for changes
-  $scope.$watch('selectedTag', function (newValue) {
-    if(newValue) {
-      if(newValue.originalObject) {
-        var found = _.find($scope.document.tags, function(tag) {
-          return tag._id === newValue.originalObject._id;
-        });
-        if(!found) {
-          $scope.document.tags.push(newValue.originalObject);
-        }
-      }
-      console.log('selectedTag changed!' + newValue);
-    }
-  });
+  // // watch for changes
+  // $scope.$watch('selectedTag', function (newValue) {
+  //   if(newValue) {
+  //     if(newValue.originalObject) {
+  //       var found = _.find($scope.document.tags, function(tag) {
+  //         return tag._id === newValue.originalObject._id;
+  //       });
+  //       if(!found) {
+  //         $scope.document.tags.push(newValue.originalObject);
+  //       }
+  //     }
+  //     console.log('selectedTag changed!' + newValue);
+  //   }
+  // });
 
-  // watch for changes
-  $scope.$watch('selectedSender', function (newValue) {
-    if(newValue) {
-      if(newValue.originalObject) {
-        var found = _.find( $scope.document.senders, function( sender ) {
-          return sender._id === newValue.originalObject._id;
-        });
-        if(!found) {
-          $scope.document.senders.push( newValue.originalObject );
-        }
-      }
-      console.log('selectedSender changed!' + newValue);
-    }
-  });
+  // // watch for changes
+  // $scope.$watch('selectedSender', function (newValue) {
+  //   if(newValue) {
+  //     if(newValue.originalObject) {
+  //       var found = _.find( $scope.document.senders, function( sender ) {
+  //         return sender._id === newValue.originalObject._id;
+  //       });
+  //       if(!found) {
+  //         $scope.document.senders.push( newValue.originalObject );
+  //       }
+  //     }
+  //     console.log('selectedSender changed!' + newValue);
+  //   }
+  // });
 
 
   // ------------------------------------------------------------------------

@@ -7,7 +7,6 @@ var mydmsApp = angular.module('mydmsApp', [
     'ngRoute',
     'ngCookies',
     'pascalprecht.translate',           // translate angular elements
-    'angucomplete-alt',                 // autocomplete logic
     'angularFileUpload',                // handel file-upload the angular way
     'chieffancypants.loadingBar'        // loading indicator for xhr requests
   ]);

@@ -90,62 +90,33 @@
 			<div class="form-group has-feedback" ng-class="{'has-error': form2.sender.$invalid && formValidationError}">
 				<label class="control-label" for="senders" translate="document.senders">Senders</label>
 		   	
-		   		<input type="hidden" name="sender" ng-model="selectedSender" required/>
-				
-				<div style="margin-bottom: 20px;" ng-if="document.senders.length > 0">
-					<span class="label label-info label-big label-tag" href="#" id="{{ selectedSender.originalObject._id }}"> <i class="fa fa-truck tag-padding"></i> {{ document.senders[0].name }}</span>
-				</div>
+		   		<input type="hidden" name="sender" ng-model="selectedSenders" required/>
 				
 				<input type="text" id="senders" selectize 
 					data-remote="/api/1.0/senders/?q="
-					label="<span class='label label-info label-big label-tag' data-id='{_id}' data-text={name}><i class='fa fa-truck'></i> {name}</span>"
-					selected-object="selectedSender"
-					callback-new="addNewSenderCallback(text)"
+					label="<span class='label label-info label-big label-tag' data-text={name}><i class='fa fa-truck'></i> {name}</span>"
+					selected-object="selectedSenders"
 					/>
 				
-				<span>{{ selectedSender }}</span>
-				
-
-				  <!--
-				<angucomplete-alt id="senderSelector"
-	              placeholder="Search senders"
-	              pause="400"
-	              selected-object="selectedSender"
-	              remote-url="/api/1.0/senders/?q="
-	              title-field="name"
-	        	  input-class="form-control"
-	        	  clear-selected="true"
-	        	  callback-new="addNewSenderCallback(text)"/>
-				-->
-
-
-	        	
+				<span>{{ selectedSenders }}</span>
 	        	
 			</div>
 
 			<div class="form-group has-feedback" ng-class="{'has-error': form2.tags.$invalid && formValidationError}">
 				<label class="control-label" for="tags" translate="document.tags">Tags</label>
 
-				<input type="hidden" name="tags" ng-model="selectedTag" required/>
-				<div style="margin-bottom: 20px;" ng-if="document.tags.length > 0">
-					<span ng-repeat="tag in document.tags">
-						<span class="label label-primary label-big label-tag" id="{{ tag._id }}" ng-click="removeTag(tag._id)"> <i class="fa fa-tag tag-padding"></i> {{ tag.name }}</span>
-					</span>
-				</div>
-		   		
-				<angucomplete-alt id="tagSelector"
-	              placeholder="Search tags"
-	              pause="400"
-	              selected-object="selectedTag"
-	              remote-url="/api/1.0/tags/?q="
-	              title-field="name"
-	        	  input-class="form-control"
-	        	  clear-selected="true"
-	        	  callback-new="addNewTagCallback(text)" />
+				<input type="hidden" name="tags" ng-model="selectedTags" required/>
+
+				<input type="text" id="tags" selectize 
+					data-remote="/api/1.0/tags/?q="
+					label="<span class='label label-primary label-big label-tag' data-text={name}><i class='fa fa-tag'></i> {name}</span>"
+					selected-object="selectedTags"
+					/>
+
+
+				<span>{{ selectedTags }}</span>
 
 			</div>
-			
-			
 
 		</form>
 	</div>
