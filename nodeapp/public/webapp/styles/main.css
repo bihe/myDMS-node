@@ -34,11 +34,6 @@ ul.items li
   font-size: inhert;
 }
 
-.label-big {
-  font-size: 14px;
-  margin: 2px;
-}
-
 .double-line {
   line-height: 2.5;
 }
@@ -107,4 +102,60 @@ ul.items li
 .label-big {
   font-size: 14pt;
   margin: 3px;
+}
+
+.document {
+  float: left;
+  width: 20%;
+  padding: 6px;
+  height: 180px;
+
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.document .inner {
+  height: 100%;
+  
+  margin: 0;
+  padding: 6px;
+  border: 1px solid gray;
+  border-radius: 4px;
+
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.document .inner .header {
+  text-align: center;
+  font-size: 12pt;
+  
+}
+
+.document .inner .header .amount {
+  text-align: center;
+  font-size: 10pt;
+  font-style: italic;
+}
+
+.document .inner .masterdata {
+  text-align: left;
+  font-size: 10pt;
+  margin-bottom: 2px;
+}
+
+.document .inner .footer {
+  padding-top: 5px;
+  text-align: center;
+  font-size: 8pt;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.well {
+  margin-bottom: 5px;
 }

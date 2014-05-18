@@ -21,7 +21,8 @@
         "noresults": "No results",
         "addentry": "Add entry",
         "invalidForm": "Form input invalid or incomplete, please check your input!",
-        "saveError": "Error on save!"
+        "saveError": "Error on save!",
+        "file": "File"
     },
     "main": {
         "title": "Welcome, myDMS!",

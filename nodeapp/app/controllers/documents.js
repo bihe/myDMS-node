@@ -22,7 +22,9 @@ var MasterDataService = require('../services/masterDataService');
  * called without any parameters just returns all of the available documents 
  */
 exports.index = function( req, res, next ) {
-  Document.find( { $query: { }, $orderby: { name : 1 } } ).exec(function ( err, documents ) {
+  Document.find( { $query: { }, $orderby: { created : -1 } } )
+  .populate('tags senders')
+  .exec(function ( err, documents ) {
     if( err ) {
       return base.handleError( req, res, next, err );
     }
@@ -131,7 +133,7 @@ exports.saveDocument = function( req, res, next ) {
     logger.dump( document );
 
     // do a server-side validation
-    if(!document.title || !document.amount || !document.fileName || 
+    if(!document.title || !document.fileName || 
       document.tags.length === 0 || document.senders.length === 0) {
       return res.send( 'Invalid data supplied!', 500 );
     }
