@@ -82,28 +82,49 @@ MasterDataService.prototype = {
       function( callback ) {
         try {
           _.forEach( objectList, function( object, index ) {
-            if( object._id === -1 ) {
-              // those entries will be created
-              if( type === 'sender' ) {
-                item = new Sender( { name: object.name } );
-              } else if( type === 'tag') {
-                item = new Tag( { name: object.name } );
-              }
-              
-              item.save(function( err, s ) {
+            if( object._id <= -1 ) {
+
+              // check if an entry with the given name already exists
+              model.findOne({name: object.name}).exec(function ( err, s ) {
                 if( err ) {
                   // indicate an error
                   return callback( err );
                 }
 
-                if(!s) {
-                  return callback(new Error('Item not saved!'));
-                }
+                if(s) {
+                  // found one entry with the given name
+                  // use this one
+                  items.push( s );
 
-                items.push( s );
-                // if this is the last index we are done here
-                if( index === (totalLenght - 1) ) {
-                  callback( null ); // done
+                  // if this is the last index we are done here
+                  if( index === (totalLenght - 1) ) {
+                    callback( null ); // done
+                  }
+                } else {
+                  // aah: no entry found - create a new one
+                  if( type === 'sender' ) {
+                    item = new Sender( { name: object.name } );
+                  } else if( type === 'tag') {
+                    item = new Tag( { name: object.name } );
+                  }
+                  
+                  item.save(function( err, s ) {
+                    if( err ) {
+                      // indicate an error
+                      return callback( err );
+                    }
+
+                    if(!s) {
+                      return callback(new Error('Item not saved!'));
+                    }
+
+                    items.push( s );
+                    // if this is the last index we are done here
+                    if( index === (totalLenght - 1) ) {
+                      callback( null ); // done
+                    }
+
+                  });
                 }
 
               });

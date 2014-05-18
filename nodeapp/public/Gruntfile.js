@@ -282,6 +282,18 @@ module.exports = function (grunt) {
             cwd: 'webapp/bower_components/font-awesome/css',
             dest: '.tmp/bower_components/font-awesome/css',
             src: 'font-awesome.min.css'
+          },
+          {
+            expand: true,
+            cwd: 'webapp/bower_components/angular-loading-bar/build',
+            dest: '.tmp/bower_components/angular-loading-bar/build',
+            src: 'loading-bar.css'
+          },
+          {
+            expand: true,
+            cwd: 'webapp/bower_components/selectize/dist/css',
+            dest: '.tmp/bower_components/selectize/dist/css',
+            src: 'selectize.bootstrap3.css'
           }
         ]
       },

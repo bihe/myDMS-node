@@ -14,11 +14,14 @@ var Tag = require('../models/tag.js');
  * uses 'q' to search for tags
  */
 exports.index = function( req, res, next ) {
-
-  var filter = {};
+  var filter = {}, filterValue = '';
   if(req.query.q) {
+    filterValue = req.query.q;
+    if(filterValue === '*') {
+      filterValue = '.*'; // search anything
+    }
     filter.name = {};
-    filter.name.$regex = new RegExp(req.query.q);
+    filter.name.$regex = new RegExp(filterValue, 'i');
   }
   console.log('filter: ' + filter.name );
   Tag.find( filter ).sort('name').exec(function (err, tags) {

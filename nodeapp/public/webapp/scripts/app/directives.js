@@ -1,4 +1,4 @@
-'use strict';
+  'use strict';
 
 
 function escapeRegExp(string) {
@@ -7,6 +7,30 @@ function escapeRegExp(string) {
 
 function replaceAll(find, replace, str) {
   return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
+/**
+ * @see http://erlycoder.com/49/javascript-hash-functions-to-convert-string-into-integer-hash-
+ */
+function hashCode(str){
+  var hash = 0, i, char;
+    if (str.length == 0) return hash;
+    for (i = 0; i < str.length; i++) {
+        char = str.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+/**
+ * Returns a random integer between min and max
+ * Using Math.round() will give you a non-uniform distribution!
+ *
+ * @see http://stackoverflow.com/questions/1527803/generating-random-numbers-in-javascript-in-a-specific-range
+ */
+function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 angular.module('mydmsApp')
@@ -76,7 +100,7 @@ angular.module('mydmsApp')
                 // the magic is to wait!!
                 // until the necessary scope-objects are loaded. Once done start the selectize logic
                 scope.$watch('selectedObject', function(value){
-                    if (!value) return;
+                    //if (!value) return;
 
                     $timeout(function() {
                         $(element).selectize({
@@ -85,8 +109,14 @@ angular.module('mydmsApp')
                             searchField: 'name',
                             persist: false,
                             create: function(input) {
+                                var id = 0;
+                                id = getRandomInt(1, 99);
+                                id *= hashCode(input);
+                                if(id > 0) {
+                                    id *= (-1);    
+                                }
                                 return {
-                                    _id: input,
+                                    _id: id,
                                     name: input
                                 };
                             },
@@ -113,21 +143,27 @@ angular.module('mydmsApp')
                             },
                             onInitialize: function() {
                                 var self = this;
-                                // preset the elements!
-                                _.forEach(scope.selectedObject, function(o) {
-                                    self.options[o._id] = o;
-                                    self.addItem(o._id);                                    
-                                });
+                                if(scope.selectedObject) {
+                                    // preset the elements!
+                                    _.forEach(scope.selectedObject, function(o) {
+                                        self.options[o._id] = o;
+                                        self.addItem(o._id);                                    
+                                    });
+                                }
                             },
                             onItemAdd: function(value, $item) {
                                 item = _.find(currentData, function(i) {
                                     return i._id === value;
                                 });
+                                text = $item.attr('data-text');
+
+                                if(!item && value <= -1) {
+                                    item = {name: text, _id: value};
+                                }
                                 
                                 if(item) {
                                     scope.$apply(function () {
-                                        text = $item.attr('data-text');
-
+                                        
                                         if(!scope.selectedObject) {
                                             scope.selectedObject = [];
                                         }

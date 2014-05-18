@@ -7,7 +7,6 @@
  */
 mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$routeParams', '_', '$upload', function ($scope, $http, $location, $routeParams, _, $upload) {
   
-  var items = '', index;
   // ------------------------------------------------------------------------
   // initialisation
   // ------------------------------------------------------------------------
@@ -24,9 +23,6 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
   $scope.document.created = null;
   $scope.document.senders = [];
   $scope.document.tags = [];
-
-  // $scope.selectedSenders = [];
-  // $scope.selectedTags = [];
 
   if($routeParams && $routeParams.documentId) {
     $scope.document._id = $routeParams.documentId;
@@ -62,6 +58,9 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
     .error( function(data, status, headers) {
       alert('Error: ' + data + '\nHTTP-Status: ' + status);
     });
+  } else {
+    $scope.selectedSenders = [];
+    $scope.selectedTags = [];
   }
 
 
