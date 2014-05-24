@@ -100,7 +100,7 @@ angular.module('mydmsApp')
                 // the magic is to wait!!
                 // until the necessary scope-objects are loaded. Once done start the selectize logic
                 scope.$watch('selectedObject', function(value){
-                    //if (!value) return;
+                    if (!value) return;
 
                     $timeout(function() {
                         $(element).selectize({

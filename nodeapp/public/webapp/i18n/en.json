@@ -42,5 +42,13 @@
             "error": "Error during file upload!",
             "hint": "Allowed file-types are pdf and images"
         }
+    },
+    "settings": {
+        "title": "Settings",
+        "import": "Import data",
+        "export": "Export data",
+        "tags": "Tags",
+        "senders": "Senders",
+        "documents": "Documents"
     }
 }

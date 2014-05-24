@@ -42,5 +42,13 @@
             "error": "Ein Fehler beim Upload!",
             "hint": "Erlaubt sind PDF und Bilder"
         }
+    },
+    "settings": {
+        "title": "Einstellungen",
+        "import": "Import von Daten",
+        "export": "Export von Daten",
+        "tags": "Tags",
+        "senders": "Absender",
+        "documents": "Dokumente"
     }
 }

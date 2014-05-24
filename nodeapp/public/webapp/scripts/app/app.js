@@ -24,6 +24,10 @@ mydmsApp
                     templateUrl: 'views/document.html',
                     controller: 'DocumentController'
                 })
+                .when('/settings', {
+                    templateUrl: 'views/settings.html',
+                    controller: 'SettingsController'
+                })
                 .otherwise({
                     templateUrl: 'views/main.html',
                     controller: 'MainController'
@@ -35,8 +39,8 @@ mydmsApp
                 suffix: '.json'
             });
 
-            //$translateProvider.preferredLanguage('en');
-            $translateProvider.determinePreferredLanguage();
+            $translateProvider.preferredLanguage('en');
+            //$translateProvider.determinePreferredLanguage();
 
             // remember language
             $translateProvider.useCookieStorage();
