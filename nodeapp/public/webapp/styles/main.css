@@ -108,7 +108,9 @@ ul.items li
   float: left;
   width: 20%;
   padding: 6px;
-  height: 180px;
+  height: 200px;
+  min-height: 200px;
+  min-width: 150px;
 
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -143,6 +145,7 @@ ul.items li
 .document .inner .masterdata {
   text-align: left;
   font-size: 10pt;
+  margin-top: 5px;
   margin-bottom: 2px;
 }
 
@@ -158,4 +161,41 @@ ul.items li
 
 .well {
   margin-bottom: 5px;
+}
+
+.alert-small {
+  margin-top: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  margin-bottom: 1px;
+}
+
+.label-huge {
+  font-size: 24pt;
+}
+
+.document-entry {
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.documnet-info {
+  text-align: left;
+  margin-bottom: 10px;
+  margin-top: 15px;
+  font-size: 10pt;
+}
+
+.document-name {
+  font-weight: bold;
+  text-align: center;
+  text-decoration: underline;
+  font-size: 10pt;
+}
+
+.tag {
+  float: left;
+  margin-bottom: 3px;
+  padding: 5px;
 }

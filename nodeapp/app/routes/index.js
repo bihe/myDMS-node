@@ -8,6 +8,7 @@ var baseController = require('../controllers/base');
 var tagsController = require('../controllers/tags');
 var senderController = require('../controllers/senders');
 var documentsController = require('../controllers/documents');
+var settingsController = require('../controllers/settings');
 var API = require('../config/version').api;
 
 // setup the routes and delegate logic to the controllers 
@@ -23,4 +24,5 @@ exports.setup = function(app) {
   app.post('/api/' + API + '/document/', documentsController.saveDocument);
   app.put('/api/' + API + '/document/', documentsController.saveDocument);
   app.post('/api/' + API + '/document/upload', documentsController.upload);
+  app.post('/api/' + API + '/settings', settingsController.save);
 };

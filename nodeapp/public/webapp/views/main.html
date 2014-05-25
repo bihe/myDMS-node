@@ -46,73 +46,73 @@
         <hr>
         
         <div class="row">
-        <div class="col-md-12">
-            <h1 translate="main.title">Welcome, to myDMS</h1>
+          <div class="col-md-12">
 
-            <div class="document" ng-repeat="doc in documents">
+              <div class="document" ng-repeat="doc in documents">
 
-              <div class="inner">
+                <div class="inner">
 
-                <div class="well well-sm">
-                  <a href="#/document/{{ doc._id }}">{{ doc.title }}</doc>
-                </div>
+                 
 
-                <div class="header visible-lg">
-                  
-                  <a class="label label-warning" href="#/document/{{ doc._id }}" id="{{ doc._id }}" title="{{ doc.fileName }}"> <i class="fa fa-file-pdf-o"></i> <span translate="global.file">file</span> </a>
-                  
-                  <div ng-if="doc.amount > 0" class="amount">
-                    <span>&euro; {{ doc.amount }}</span>
+                  <div class="header document-entry">
+                    
+                    <a class="label label-warning label-huge" href="#/document/{{ doc._id }}" id="{{ doc._id }}" title="{{ doc.fileName }}"> 
+                    <i class="fa fa-file-pdf-o"></i>
+                    </a>
+
+                    <div class="documnet-info">
+                      <span translate="">m</span>: <span class="bold">{{ doc.modified | date : 'dd.MM.yyyy' }}</span>
+                      &nbsp;
+                       <span ng-if="doc.amount > 0" class="amount" >
+                        (&euro; {{ doc.amount }})
+                      </span>
+                    </div>
+
+                   
+                    
                   </div>
 
-                  <div ng-if="doc.amount <= 0" class="amount">
-                    <span>-</span>
-                  </div>
-                
-                </div>
-
-                
-
-                <div class="masterdata">
-                  <div >
-                    <span ng-repeat="sender in doc.senders" >
-                      <a class="label label-info" href="#" id="{{ sender._id }}"> <i class="fa fa-tag"></i> {{ sender.name }}</a>
-                    </span>
-                  </div>
-                  <div >
-                    <span ng-repeat="tag in doc.tags" >
-                      <a class="label label-primary" href="#" id="{{ tag._id }}"> <i class="fa fa-tag"></i> {{ tag.name }}</a>
-                    </span>
+                  <div class="document-name">
+                    <a href="#/document/{{ doc._id }}">{{ doc.title }}</a>
                   </div>
 
-                </div>
+                  <div class="masterdata">
+                    <div >
+                      <span ng-repeat="sender in doc.senders" >
+                        <span class="label label-info"><i class="fa fa-truck"></i> {{ sender.name }}</span>
+                        
+                      </span>
+                    </div>
 
-                <div class="footer">
-                  <div class="pull-left">
-                    <span translate="">c</span>: <span class="bold">{{ doc.created | date : 'dd.MM.yyyy' }}</span>
+                    <div >
+                      <span ng-repeat="tag in doc.tags" >
+                        <span class="label label-primary"><i class="fa fa-tag"></i> {{ tag.name }}</span>
+                        
+                      </span>
+                    </div>
+
                   </div>
-                  <div class="pull-right">
-                    <span translate="">m</span>: <span class="bold">{{ doc.modified | date : 'dd.MM.yyyy' }}</span>
-                  </div>
+
                 </div>
 
               </div>
 
-            </div>
-
-        </div>
-    </div>
+          </div>
+      </div>
 
     </div>
 
     <div class="col-xs-6 col-md-4" id="sidebar" role="navigation">
-        <div class="well sidebar-nav well double-line" >
         
-        <span ng-repeat="tag in tags" >
-          <a class="label label-primary label-big" href="#" id="{{ tag._id }}"> <i class="fa fa-tag"></i> {{ tag.name }}</a>
-        </span>
-
-        </div><!--/.well -->
+          <div class="tag" ng-repeat="tag in tags">
+          
+          <a href="#" class="label label-primary label-big">
+            <i class="fa fa-tag"></i>
+            {{ tag.name }}
+          </a>
+        
+          </div>
+        
 
     </div><!--/span-->
 

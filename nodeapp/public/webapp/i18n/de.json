@@ -22,7 +22,8 @@
         "addentry": "Eintrag hinzufügen",
         "invalidForm": "Eingaben ungültig oder unvollständig, bitte erneut überprüfen!",
         "saveError": "Fehler beim Speichern!",
-        "file": "Datei"
+        "file": "Datei",
+        "saveSuccess": "Speichern erfolgreich!"
     },
     "main": {
         "title": "Willkommen, myDMS!",
@@ -49,6 +50,8 @@
         "export": "Export von Daten",
         "tags": "Tags",
         "senders": "Absender",
-        "documents": "Dokumente"
+        "documents": "Dokumente",
+        "json": "Gültiges, richtig formatiertes JSON als Eingabe!",
+        "save": "Die zu importierendend Daten wurden erfolgreich gespeichert!"
     }
 }

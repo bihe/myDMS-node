@@ -7,6 +7,19 @@
       <li ng-class="{'active': activeTab == 'tabExport'}" ><a href="#" ng-click="showTab('tabExport')">Export</a></li>
     </ul>
 
+    <div class="alert alert-danger" ng-if="saveSuccess === false" style="margin-top: 10px">
+      <span class="fa fa-flash form-control-feedback"></span>
+      <strong translate="global.saveError">Form Error!</strong>
+      <p>{{ saveErrorMessage }}</p>
+    </div>
+
+    <div class="alert alert-success" ng-if="saveSuccess && action" style="margin-top: 10px">
+      <span class="fa fa-check-circle-o form-control-feedback"></span>
+      <strong translate="global.saveSuccess">Success!</strong>
+      <span translate="settings.save">Seetings saved</span>
+      <p>{{ saveMessage }}</p>
+    </div>
+
     <!-- Tab panes -->
     <div style="padding: 5px">
       <div  ng-if="activeTab == 'tabImport'">
@@ -15,22 +28,35 @@
 
         <div class="panel panel-default">
           <div class="panel-heading" translate="settings.tags">Tags</div>
-          <div class="panel-body">
-            tags,tags,
+          <div class="panel-body" ng-class="{'has-error': rawTagsValid == false}">
+            
+            <textarea class="form-control" rows="3" id="tags" ng-model="input.rawTags" placeholder='["tag1","tag2"]' ></textarea>
+            <div class="alert alert-info alert-small" translate="settings.json">Use valid JSON format</div>
+
           </div>
         </div>
 
         <div class="panel panel-default">
           <div class="panel-heading" translate="settings.senders">Senders</div>
-          <div class="panel-body">
-            senders, senders, 
+          <div class="panel-body" ng-class="{'has-error': rawSendersValid == false}">
+            <textarea class="form-control" rows="3" id="senders" ng-model="input.rawSenders" placeholder='["sender1","sender2"]'></textarea>
+            <div class="alert alert-info alert-small" translate="settings.json">Use valid JSON format</div>
           </div>
         </div>
 
         <div class="panel panel-default">
           <div class="panel-heading" translate="settings.documents">Documents</div>
-          <div class="panel-body">
-            docs, docs, 
+          <div class="panel-body" ng-class="{'has-error': rawDocumentsValid == false}">
+            <textarea class="form-control" rows="5" id="documents" ng-model="input.rawDocuments" placeholder='[{
+  "fileName" : "2011_01_14/max_kindergarten_122010.pdf",
+  "title" : "Kindergarten Max Dez. 2010",
+  "previewLink" : null,
+  "created" : "2011-01-14",
+  "senders" : [ "Hallein" ],
+  "tags" : [ "Max" ],
+  "id" : "156kdv"
+}]'></textarea>
+            <div class="alert alert-info alert-small" translate="settings.json">Use valid JSON format</div>
           </div>
         </div>
 
@@ -53,7 +79,7 @@
     <button type="button" class="btn btn-primary btn-lg" translate="global.cancel" id="btnCancel" ng-click="cancel('/')">Cancel</button>
     </div>
     <div class="pull-right">
-    <button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave" >Save</button>
+    <button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave" ng-click="save()">Save</button>
     </div>
   </div>
 </div>
