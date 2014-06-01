@@ -93,8 +93,6 @@ describe('Services', function() {
           assert(senderList, 'No senders returned !' );
           assert.equal(senderList.length, 2, 'Number of senders');
 
-          console.log('\n' + senderList);
-
           assert.notEqual(senderList[0]._id, -1, 'Wrong id');
           assert.equal(senderList[1].name, 'testsender', 'Wrong name');
 
@@ -124,8 +122,6 @@ describe('Services', function() {
         dataService.createAndGetTags(objectList).then(function(tagList) {
           assert(tagList, 'No tags returned !' );
           assert.equal(tagList.length, 2, 'Number of tags');
-
-          console.log('\n' + tagList);
 
           assert.notEqual(tagList[0]._id, -1, 'Wrong id');
           assert.equal(tagList[1].name, 'testtag', 'Wrong name');

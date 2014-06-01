@@ -10,7 +10,6 @@
 
 var async = require('async');
 var q = require('q');
-var _ = require('lodash');
 var Sender = require('../models/sender');
 var Tag = require('../models/tag');
 
@@ -81,14 +80,17 @@ MasterDataService.prototype = {
     async.series([
       function( callback ) {
         try {
-          _.forEach( objectList, function( object, index ) {
+          // iterate over the objectlist , use feature of the async lib
+          // list is processed in order but asynchronously
+          async.eachSeries( objectList, function( object , cb ) {
+
             if( object._id <= -1 ) {
 
               // check if an entry with the given name already exists
               model.findOne({name: object.name}).exec(function ( err, s ) {
                 if( err ) {
                   // indicate an error
-                  return callback( err );
+                  return cb( err );
                 }
 
                 if(s) {
@@ -96,10 +98,7 @@ MasterDataService.prototype = {
                   // use this one
                   items.push( s );
 
-                  // if this is the last index we are done here
-                  if( index === (totalLenght - 1) ) {
-                    callback( null ); // done
-                  }
+                  cb( null ); // done                  
                 } else {
                   // aah: no entry found - create a new one
                   if( type === 'sender' ) {
@@ -111,19 +110,16 @@ MasterDataService.prototype = {
                   item.save(function( err, s ) {
                     if( err ) {
                       // indicate an error
-                      return callback( err );
+                      return cb( err );
                     }
 
                     if(!s) {
-                      return callback(new Error('Item not saved!'));
+                      return cb(new Error('Item not saved!'));
                     }
 
                     items.push( s );
-                    // if this is the last index we are done here
-                    if( index === (totalLenght - 1) ) {
-                      callback( null ); // done
-                    }
-
+                    
+                    cb( null ); // done
                   });
                 }
 
@@ -136,22 +132,25 @@ MasterDataService.prototype = {
               model.findById( object._id ).exec(function ( err, s ) {
                 if( err ) {
                   // indicate an error
-                  return callback( err );
+                  return cb( err );
                 }
 
                 if(!s) {
-                  return callback(new Error('No entry found'));
+                  return cb(new Error('No entry found'));
                 }
-
                 items.push( s );
-                // if this is the last index we are done here
-                if( index === (totalLenght - 1) ) {
-                  callback( null ); // done
-                }
+                
+                cb( null ); // done
               });
             }
+          }, function( err ) {
+            if( err) {
+              console.log(err);
+              return callback( err );  
+            }
+            callback( null ); // done
           });
-        } catch (err) {
+        } catch ( err ) {
           callback( err );
         }
       }
