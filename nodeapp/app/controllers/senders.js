@@ -11,7 +11,7 @@ var Sender = require('../models/sender.js');
  * url: /senders
  * called without any parameters just returns all of the available senders in 
  * alphabetical order
-* uses 'q' to search for senders
+ * uses 'q' to search for senders
  */
 exports.index = function( req, res, next ) {
   var filter = {}, filterValue;

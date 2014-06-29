@@ -22,7 +22,18 @@ var MasterDataService = require('../services/masterDataService');
  * called without any parameters just returns all of the available documents 
  */
 exports.index = function( req, res, next ) {
-  Document.find( { $query: { }, $orderby: { created : -1 } } )
+  var filter = {}, filterValue;
+  if(req.query.q) {
+    filterValue = req.query.q;
+    if(filterValue === '*') {
+      filterValue = '.*'; // search anything
+    }
+    filter.title = {};
+    filter.title.$regex = new RegExp(filterValue, 'i');
+  }
+  console.log('filter: ' + filter.title );
+
+  Document.find(filter).sort({created: -1})
   .populate('tags senders')
   .exec(function ( err, documents ) {
     if( err ) {
