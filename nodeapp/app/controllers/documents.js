@@ -22,16 +22,53 @@ var MasterDataService = require('../services/masterDataService');
  * called without any parameters just returns all of the available documents 
  */
 exports.index = function( req, res, next ) {
-  var filter = {}, filterValue;
-  if(req.query.q) {
-    filterValue = req.query.q;
+  var filter = {}, filterValue,
+      logicalAnd = [];
+  
+  if(req.query.t) {
+    filterValue = req.query.t;
     if(filterValue === '*') {
       filterValue = '.*'; // search anything
     }
+    filter = {};
     filter.title = {};
     filter.title.$regex = new RegExp(filterValue, 'i');
+    logicalAnd.push(filter);
   }
-  console.log('filter: ' + filter.title );
+  if(req.query.df) {
+    filterValue = req.query.df;
+    filter = {};
+    filter.created = {};
+    filter.created.$gte = utils.parseDate(filterValue, false);
+    logicalAnd.push(filter);
+  }
+  if(req.query.dt) {
+    filterValue = req.query.dt;
+    filter = {};
+    filter.created = {};
+    filter.created.$lte = utils.parseDate(filterValue, true);
+    logicalAnd.push(filter);
+  }
+  if(req.query.s) {
+    filterValue = req.query.s;
+    filter = {};
+    filter.senders = filterValue;
+    logicalAnd.push(filter);
+  }
+  if(req.query.tag) {
+    filterValue = req.query.tag;
+    filter = {};
+    filter.tags = filterValue;
+    logicalAnd.push(filter);
+  }
+
+  // combine the filters
+  if(logicalAnd.length > 1) {
+    filter = {};
+    filter.$and = logicalAnd;
+  }
+
+  logger.dump(filter);
 
   Document.find(filter).sort({created: -1})
   .populate('tags senders')

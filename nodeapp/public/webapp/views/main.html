@@ -6,7 +6,7 @@
             <div class="form-group col-md-2">
                 <div class="input-group"  >
                     <label class="sr-only" for="daterangeFrom">Date from</label>
-                    <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker">
+                    <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="search.dateFrom">
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
                 </span>
@@ -16,7 +16,7 @@
             <div class="form-group col-md-2">
                 <div class="input-group">
                     <label class="sr-only" for="daterangeTo">Date to</label>
-                    <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker">
+                    <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="search.dateTo">
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
                 </span>
@@ -25,8 +25,11 @@
             <div class="form-group" >
               <div>
                   <label class="sr-only" for="senders">Senders</label>
-                  <select class="form-control" id="senders">
+
+                  <select class="form-control" id="senders" ng-options="sender.name for sender in senders" ng-model="search.sender">
                       <option value="">Select a sender</option>
+
+
                   </select>
                 </div>
             </div>
@@ -61,7 +64,7 @@
                     </a>
 
                     <div class="documnet-info">
-                      <span translate="">m</span>: <span class="bold">{{ doc.modified | date : 'dd.MM.yyyy' }}</span>
+                      <span translate="">c</span>: <span class="bold">{{ doc.created | date : 'dd.MM.yyyy' }}</span>
                       &nbsp;
                        <span ng-if="doc.amount > 0" class="amount" >
                         (&euro; {{ doc.amount }})
@@ -106,7 +109,7 @@
         
           <div class="tag" ng-repeat="tag in tags">
           
-          <a href="#" class="label label-primary label-big">
+          <a href="#" class="label label-primary label-big" ng-click="filter(tag._id)">
             <i class="fa fa-tag"></i>
             {{ tag.name }}
           </a>
