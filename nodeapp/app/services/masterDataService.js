@@ -28,20 +28,26 @@ MasterDataService.prototype = {
    * handle existing and new Senders and return a
    * consolidated list
    *
+   * @param {array} objectList - the list to process
+   * @param {bool} allowEmptyList - should an empty list be allowed?
    * @return {deferred} a promise with a list of sender-objects
    */
-  createAndGetSenders: function( objectList ) {
-    return this.__handleSendersAndTags( objectList, 'sender' );
+  createAndGetSenders: function( objectList, allowEmptyList ) {
+    allowEmptyList = typeof allowEmptyList !== 'undefined' ? allowEmptyList : false;
+    return this.__handleSendersAndTags( objectList, 'sender', allowEmptyList );
   },
 
   /**
    * handle existing and new Tags and return a
    * consolidated list
    *
+  * @param {array} objectList - the list to process
+   * @param {bool} allowEmptyList - should an empty list be allowed?
    * @return {deferred} a promise with a list of sender-objects
    */
-  createAndGetTags: function( objectList ) {
-    return this.__handleSendersAndTags( objectList, 'tag' );
+  createAndGetTags: function( objectList, allowEmptyList ) {
+    allowEmptyList = typeof allowEmptyList !== 'undefined' ? allowEmptyList : false;
+    return this.__handleSendersAndTags( objectList, 'tag', allowEmptyList );
   },
 
 
@@ -51,10 +57,12 @@ MasterDataService.prototype = {
    * objects are verified, if they are correct.
    * return a list of resulting sender-objects
    *
+   * @param {array} objectList - the list to process
    * @param {String} type - which type to handle sender|tag
+   * @param {bool} allowEmptyList - should an empty list be allowed?
    * @return {deferred} a promise with a list of sender-objects
    */
-  __handleSendersAndTags: function( objectList, type ) {
+  __handleSendersAndTags: function( objectList, type, allowEmptyList ) {
     // the objectList needs to be iterated, check each entry
     // if it is available, if not create the object and put it into
     // a list, which is returned later
@@ -65,7 +73,12 @@ MasterDataService.prototype = {
         totalLenght = 0;
 
     if(!objectList || objectList.length === 0) {
-      return deferred.reject( new Error('empty list supplied!') );
+      if(allowEmptyList === false) {
+        deferred.reject( new Error('empty list supplied!') );
+        return deferred.promise;
+      } else {
+        objectList = [];
+      }
     }
 
     totalLenght = objectList.length;
@@ -82,74 +95,78 @@ MasterDataService.prototype = {
         try {
           // iterate over the objectlist , use feature of the async lib
           // list is processed in order but asynchronously
-          async.eachSeries( objectList, function( object , cb ) {
+          if(objectList.length > 0) {
+            async.eachSeries( objectList, function( object , cb ) {
 
-            if( object._id <= -1 ) {
+              if( object._id <= -1 ) {
 
-              // check if an entry with the given name already exists
-              model.findOne({name: object.name}).exec(function ( err, s ) {
-                if( err ) {
-                  // indicate an error
-                  return cb( err );
-                }
-
-                if(s) {
-                  // found one entry with the given name
-                  // use this one
-                  items.push( s );
-
-                  cb( null ); // done                  
-                } else {
-                  // aah: no entry found - create a new one
-                  if( type === 'sender' ) {
-                    item = new Sender( { name: object.name } );
-                  } else if( type === 'tag') {
-                    item = new Tag( { name: object.name } );
+                // check if an entry with the given name already exists
+                model.findOne({name: object.name}).exec(function ( err, s ) {
+                  if( err ) {
+                    // indicate an error
+                    return cb( err );
                   }
-                  
-                  item.save(function( err, s ) {
-                    if( err ) {
-                      // indicate an error
-                      return cb( err );
-                    }
 
-                    if(!s) {
-                      return cb(new Error('Item not saved!'));
-                    }
-
+                  if(s) {
+                    // found one entry with the given name
+                    // use this one
                     items.push( s );
+
+                    cb( null ); // done                  
+                  } else {
+                    // aah: no entry found - create a new one
+                    if( type === 'sender' ) {
+                      item = new Sender( { name: object.name } );
+                    } else if( type === 'tag') {
+                      item = new Tag( { name: object.name } );
+                    }
                     
-                    cb( null ); // done
-                  });
-                }
+                    item.save(function( err, s ) {
+                      if( err ) {
+                        // indicate an error
+                        return cb( err );
+                      }
 
-              });
+                      if(!s) {
+                        return cb(new Error('Item not saved!'));
+                      }
 
-            } else {
+                      items.push( s );
+                      
+                      cb( null ); // done
+                    });
+                  }
 
-              // existing entries supplied by UI 
-              // I am not sure of that - check again if those entries are real!
-              model.findById( object._id ).exec(function ( err, s ) {
-                if( err ) {
-                  // indicate an error
-                  return cb( err );
-                }
+                });
 
-                if(!s) {
-                  return cb(new Error('No entry found'));
-                }
-                items.push( s );
-                
-                cb( null ); // done
-              });
-            }
-          }, function( err ) {
-            if( err) {
-              console.log(err);
-              return callback( err );  
-            }
-            callback( null ); // done
-          });
+              } else {
+
+                // existing entries supplied by UI 
+                // I am not sure of that - check again if those entries are real!
+                model.findById( object._id ).exec(function ( err, s ) {
+                  if( err ) {
+                    // indicate an error
+                    return cb( err );
+                  }
+
+                  if(!s) {
+                    return cb(new Error('No entry found'));
+                  }
+                  items.push( s );
+                  
+                  cb( null ); // done
+                });
+              }
+            }, function( err ) {
+              if( err) {
+                console.log(err);
+                return callback( err );  
+              }
+              callback( null ); // done
+            });
+          } else {
+            callback( null );
+          }
         } catch ( err ) {
           callback( err );
         }

@@ -25,7 +25,7 @@ function __processDocument(document, callback) {
   dataService.createAndGetTags(document.tags, true).then(function(list) {
     tagList = list;
 
-    return dataService.createAndGetSenders(document.senders);
+    return dataService.createAndGetSenders(document.senders, true);
   })
   .then(function(list) {
     senderList = list;
@@ -130,8 +130,6 @@ exports.save = function( req, res, next ) {
             document.tags = tags;
             document.senders = senders;
 
-            logger.dump(document);
-
             __processDocument(document, function(err, doc) {
               if(err) {
                 console.log('---- CALL ERROR CALLBACK -----');
@@ -140,6 +138,9 @@ exports.save = function( req, res, next ) {
               if(!doc) {
                 return cb(new Error('Document is null!'));
               }
+
+              logger.dump(doc);
+
               itemCount = itemCount + 1;
               cb();
             });
