@@ -91,6 +91,7 @@ describe('Services', function() {
         
         dataService.createAndGetSenders(objectList).then(function(senderList) {
           assert(senderList, 'No senders returned !' );
+          console.log(senderList);
           assert.equal(senderList.length, 2, 'Number of senders');
 
           assert.notEqual(senderList[0]._id, -1, 'Wrong id');

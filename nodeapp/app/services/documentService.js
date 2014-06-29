@@ -11,6 +11,7 @@
 var async = require('async');
 var q = require('q');
 var Document = require('../models/document');
+var _ = require('lodash');
 
 /**
  * @constructor
@@ -24,6 +25,17 @@ function DocumentService() {
 DocumentService.prototype = {
 
   /**
+   * parse a date in yyyy-mm-dd format
+   *
+   * @return {Date} the parsed date
+   */
+  _parseDate: function (input) {
+    var parts = input.split('-');
+    // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
+    return new Date(parts[0], parts[1]-1, parts[2]); // Note: months are 0-based
+  },
+
+  /**
    * save the document or create a new one, depending on the 
    * supplied id
    *
@@ -31,14 +43,14 @@ DocumentService.prototype = {
    */
   save: function(document) {
     var deferred = q.defer(),
-        doc;
+        doc, self;
 
     // again use a async approach
     // 1) check if new one -- create a document
     //  or fetch a document
     // 2) update the object with the supplied data
     //  and save the object again
-    
+    self = this;
     async.series([
       // 1) check the supplied documentId
       function(callback) {
@@ -75,6 +87,16 @@ DocumentService.prototype = {
           doc.amount = document.amount;
           doc.senders = document.senders;
           doc.tags = document.tags;
+
+          if(document.created && _.isString(document.created)) {
+            doc.created = self._parseDate(document.created);
+            // special case, when a created string is passed on
+            // use this also as a modified date
+            doc.modified = doc.created;
+          }
+          if(document.alternativeId) {
+            doc.alternativeId = document.alternativeId;
+          }
 
           doc.save(function(err, d) {
             if(err) {
