@@ -29,7 +29,10 @@
         "title": "Welcome, myDMS!",
         "subtitle": "This is your homepage",
         "search": "Search!",
-        "addDoc": "Add Document"
+        "addDoc": "Add Document",
+        "searchheader": "Filter the search results",
+        "selectsender": "Select a sender",
+        "selecttag": "Select a tag"
     },
     "document": {
         "new": "Add a new document",

@@ -10,7 +10,7 @@ var http = require('http');
 var path = require('path');
 var mongoose = require('mongoose');
 var winston = require('winston');
-var FileStore = require('connect-session-file');
+//var FileStore = require('connect-session-file');
 var routes = require('./app/routes');
 var config = require('./app/config/application');
 var database = require('./app/config/database');
@@ -61,10 +61,10 @@ app.configure(function(){
   app.use(express.cookieParser(config.application.secret));
   app.use(express.session());
 
-  app.use(express.session({
-    secret: config.application.secret,
-    store: new FileStore({path: path.join(__dirname, 'session'), printDebug: false, useAsync: true})
-  }));
+  // app.use(express.session({
+  //   secret: config.application.secret,
+  //   store: new FileStore({path: path.join(__dirname, 'session'), printDebug: false, useAsync: true})
+  // }));
 
   app.use(app.router);
 

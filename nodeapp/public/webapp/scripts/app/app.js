@@ -8,7 +8,8 @@ var mydmsApp = angular.module('mydmsApp', [
     'ngCookies',
     'pascalprecht.translate',           // translate angular elements
     'angularFileUpload',                // handel file-upload the angular way
-    'chieffancypants.loadingBar'        // loading indicator for xhr requests
+    'chieffancypants.loadingBar',       // loading indicator for xhr requests
+    'infinite-scroll'                   // infinte scroll plugin
   ]);
 
 mydmsApp

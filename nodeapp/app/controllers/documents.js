@@ -23,8 +23,16 @@ var MasterDataService = require('../services/masterDataService');
  */
 exports.index = function( req, res, next ) {
   var filter = {}, filterValue,
+      skip = 0, limit = 20,
+      parts = [],
       logicalAnd = [];
   
+  if(req.query.skip) {
+    skip = parseInt(req.query.skip, 10);
+  }
+  if(req.query.limit) {
+    limit = parseInt(req.query.limit, 10);
+  }
   if(req.query.t) {
     filterValue = req.query.t;
     if(filterValue === '*') {
@@ -49,17 +57,20 @@ exports.index = function( req, res, next ) {
     filter.created.$lte = utils.parseDate(filterValue, true);
     logicalAnd.push(filter);
   }
-  if(req.query.s) {
-    filterValue = req.query.s;
+  if(req.query.sender) {
+    filterValue = req.query.sender;
     filter = {};
     filter.senders = filterValue;
     logicalAnd.push(filter);
   }
   if(req.query.tag) {
     filterValue = req.query.tag;
-    filter = {};
-    filter.tags = filterValue;
-    logicalAnd.push(filter);
+    parts = filterValue.split(',');
+    for(var i=0;i < parts.length;i++) {
+      filter = {};
+      filter.tags = parts[i];
+      logicalAnd.push(filter);
+    }
   }
 
   // combine the filters
@@ -71,6 +82,8 @@ exports.index = function( req, res, next ) {
   logger.dump(filter);
 
   Document.find(filter).sort({created: -1})
+  .skip(skip)
+  .limit(limit)
   .populate('tags senders')
   .exec(function ( err, documents ) {
     if( err ) {

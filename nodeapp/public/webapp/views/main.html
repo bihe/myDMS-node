@@ -1,122 +1,106 @@
 
 <div class="row" ng-cloak>
-    <div class="col-xs-12 col-sm-6 col-md-8">
-        
-        <form class="form-inline" role="form" id="filterForm">
-            <div class="form-group col-md-2">
-                <div class="input-group"  >
-                    <label class="sr-only" for="daterangeFrom">Date from</label>
-                    <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="search.dateFrom">
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-                </div>
+    <div class="col-xs-12 col-sm-12 col-md-12">
 
-            </div>
-            <div class="form-group col-md-2">
-                <div class="input-group">
-                    <label class="sr-only" for="daterangeTo">Date to</label>
-                    <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="search.dateTo">
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-                </div>
-            </div>
-            <div class="form-group" >
-              <div>
-                  <label class="sr-only" for="senders">Senders</label>
-
-                  <select class="form-control" id="senders" ng-options="sender.name for sender in senders" ng-model="search.sender">
-                      <option value="">Select a sender</option>
-
-
-                  </select>
-                </div>
-            </div>
-			<div class="form-group" >
-              <div>
-				<label class="sr-only" for="search">Seach</label>
-				<input type="text" class="form-control" placeholder="Search" id="search" ng-model="search.term">
-				<button type="button" class="btn btn-success btn-sm" ng-click="search()">
-	                <span class="glyphicon glyphicon-search"></span>
-	                <span translate="main.search">Search</span>
-	            </button>
+        <div class="panel panel-primary">
+          <div class="panel-heading" translate="main.searchheader">Panel heading without title</div>
+          <div class="panel-body">
+            
+           <form class="form-inline" role="form" id="filterForm">
+              <div class="form-group">  
+                <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="search.dateFrom">
               </div>
-            </div>
+              <div class="form-group">
+                <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="search.dateTo">  
+              </div>
+              <div class="form-group" >
+                  <select class="form-control" id="senders" ng-options="sender.name for sender in senders" ng-model="search.sender">
+                      <option value="" translate="main.selectsender">Select a sender</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                <div style="min-width: 200px">
+                <input type="text" id="tags" selectize 
+                  data-remote="/api/1.0/tags/?q="
+                  label="<span class='label label-primary label-big label-tag' data-text={name}><i class='fa fa-tag'></i> {name}</span>"
+                  selected-object="selectedTags"
+                  placeholder="Tags"
+                  />
+                </div>
+              </div>
+              <div class="form-group" >
+                <input type="text" class="form-control" placeholder="Search" id="search" ng-model="search.term">
+              </div>
+              <div class="form-group">
+                <button type="button" class="btn btn-success btn-sm" ng-click="search()">
+                  <span class="glyphicon glyphicon-search"></span>
+                  <span translate="main.search">Search</span>
+                </button>
+              </div>
            
-        </form>
+            </form>
 
-        <hr>
-        
+          </div>
+        </div>
+    
         <div class="row">
           <div class="col-md-12">
 
-              <div class="document" ng-repeat="doc in documents">
+              <!-- infinite scroll plugin area -->
+              <div infinite-scroll="moreResults()" infinite-scroll-distance="1">
+                <div class="document" ng-repeat="doc in documents">
 
-                <div class="inner">
+                  <div class="inner">
 
-                 
+                    <div class="header document-entry">
+                      
+                      <a class="label label-warning label-huge" href="#/document/{{ doc._id }}" id="{{ doc._id }}" title="{{ doc.fileName }}"> 
+                      <i class="fa fa-file-pdf-o"></i>
+                      </a>
 
-                  <div class="header document-entry">
-                    
-                    <a class="label label-warning label-huge" href="#/document/{{ doc._id }}" id="{{ doc._id }}" title="{{ doc.fileName }}"> 
-                    <i class="fa fa-file-pdf-o"></i>
-                    </a>
+                      <div class="documnet-info">
+                        <span translate="">c</span>: <span class="bold">{{ doc.created | date : 'dd.MM.yyyy' }}</span>
+                        &nbsp;
+                         <span ng-if="doc.amount > 0" class="amount" >
+                          (&euro; {{ doc.amount }})
+                        </span>
+                      </div>
 
-                    <div class="documnet-info">
-                      <span translate="">c</span>: <span class="bold">{{ doc.created | date : 'dd.MM.yyyy' }}</span>
-                      &nbsp;
-                       <span ng-if="doc.amount > 0" class="amount" >
-                        (&euro; {{ doc.amount }})
-                      </span>
+                     
+                      
                     </div>
 
-                   
-                    
-                  </div>
-
-                  <div class="document-name">
-                    <a href="#/document/{{ doc._id }}">{{ doc.title }}</a>
-                  </div>
-
-                  <div class="masterdata">
-                    <div >
-                      <span ng-repeat="sender in doc.senders" >
-                        <span class="label label-info"><i class="fa fa-truck"></i> {{ sender.name }}</span>
-                        
-                      </span>
+                    <div class="document-name">
+                      <a href="#/document/{{ doc._id }}">{{ doc.title }}</a>
                     </div>
 
-                    <div >
-                      <span ng-repeat="tag in doc.tags" >
-                        <span class="label label-primary"><i class="fa fa-tag"></i> {{ tag.name }}</span>
-                        
-                      </span>
+                    <div class="masterdata">
+                      <div >
+                        <span ng-repeat="sender in doc.senders" >
+                          <span class="label label-info"><i class="fa fa-truck"></i> {{ sender.name }}</span>
+                          
+                        </span>
+                      </div>
+
+                      <div >
+                        <span ng-repeat="tag in doc.tags" >
+                          <span class="label label-primary"><i class="fa fa-tag"></i> {{ tag.name }}</span>
+                          
+                        </span>
+                      </div>
+
                     </div>
 
                   </div>
 
                 </div>
-
+              
               </div>
+              <!-- end of infinte scroll plugin -->
 
           </div>
       </div>
 
     </div>
-
-    <div class="col-xs-6 col-md-4" id="sidebar" role="navigation">
-        
-          <div class="tag" ng-repeat="tag in tags">
-          
-          <a href="#" class="label label-primary label-big" ng-click="filter(tag._id)">
-            <i class="fa fa-tag"></i>
-            {{ tag.name }}
-          </a>
-        
-          </div>
-        
-
-    </div><!--/span-->
 
 </div><!--/row-->

@@ -29,7 +29,10 @@
         "title": "Willkommen, myDMS!",
         "subtitle": "Dies ist Ihre Hauptseite",
         "search": "Suche!",
-        "addDoc": "Neues Dokument"
+        "addDoc": "Neues Dokument",
+        "searchheader": "Filter die Suchergebnisse",
+        "selectsender": "Absender auswählen",
+        "selecttag": "Tag auswählen"
     },
     "document": {
         "new": "Neues Dokument hinzufügen",

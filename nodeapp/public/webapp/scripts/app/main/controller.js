@@ -8,7 +8,13 @@ mydmsApp.controller('MainController', ['$scope', '$http', function ($scope, $htt
   // ------------------------------------------------------------------------
   // initialisation
   // ------------------------------------------------------------------------
+  var maxResults = 20;
+
   $scope.search = {};
+  $scope.page = 0;
+  $scope.busy = false;
+
+  $scope.selectedTags = [];
 
   // ------------------------------------------------------------------------
   // startup - fetch remote data
@@ -35,20 +41,34 @@ mydmsApp.controller('MainController', ['$scope', '$http', function ($scope, $htt
     alert('Error: ' + data + '\nHTTP-Status: ' + status);
   });
 
-
   $scope.selectedSenders = [];
 
   // ------------------------------------------------------------------------
   // actions
   // ------------------------------------------------------------------------
 
-  $scope.filter = function(tagId) {
-    $scope.search.tagId = tagId;
-    $scope.search();
-  }
-
-  // navigate back to main screen
+  // perform a search 
   $scope.search = function() {
+    $scope.search.skip = 0;
+    $scope.page = 0;
+    $scope.documents = [];
+    $scope._backendSearch($scope.page, $scope.search.skip);
+  };
+
+  // fetch more results to show
+  $scope.moreResults = function() {
+    if ($scope.busy) {
+      return;
+    }
+    $scope.busy = true;
+
+    console.log('fetching more results for page ' + $scope.page);
+    $scope.search.skip = $scope.page * maxResults;
+    $scope._backendSearch($scope.page, $scope.search.skip);
+  };
+
+  // internal logic - query the backend system
+  $scope._backendSearch = function(page, skip) {
 
     var query = '';
     if($scope.search.term) {
@@ -61,18 +81,37 @@ mydmsApp.controller('MainController', ['$scope', '$http', function ($scope, $htt
       query += '&dt=' + $scope.search.dateTo;
     }
     if($scope.search.sender) {
-      query += '&s=' + $scope.search.sender._id;
+      query += '&sender=' + $scope.search.sender._id;
     }
-    if($scope.search.tagId) {
-      query += '&tag=' + $scope.search.tagId;
+    if($scope.selectedTags) {
+      var idlist = '';
+      if($scope.selectedTags.length == 1) {
+        idlist = $scope.selectedTags[0]._id;
+      } else {
+        for (var i = 0; i < $scope.selectedTags.length; i++) {
+          if(i > 0) {
+            idlist += ',';
+          }
+          idlist += $scope.selectedTags[i]._id;
+        }
+      }
+      query += '&tag=' + idlist;
     }
+    query += '&limit=' + maxResults;
+    query += '&skip=' + skip;
 
     $http.get('./api/1.0/documents?a=b' + query).success( function(data) {
-      $scope.documents = data;
+      if(data && data.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+          $scope.documents.push(data[i]);
+        }
+        $scope.page = page + 1;
+        $scope.busy = false; // operation done
+      }
     }).error( function(data, status, headers) {
+      $scope.busy = false; // also done
       alert('Error: ' + data + '\nHTTP-Status: ' + status);
     });
   };
-
 
 }]);
