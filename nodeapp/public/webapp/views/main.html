@@ -8,31 +8,26 @@
             
            <form class="form-inline" role="form" id="filterForm">
               <div class="form-group">  
-                <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="search.dateFrom">
+                <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="search.dateFrom" ng-change="doSearch()">
               </div>
               <div class="form-group">
-                <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="search.dateTo">  
+                <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="search.dateTo" ng-change="doSearch()">  
               </div>
               <div class="form-group" >
-                  <select class="form-control" id="senders" ng-options="sender.name for sender in senders" ng-model="search.sender">
+                  <select class="form-control" id="senders" ng-options="sender.name for sender in senders" ng-model="search.sender" ng-change="doSearch()">
                       <option value="" translate="main.selectsender">Select a sender</option>
                   </select>
               </div>
-              <div class="form-group">
-                <div style="min-width: 200px">
-                <input type="text" id="tags" selectize 
-                  data-remote="/api/1.0/tags/?q="
-                  label="<span class='label label-primary label-big label-tag' data-text={name}><i class='fa fa-tag'></i> {name}</span>"
-                  selected-object="selectedTags"
-                  placeholder="Tags"
-                  />
-                </div>
+              <div class="form-group" >
+                  <select class="form-control" id="tags" ng-options="tag.name for tag in tags" ng-model="search.tag" ng-change="doSearch()">
+                      <option value="" translate="main.selecttag">Select a tag</option>
+                  </select>
               </div>
               <div class="form-group" >
-                <input type="text" class="form-control" placeholder="Search" id="search" ng-model="search.term">
+                <input type="text" class="form-control" placeholder="Search" id="search" ng-model="search.term" ng-change="doSearch()">
               </div>
               <div class="form-group">
-                <button type="button" class="btn btn-success btn-sm" ng-click="search()">
+                <button type="button" class="btn btn-success btn-sm" ng-click="doSearch()">
                   <span class="glyphicon glyphicon-search"></span>
                   <span translate="main.search">Search</span>
                 </button>
@@ -47,14 +42,14 @@
           <div class="col-md-12">
 
               <!-- infinite scroll plugin area -->
-              <div infinite-scroll="moreResults()" infinite-scroll-distance="1">
+              <div infinite-scroll="moreResults()" infinite-scroll-distance="0" infinite-scroll-immediate-check="false">
                 <div class="document" ng-repeat="doc in documents">
 
                   <div class="inner">
 
                     <div class="header document-entry">
                       
-                      <a class="label label-warning label-huge" href="#/document/{{ doc._id }}" id="{{ doc._id }}" title="{{ doc.fileName }}"> 
+                      <a class="label label-warning label-huge" ng-click="editDocument(doc._id)" id="{{ doc._id }}" title="{{ doc.fileName }}"> 
                       <i class="fa fa-file-pdf-o"></i>
                       </a>
 
@@ -71,7 +66,7 @@
                     </div>
 
                     <div class="document-name">
-                      <a href="#/document/{{ doc._id }}">{{ doc.title }}</a>
+                      <a href="#/document/{{ doc._id }}" id="{{ doc._id }}">{{ doc.title }}</a>
                     </div>
 
                     <div class="masterdata">

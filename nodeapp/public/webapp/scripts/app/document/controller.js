@@ -5,7 +5,7 @@
 /*
  * handle the documents
  */
-mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$routeParams', '_', '$upload', function ($scope, $http, $location, $routeParams, _, $upload) {
+mydmsApp.controller('DocumentController', ['$scope', 'backendService', '$location', '$routeParams', '_', '$upload', function ($scope, backendService, $location, $routeParams, _, $upload) {
   
   // ------------------------------------------------------------------------
   // initialisation
@@ -33,14 +33,14 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
   // ------------------------------------------------------------------------  
 
   // retrieve the senders on load
-  $http.get('./api/1.0/senders').success(function(data) {
-    $scope.senders = data;
-  }).error( function( data, status, headers ) {
-    alert('Error: ' + data + '\nHTTP-Status: ' + status);
-  });
+  // backendService.getSenders().success(function(data) {
+  //   $scope.senders = data;
+  // }).error( function( data, status, headers ) {
+  //   alert('Error: ' + data + '\nHTTP-Status: ' + status);
+  // });
 
   if($scope.document._id !== -1) {
-    $http.get('./api/1.0/document/' + $scope.document._id).success(function(data) {
+    backendService.getDocumentById($scope.document._id).success(function(data) {
 
       // got the data - preset the selection
       $scope.document.title = data.title;
@@ -95,12 +95,7 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
     if($scope.document._id !== -1) {
       // PUT
       // update existing entry
-      $http({
-        url: './api/1.0/document/',
-        method: 'PUT',
-        data: postData,
-        headers: {'Content-Type': 'application/json'}
-      }).success(function (data, status, headers, config) {
+      backendService.updateDocument(postData).success(function (data, status, headers, config) {
         $scope.saveSuccess = true;
 
         $location.path('/');
@@ -111,12 +106,7 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
     } else {
       // POST
       // create a new entry
-      $http({
-        url: './api/1.0/document/',
-        method: 'POST',
-        data: postData,
-        headers: {'Content-Type': 'application/json'}
-      }).success(function (data, status, headers, config) {
+      backendService.createDocument(postData).success(function (data, status, headers, config) {
         $scope.saveSuccess = true;
 
         $location.path('/');
@@ -198,7 +188,6 @@ mydmsApp.controller('DocumentController', ['$scope', '$http', '$location', '$rou
 
       }).error(function(data, status, headers, config) {
         console.log(data);
-
         $scope.uploadError = data;
       });
       //.then(success, error, progress); 

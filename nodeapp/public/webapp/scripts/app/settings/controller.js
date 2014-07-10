@@ -5,7 +5,7 @@
 /*
  * handle settings
  */
-mydmsApp.controller('SettingsController', ['$scope', '$http', '$location', '$routeParams', '_', function ($scope, $http, $location, $routeParams, _) {
+mydmsApp.controller('SettingsController', ['$scope', 'backendService', '$location', '$routeParams', '_', function ($scope, backendService, $location, $routeParams, _) {
 
   // ------------------------------------------------------------------------
   // scope variables
@@ -71,12 +71,7 @@ mydmsApp.controller('SettingsController', ['$scope', '$http', '$location', '$rou
 
     // POST
     // create a new entry
-    $http({
-      url: './api/1.0/settings/',
-      method: 'POST',
-      data: postData,
-      headers: {'Content-Type': 'application/json'}
-    }).success(function (data, status, headers, config) {
+    backendService.processSettings(postData).success(function (data, status, headers, config) {
       $scope.saveSuccess = true;
       $scope.saveMessage = data;
       $scope.input = {}; // clear input

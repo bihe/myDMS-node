@@ -3,7 +3,7 @@
 /*
  * handel the main screen
  */
-mydmsApp.controller('MainController', ['$scope', '$http', function ($scope, $http) {
+mydmsApp.controller('MainController', ['$scope', '$rootScope', '$location', 'backendService', 'stateService', '_', function ($scope, $rootScope, $location, backendService, stateService, _) {
 
   // ------------------------------------------------------------------------
   // initialisation
@@ -11,44 +11,37 @@ mydmsApp.controller('MainController', ['$scope', '$http', function ($scope, $htt
   var maxResults = 20;
 
   $scope.search = {};
+  $scope.documents = [];
+  $scope.senders = [];
+  $scope.tags = [];
   $scope.page = 0;
   $scope.busy = false;
 
-  $scope.selectedTags = [];
-
-  // ------------------------------------------------------------------------
-  // startup - fetch remote data
-  // ------------------------------------------------------------------------  
-
-  // retrieve the documents on load
-  $http.get('./api/1.0/documents').success( function(data) {
-    $scope.documents = data;
-  }).error( function(data, status, headers) {
-    alert('Error: ' + data + '\nHTTP-Status: ' + status);
+  // ------------------------------------------------------
+  // events
+  // ------------------------------------------------------
+  
+  /**
+   * perform a search
+   */
+  var unbind = $rootScope.$on('::doSearch::', function(args){
+    $scope.doSearch();
+     args.stopPropagation(); // ok - done here
   });
+  $scope.$on('$destroy', unbind);
 
-  // retrieve the tags on load
-  $http.get('./api/1.0/tags').success( function(data) {
-    $scope.tags = data;
-  }).error( function(data, status, headers) {
-    alert('Error: ' + data + '\nHTTP-Status: ' + status);
-  });
-
-  // retrieve the senders on load
-  $http.get('./api/1.0/senders').success( function(data) {
-    $scope.senders = data;
-  }).error( function(data, status, headers) {
-    alert('Error: ' + data + '\nHTTP-Status: ' + status);
-  });
-
-  $scope.selectedSenders = [];
 
   // ------------------------------------------------------------------------
   // actions
   // ------------------------------------------------------------------------
 
+  $scope.editDocument = function(id) {
+    stateService.set($scope);
+    $location.path('/document/' + id);
+  };
+
   // perform a search 
-  $scope.search = function() {
+  $scope.doSearch = function() {
     $scope.search.skip = 0;
     $scope.page = 0;
     $scope.documents = [];
@@ -69,38 +62,9 @@ mydmsApp.controller('MainController', ['$scope', '$http', function ($scope, $htt
 
   // internal logic - query the backend system
   $scope._backendSearch = function(page, skip) {
-
-    var query = '';
-    if($scope.search.term) {
-      query += '&t=' + $scope.search.term;
-    }
-    if($scope.search.dateFrom) {
-      query += '&df=' + $scope.search.dateFrom;
-    }
-    if($scope.search.dateTo) {
-      query += '&dt=' + $scope.search.dateTo;
-    }
-    if($scope.search.sender) {
-      query += '&sender=' + $scope.search.sender._id;
-    }
-    if($scope.selectedTags) {
-      var idlist = '';
-      if($scope.selectedTags.length == 1) {
-        idlist = $scope.selectedTags[0]._id;
-      } else {
-        for (var i = 0; i < $scope.selectedTags.length; i++) {
-          if(i > 0) {
-            idlist += ',';
-          }
-          idlist += $scope.selectedTags[i]._id;
-        }
-      }
-      query += '&tag=' + idlist;
-    }
-    query += '&limit=' + maxResults;
-    query += '&skip=' + skip;
-
-    $http.get('./api/1.0/documents?a=b' + query).success( function(data) {
+    $scope.busy = true;
+    backendService.searchDocuments($scope.search, $scope.selectedTags,
+      page, skip, maxResults).success( function(data) {
       if(data && data.length > 0) {
         for (var i = 0; i < data.length; i++) {
           $scope.documents.push(data[i]);
@@ -113,5 +77,81 @@ mydmsApp.controller('MainController', ['$scope', '$http', function ($scope, $htt
       alert('Error: ' + data + '\nHTTP-Status: ' + status);
     });
   };
+
+
+  // ------------------------------------------------------------------------
+  // startup - fetch remote data
+  // ------------------------------------------------------------------------  
+
+  if(stateService.getInit() === true) {
+    var state = stateService.get(),
+        index = -1;
+
+    // retrieve the senders on load
+    backendService.getSenders().success( function(data) {
+      $scope.senders = data;
+
+      // retrieve the tags on load
+      backendService.getTags().success( function(data) {
+        $scope.tags = data;
+
+        $scope.search = state.search;
+
+        // find the selected entry of senders
+        if($scope.search.sender) {
+          index = _.findIndex($scope.senders, function(sender) {
+            return sender._id == $scope.search.sender._id;
+          });
+          $scope.search.sender = $scope.senders[index];
+        }
+
+        // find the selected entry of tags
+        if($scope.search.tag) {
+          index = _.findIndex($scope.tags, function(tag) {
+            return tag._id == $scope.search.tag._id;
+          });
+          $scope.search.tag = $scope.tags[index];
+        }
+
+        $scope.documents = [];
+        $scope.page = state.page;
+        $scope.busy = false;
+        $rootScope.$emit('::doSearch::');
+
+      }).error( function(data, status, headers) {
+        alert('Error: ' + data + '\nHTTP-Status: ' + status);
+      });
+
+    }).error( function(data, status, headers) {
+      alert('Error: ' + data + '\nHTTP-Status: ' + status);
+    });
+
+  } else {
+  
+    // retrieve the documents on load
+    $scope.busy = true;
+    backendService.getDocuments().success( function(data) {
+      $scope.documents = data;
+      $scope.busy = false;
+    }).error( function(data, status, headers) {
+      alert('Error: ' + data + '\nHTTP-Status: ' + status);
+    });
+
+    // retrieve the senders on load
+    backendService.getSenders().success( function(data) {
+      $scope.senders = data;
+    }).error( function(data, status, headers) {
+      alert('Error: ' + data + '\nHTTP-Status: ' + status);
+    });
+
+    // retrieve the tags on load
+    backendService.getTags().success( function(data) {
+      $scope.tags = data;
+    }).error( function(data, status, headers) {
+      alert('Error: ' + data + '\nHTTP-Status: ' + status);
+    });
+  }
+
+ 
 
 }]);
