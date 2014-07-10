@@ -69,9 +69,9 @@ app.configure(function(){
   app.use(app.router);
 
   if(!env || env === 'development') {
-    app.use(express.static(path.join(__dirname, 'public/webapp')));
+    app.use(express.static(path.join(__dirname, 'public/app')));
   } else if(env === 'production') {
-    app.use(express.static(path.join(__dirname, 'public/webapp/dist')));
+    app.use(express.static(path.join(__dirname, 'public/app/dist')));
   }
 });
 
