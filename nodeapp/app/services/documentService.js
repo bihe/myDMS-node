@@ -11,8 +11,7 @@
 var async = require('async');
 var q = require('q');
 var Document = require('../models/document');
-var _ = require('lodash');
-var u = require('../util/utils');
+//var u = require('../util/utils');
 
 /**
  * @constructor
@@ -77,13 +76,12 @@ DocumentService.prototype = {
           doc.amount = document.amount;
           doc.senders = document.senders;
           doc.tags = document.tags;
+          //doc.modified = new Date();
 
-          if(document.created && _.isString(document.created)) {
-            doc.created = u.parseDate(document.created);
-            // special case, when a created string is passed on
-            // use this also as a modified date
-            doc.modified = doc.created;
-          }
+          // if(document.created && _.isString(document.created)) {
+          //   doc.created = u.parseDate(document.created);
+          // }
+
           if(document.alternativeId) {
             doc.alternativeId = document.alternativeId;
           }

@@ -162,16 +162,16 @@ exports.save = function( req, res, next ) {
       // I am done here
       if(error) {
         console.log(error);
-        return res.send('Cannot save settings! ' + error, 500);
+        return res.status(500).send('Cannot save settings! ' + error);
       }
-      return res.send('Settings saved! ' + result + ' entries processed!', 200);
+      return res.status(200).send('Settings saved! ' + result + ' entries processed!');
     });
 
   } catch(err) {
     console.log('Got an error: ' + err);
     console.log(err.stack);
 
-    return res.send('Cannot save settings! ' + err, 500);
+    return res.status(500).send('Cannot save settings! ' + err);
   }
 
 };

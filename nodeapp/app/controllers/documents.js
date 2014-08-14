@@ -108,7 +108,7 @@ exports.upload = function( req, res, next ) {
   // basic validations: check for content-types and file-extensions
   // including max-file-size
   if( fileObject.size > config.application.upload.maxFileSize ) {
-    return res.send('max-file-size-limit', 500);
+    return res.status(500).send('max-file-size-limit');
   }
   // check allowed content-types
   wrongContentType = true;
@@ -120,7 +120,7 @@ exports.upload = function( req, res, next ) {
     }
   });
   if( wrongContentType ) {
-    return res.send('incorrect-content-type', 500);
+    return res.status(500).send('incorrect-content-type');
   }
   // check for file-extensions
   wrongExtension = true;
@@ -133,7 +133,7 @@ exports.upload = function( req, res, next ) {
     }
   });
   if( wrongExtension ) {
-    return res.send('incorrect-file-extension', 500);
+    return res.status(500).send('incorrect-file-extension');
   }
 
   // use this random string as a temp filename - return the string as a reference
@@ -195,14 +195,14 @@ exports.saveDocument = function( req, res, next ) {
 
     // do a server-side validation
     if(!document.title || !document.fileName || 
-      document.tags.length === 0 || document.senders.length === 0) {
-      return res.send( 'Invalid data supplied!', 500 );
+      document.senders.length === 0) {
+      return res.status(500).send('Invalid data supplied, or some necessary data missing!');
     }
 
     // validation done - at least we do have some data
     // use promises to handle tags, senders, and the document itself
 
-    masterDataService.createAndGetTags(document.tags).then(function(list) {
+    masterDataService.createAndGetTags(document.tags, true).then(function(list) {
       tagList = list;
       // start the promise chain
       return masterDataService.createAndGetSenders(document.senders);
@@ -217,6 +217,7 @@ exports.saveDocument = function( req, res, next ) {
     })
     .then(function(doc) {
       console.log('Saved the document: ' + doc);
+      console.log('Modified: ' + doc.modified);
 
       // document was saved, I need to move the uploaded file from the temp-folder
       // to the final document location
@@ -235,19 +236,17 @@ exports.saveDocument = function( req, res, next ) {
             throw error;
           }
 
-          return res.send('Document saved!', 200);
+          return res.status(200).send('Document saved!');
         });
       } else {
-
         // document not changed
-
-        return res.send('Document saved!', 200);
+        return res.status(200).send('Document saved!');
       }
 
     })
     .catch(function(error) {
       console.log(error.stack);
-      return res.send('Cannot save document! ' + error, 500);
+      return res.status(500).send('Cannot save document! ' + error);
     })
     .done();
 
@@ -255,7 +254,7 @@ exports.saveDocument = function( req, res, next ) {
     console.log('Got an error: ' + err);
     console.log(err.stack);
 
-    return res.send('Cannot save document! ' + err, 500);
+    return res.status(500).send('Cannot save document! ' + err);
   }
 
 };
