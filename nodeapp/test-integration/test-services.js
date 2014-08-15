@@ -1,4 +1,4 @@
-// test the basic features of sqlite
+// test the service methods
 
 'use strict';
 
@@ -12,7 +12,7 @@ var logger = require('../app/util/logger');
 var MasterDataService = require('../app/services/masterDataService');
 var DocumentService = require('../app/services/documentService');
 
-var uristring = database.uri;
+var uristring = database.uri + '_integration';
 if(mongoose.connection.readyState !== 1) {
   mongoose.connect(uristring, function (err) {
     if (err) {
@@ -50,31 +50,64 @@ var testDocument = JSON.parse(testData);
 
 describe('Services', function() {
 
-  before(function(){
-    Sender.remove({name: 'Sender1'}, function(err) {
+  before(function(done) {
+    // clean house before starting tests
+    Tag.remove({}, function(err) {
       if(err) {
         console.log(err);
       }
-    });
 
-    Tag.remove({name: 'Tag1'}, function(err) {
-      if(err) {
-        console.log(err);
-      }
-    });
+      Sender.remove({}, function(err) {
+        if(err) {
+          console.log(err);
+        }
 
-    Document.remove({title: 'TEST'}, function(err) {
-      if(err) {
-        console.log(err);
-      }
+        Document.remove({}, function(err) {
+          if(err) {
+            console.log(err);
+          }
+
+          var sender = new Sender({name: 'testsender'});
+          sender.save(function (err) {
+            assert(!err, err);
+
+            var tag = new Tag({name: 'testtag'});
+            tag.save(function (err) {
+              assert(!err, err);
+
+              done();
+            });
+          });
+        });
+      });
     });
 
   });
 
   // close the mongo connection - not strictly necessary but
   // keep your  house clean
-  after(function() {
-    mongoose.connection.close();
+  after(function(done) {
+
+    // clean house before starting tests
+    Tag.remove({}, function(err) {
+      if(err) {
+        console.log(err);
+      }
+
+      Sender.remove({}, function(err) {
+        if(err) {
+          console.log(err);
+        }
+
+        Document.remove({}, function(err) {
+          if(err) {
+            console.log(err);
+          }
+          mongoose.connection.close();
+          done();
+        });
+      });
+    });
   });
 
   describe('Services', function() {
@@ -189,7 +222,7 @@ describe('Services', function() {
           tagList,
           senderList;
 
-      Document.findOne({title: 'testdocument'}).exec(function (err, foundDoc) {
+      Document.findOne({title: 'TEST'}).exec(function (err, foundDoc) {
         assert(!err, err);
 
         testDocument._id = foundDoc._id;
@@ -215,7 +248,7 @@ describe('Services', function() {
         })
         .then(function(doc) {
           assert(doc, 'No document returned !' );
-          assert.equal(doc.title, 'testdocument', 'Wrong title');
+          assert.equal(doc.title, 'TEST', 'Wrong title');
           assert.equal(doc.senders.length, 1, 'Wrong number of senders');
 
 

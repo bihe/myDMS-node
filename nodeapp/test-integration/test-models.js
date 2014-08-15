@@ -1,4 +1,4 @@
-// test the basic features of sqlite
+// test the models
 
 'use strict';
 
@@ -9,7 +9,8 @@ var Document = require('../app/models/document.js');
 var database = require('../app/config/database');
 var mongoose = require('mongoose');
 
-var uristring = database.uri;
+var uristring = database.uri + '_integration';
+console.log(uristring);
 if(mongoose.connection.readyState !== 1) {
   mongoose.connect(uristring, function (err) {
     if (err) {
@@ -21,31 +22,53 @@ if(mongoose.connection.readyState !== 1) {
 
 describe('Models', function() {
 
-  before(function(){
+  before(function(done) {
     // clean house before starting tests
     Tag.remove({}, function(err) {
       if(err) {
         console.log(err);
       }
+
+      Sender.remove({}, function(err) {
+        if(err) {
+          console.log(err);
+        }
+
+        Document.remove({}, function(err) {
+          if(err) {
+            console.log(err);
+          }
+          done();
+        });
+      });
     });
 
-    Sender.remove({}, function(err) {
-      if(err) {
-        console.log(err);
-      }
-    });
-
-    Document.remove({}, function(err) {
-      if(err) {
-        console.log(err);
-      }
-    });
   });
 
   // close the mongo connection - not strictly necessary but
   // keep your  house clean
-  after(function() {
-    mongoose.connection.close();
+  after(function(done) {
+
+    // clean house before starting tests
+    Tag.remove({}, function(err) {
+      if(err) {
+        console.log(err);
+      }
+
+      Sender.remove({}, function(err) {
+        if(err) {
+          console.log(err);
+        }
+
+        Document.remove({}, function(err) {
+          if(err) {
+            console.log(err);
+          }
+          mongoose.connection.close();
+          done();
+        });
+      });
+    });
   });
 
   describe('Senders', function() {
@@ -66,6 +89,9 @@ describe('Models', function() {
         
         // find the entry again
         Sender.findOne({}).exec(function (err, foundSender) {
+
+          console.log(foundSender);
+
           assert(!err, err);
           assert.equal(foundSender.name, 'testsender', 'Sender has no name!');
           console.info('Found sender ' + foundSender.toString());
