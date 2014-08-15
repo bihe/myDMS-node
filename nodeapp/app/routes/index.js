@@ -22,6 +22,7 @@ router.get('/api/' + API + '/tags', tagsController.index);
 router.get('/api/' + API + '/senders', senderController.index);
 router.get('/api/' + API + '/documents', documentsController.index);
 router.get('/api/' + API + '/document/:id', documentsController.document);
+router.get('/api/' + API + '/document/download/:id', documentsController.documentDownload);
 router.post('/api/' + API + '/document/', documentsController.saveDocument);
 router.put('/api/' + API + '/document/', documentsController.saveDocument);
 router.post('/api/' + API + '/document/upload', documentsController.upload);

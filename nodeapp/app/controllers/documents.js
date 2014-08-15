@@ -16,7 +16,6 @@ var path = require('path');
 var DocumentService = require('../services/documentService');
 var MasterDataService = require('../services/masterDataService');
 
-
 /*
  * url: /documents
  * called without any parameters just returns all of the available documents 
@@ -113,7 +112,7 @@ exports.upload = function( req, res, next ) {
   // check allowed content-types
   wrongContentType = true;
   _.forEach( config.application.upload.ctypes, function( ctype ) {
-    if( fileObject.type.indexOf( ctype ) > -1 ) {
+    if( fileObject.mimetype.indexOf( ctype ) > -1 ) {
       if(wrongContentType) {
         wrongContentType = false;
       }
@@ -124,7 +123,7 @@ exports.upload = function( req, res, next ) {
   }
   // check for file-extensions
   wrongExtension = true;
-  fileExt = utils.getExtension( fileObject.originalFilename );
+  fileExt = utils.getExtension( fileObject.originalname );
   _.forEach( config.application.upload.extensions, function( ext ) {
     if( fileExt.indexOf( ext ) > -1 ) {
       if( wrongExtension ) {
@@ -147,7 +146,7 @@ exports.upload = function( req, res, next ) {
       }
       result = {};
       result.fileName = tempFileName;
-      result.originalFileName = fileObject.originalFilename;
+      result.originalFileName = fileObject.originalname;
       result.size = fileObject.size;
 
       logger.dump( result );
@@ -194,8 +193,7 @@ exports.saveDocument = function( req, res, next ) {
     logger.dump( document );
 
     // do a server-side validation
-    if(!document.title || !document.fileName || 
-      document.senders.length === 0) {
+    if(!document.title || !document.fileName || document.senders.length === 0) {
       return res.status(500).send('Invalid data supplied, or some necessary data missing!');
     }
 
@@ -217,27 +215,47 @@ exports.saveDocument = function( req, res, next ) {
     })
     .then(function(doc) {
       console.log('Saved the document: ' + doc);
-      console.log('Modified: ' + doc.modified);
 
       // document was saved, I need to move the uploaded file from the temp-folder
       // to the final document location
 
       if(document.tempFilename && document.tempFilename !== '') {
-        uploadPath = path.join(__dirname, '../../', config.application.upload.tempFilePath) + '/' + document.tempFilename;
-        filePath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + document.fileName;
         
-        console.log('Will move file from ' + uploadPath + ' to ' + filePath);
+        // create a folder
+        documentService.createDir(doc).then(function(folder) {
 
-        mv(uploadPath, filePath, function(error) {
-          if(error) {
-            console.log('Could not move file: ' + error);
-            console.log(error.stack);
+          doc.fileName = '/' + folder + '/' + doc.fileName;
 
-            throw error;
-          }
+          uploadPath = path.join(__dirname, '../../', config.application.upload.tempFilePath) + '/' + document.tempFilename;
+          filePath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + doc.fileName;
+        
+          console.log('Will move file from ' + uploadPath + ' to ' + filePath);
 
-          return res.status(200).send('Document saved!');
+          mv(uploadPath, filePath, function(error) {
+            if(error) {
+              console.log('Could not move file: ' + error);
+              console.log(error.stack);
+
+              throw error;
+            }
+
+            // moved - update the doc
+            documentService.save(doc).then(function(d)  {
+
+              return res.status(200).send('Document updated after move!');
+
+            }).catch(function(error) {
+              console.log(error.stack);
+              return res.status(500).send('Cannot save document! ' + error);
+            });
+
+          });
+
+        }).catch(function(error) {
+          console.log(error.stack);
+          return res.status(500).send('Cannot save document! ' + error);
         });
+
       } else {
         // document not changed
         return res.status(200).send('Document saved!');
@@ -257,4 +275,32 @@ exports.saveDocument = function( req, res, next ) {
     return res.status(500).send('Cannot save document! ' + err);
   }
 
+};
+
+/* 
+ * url: /document/download/:id
+ * return the binary data of the document to the client
+ */
+exports.documentDownload = function( req, res, next ) {
+  var id = req.params.id,
+      documentService = new DocumentService();
+
+  console.log('Got param: ' + id);
+
+  documentService.getBinary(id).then(function(stream) {
+
+    // This will wait until we know the readable stream is actually valid before piping
+    stream.on('open', function () {
+      // This just pipes the read stream to the response object (which goes to the client)
+      stream.pipe(res);
+    });
+
+    // This catches any errors that happen while creating the readable stream (usually invalid names)
+    stream.on('error', function(err) {
+      res.end(err);
+    });
+
+  }).catch(function(error) {
+    return res.status(404).send('Document not found! ' + error);
+  });
 };

@@ -12,6 +12,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var multer  = require('multer');
 var mongoose = require('mongoose');
 
 var routes = require('./app/routes');
@@ -33,13 +34,13 @@ app.set('host', '127.0.0.1');
 app.set('views', path.join(__dirname, 'app/views'));
 app.set('view engine', 'jade');
 
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(cookieParser());
+app.use(multer({ dest: path.join(__dirname, 'tmp') }));
 
 if(env === 'development') {
   app.use(express.static(path.join(__dirname, 'public/app')));
@@ -106,24 +107,24 @@ if (env === 'development') {
 
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
+    res.render('500', {
       message: err.message,
       error: err,
       title: 'error'
     });
   });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {},
-    title: 'error'
+} else {
+  // production error handler
+  // no stacktraces leaked to user
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('500', {
+      message: err.message,
+      error: {},
+      title: 'error'
+    });
   });
-});
+}
 
 // 404 handler with content type specific results
 app.use(function(req, res, next){

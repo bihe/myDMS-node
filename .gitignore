@@ -123,3 +123,5 @@ data
 nodeapp/debug-tests.sh
 nodeapp/public/webapp/bower_components/
 nodeapp/upload/
+nodeapp/tmp
+nodeapp/files
