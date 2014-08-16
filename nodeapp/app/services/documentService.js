@@ -16,7 +16,8 @@ var moment = require('moment');
 var mv = require('mv');
 var Document = require('../models/document');
 var config = require('../config/application');
-//var u = require('../util/utils');
+var _ = require('lodash');
+var u = require('../util/utils');
 
 /**
  * @constructor
@@ -81,6 +82,40 @@ DocumentService.prototype = (function() {
     return deferred.promise;
   };
 
+  /**
+   * update the document statue
+   * @param id {ObjectId} the id of the documnet
+   * @param state {String} the document state
+   * 
+   * @return {deferred} a promise object of the Document
+   */
+  var stateUpdate = function(id, newState) {
+    var deferred = q.defer();
+
+    Document.findById(id).exec(function (err, document) {
+      if(err) {
+        return deferred.reject(err);
+      }
+
+      if(!document) {
+        return deferred.reject(new Error('No entry found'));
+      }
+
+      // update the state field
+      document.state = newState;
+      document.update({ state: newState}, function(error) {
+        if(error) {
+          return deferred.reject(error);
+        }
+        console.log('after update: ' + document);
+        deferred.resolve(document);
+      });
+
+    });
+
+    return deferred.promise;
+  };
+  
 
   // those methods are public accessible
   return {
@@ -136,11 +171,12 @@ DocumentService.prototype = (function() {
             doc.amount = document.amount;
             doc.senders = document.senders;
             doc.tags = document.tags;
-            //doc.modified = new Date();
+            doc.state = 'dirty';
+            doc.modified = new Date();
 
-            // if(document.created && _.isString(document.created)) {
-            //   doc.created = u.parseDate(document.created);
-            // }
+            if(document.created && _.isString(document.created)) {
+              doc.created = u.parseDate(document.created);
+            }
 
             if(document.alternativeId) {
               doc.alternativeId = document.alternativeId;
@@ -260,7 +296,28 @@ DocumentService.prototype = (function() {
       }
 
       return deferred.promise;
+    },
+
+    /**
+     * start the document edit process by updating the document status
+     * @param id {ObjectId} the id of the documnet
+     * 
+     * @return {deferred} a promise object 
+     */
+    beginDocumentChange: function(id) {
+      return stateUpdate(id, 'dirty');
+    },
+
+    /**
+     * end the document edit process by updating the document status
+     * @param id {ObjectId} the id of the documnet
+     * 
+     * @return {deferred} a promise object 
+     */
+    endDocumentChange: function(id) {
+      return stateUpdate(id, 'done');
     }
+
   };
 })();
 

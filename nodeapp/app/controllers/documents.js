@@ -71,6 +71,11 @@ exports.index = function( req, res, next ) {
     }
   }
 
+  // only show valid documents -- state 'done'
+  filter = {};
+  filter.state = 'done';
+  logicalAnd.push(filter);
+
   // combine the filters
   if(logicalAnd.length > 1) {
     filter = {};
@@ -218,6 +223,12 @@ exports.saveDocument = function( req, res, next ) {
 
       // move files and update the document
       return documentService.handleDocumentUpload(doc, document.tempFilename);
+    })
+    .then(function(doc) {
+      // when a document is saved, the state is changed
+      // this is the last step of the processing, update the state so the doc
+      // is shown
+      return documentService.endDocumentChange(doc.id);
     })
     .then(function(doc) {
       if(!doc) {

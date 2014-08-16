@@ -7,6 +7,8 @@ var mongoose = require('mongoose');
 var randomstring = require('randomstring');
 var Schema = mongoose.Schema;
 
+var states = 'dirty done'.split(' ');
+
 var documentSchema = new Schema({
   title: {
     type: String,
@@ -41,7 +43,13 @@ var documentSchema = new Schema({
     default: new Date()
   },
 	senders: [{ type: Schema.Types.ObjectId, ref: 'Sender' }],
-	tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }]
+	tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
+  // state of the document
+  state: {
+    type: String,
+    enum: states,
+    default: 'dirty'
+  }
 
 });
 

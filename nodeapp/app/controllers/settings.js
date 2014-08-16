@@ -11,6 +11,7 @@ var DocumentService = require('../services/documentService');
 var MasterDataService = require('../services/masterDataService');
 var _ = require('lodash');
 var async = require('async');
+var moment = require('moment');
 
 
 /**
@@ -32,6 +33,8 @@ function __processDocument(document, callback) {
 
     document.tags = tagList;
     document.senders = senderList;
+    // parse the creation date
+    //document.created = moment(document.created, 'YYYY-MM-DD');
 
     return documentService.save(document);
   })
@@ -54,6 +57,7 @@ function __processDocument(document, callback) {
 exports.save = function( req, res, next ) {
   var payload, itemCount = 0,
       masterDataService = new MasterDataService(),
+      documentService = new DocumentService(),
       tags = [],
       senders = [];
 
@@ -139,10 +143,17 @@ exports.save = function( req, res, next ) {
                 return cb(new Error('Document is null!'));
               }
 
-              logger.dump(doc);
-
-              itemCount = itemCount + 1;
-              cb();
+              // update the state of the document
+              documentService.endDocumentChange(doc._id)
+              .then(function(doc) {
+                itemCount = itemCount + 1;
+                cb();
+              })
+              .catch(function(error) {
+                console.log(error.stack);
+                return cb(error);
+              })
+              .done();
             });
 
           }, function(err){
