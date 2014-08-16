@@ -49,6 +49,7 @@ if(env === 'development') {
   app.use(express.static(path.join(__dirname, 'public/app/dist')));
   app.use(favicon(__dirname + '/public/app/dist/html5.ico'));
 }
+app.disable('x-powered-by');
 
 // view settings
 app.locals.basePath = config.application.basePath;

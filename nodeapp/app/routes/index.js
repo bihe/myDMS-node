@@ -26,6 +26,7 @@ router.get('/api/' + API + '/document/download/:id', documentsController.documen
 router.post('/api/' + API + '/document/', documentsController.saveDocument);
 router.put('/api/' + API + '/document/', documentsController.saveDocument);
 router.post('/api/' + API + '/document/upload', documentsController.upload);
+router.delete('/api/' + API + '/document/:id', documentsController.deleteDocument);
 router.post('/api/' + API + '/settings', settingsController.save);
 
 module.exports = router;

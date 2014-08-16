@@ -13,6 +13,7 @@ var path = require('path');
 var async = require('async');
 var q = require('q');
 var moment = require('moment');
+var mv = require('mv');
 var Document = require('../models/document');
 var config = require('../config/application');
 //var u = require('../util/utils');
@@ -26,138 +27,27 @@ function DocumentService() {
 /* 
  * method, logic implementation
  */
-DocumentService.prototype = {
+DocumentService.prototype = (function() {
 
   /**
-   * save the document or create a new one, depending on the 
-   * supplied id
+   * move a file. wrap existing function in promise
+   * @param path1 {String} filesystem path
+   * @param path2 {String} filesystem path
    *
-   * @return {deferred} a promise with the saved document
+   * @return {deferred} a promise
    */
-  save: function(document) {
-    var deferred = q.defer(),
-        doc, self;
+  var moveFile = function(path1, path2) {
+    var deferred = q.defer();
 
-    // again use a async approach
-    // 1) check if new one -- create a document
-    //  or fetch a document
-    // 2) update the object with the supplied data
-    //  and save the object again
-    self = this;
-    async.series([
-      // 1) check the supplied documentId
-      function(callback) {
-        try {
-          if(document._id === -1) {
-            doc = new Document({title: document.title});
-            callback(null);
-          } else {
-            // try to find the document
-            Document.findById(document._id).exec(function (err, foundDoc) {
-              if(err) {
-                return callback(err);
-              }
-
-              if(!foundDoc) {
-                return callback(new Error('No entry found'));
-              }
-
-              doc = foundDoc;
-              callback(null);
-            });
-          }
-        } catch(err) {
-          callback(err);
-        }
-      },
-      // 2) update the object and save it
-      function(callback) {
-        try {
-
-          doc.title = document.title;
-          doc.fileName = document.fileName;
-          doc.previewLink = document.previewLink;
-          doc.amount = document.amount;
-          doc.senders = document.senders;
-          doc.tags = document.tags;
-          //doc.modified = new Date();
-
-          // if(document.created && _.isString(document.created)) {
-          //   doc.created = u.parseDate(document.created);
-          // }
-
-          if(document.alternativeId) {
-            doc.alternativeId = document.alternativeId;
-          }
-
-          doc.save(function(err, d) {
-            if(err) {
-              return callback(err);
-            }
-
-            if(!d) {
-              return callback(new Error('Item not saved!'));
-            }
-
-            doc = d;
-            callback(null);
-          });
-
-        } catch(err) {
-          callback(err);
-        }
-      }
-    ],
-    function(error,result) {
-      // I am done here
+    mv(path1, path2, function(error) {
       if(error) {
         return deferred.reject(error);
       }
-      deferred.resolve(doc);
+      deferred.resolve();
     });
 
     return deferred.promise;
-  },
-
-  /**
-   * retrieve the binary content of the document
-   * @param id {objectid} the document id
-   * 
-   * @return {deferred} a promise with a stream object
-   */
-  getBinary: function(id) {
-    var deferred = q.defer(),
-      fileName,
-      filePath,
-      readStream;
-      
-    Document.findById(id).exec(function (err, foundDoc) {
-      if(err) {
-        return deferred.reject(err);
-      }
-
-      if(!foundDoc) {
-        return deferred.reject(new Error('No entry found'));
-      }
-
-      // got the document, now read the data from the specified file
-      fileName = foundDoc.fileName;
-      filePath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + fileName;
-
-      console.log('read file: ' + filePath);
-
-      fs.exists(filePath, function(exists) {
-        if (!exists) {
-          return deferred.reject(new Error('The file '  + filePath + ' does not exist!'));
-        }
-        readStream = fs.createReadStream(filePath);
-        deferred.resolve(readStream);
-      });
-
-    });
-
-    return deferred.promise;
-  },
+  };
 
   /**
    * creates a folder for the document based on the creation date
@@ -166,7 +56,7 @@ DocumentService.prototype = {
    *
    * @return {String} folderName
    */
-  createDir: function(document) {
+  var createDir = function(document) {
     var deferred = q.defer(),
       dirPath,
       dirName;
@@ -189,7 +79,189 @@ DocumentService.prototype = {
     });
     
     return deferred.promise;
-  }
-};
+  };
+
+
+  // those methods are public accessible
+  return {
+    /**
+     * save the document or create a new one, depending on the 
+     * supplied id
+     *
+     * @return {deferred} a promise with the saved document
+     */
+    save: function(document) {
+      var deferred = q.defer(),
+          doc, self;
+
+      // again use a async approach
+      // 1) check if new one -- create a document
+      //  or fetch a document
+      // 2) update the object with the supplied data
+      //  and save the object again
+      self = this;
+      async.series([
+        // 1) check the supplied documentId
+        function(callback) {
+          try {
+            if(document._id === -1) {
+              doc = new Document({title: document.title});
+              callback(null);
+            } else {
+              // try to find the document
+              Document.findById(document._id).exec(function (err, foundDoc) {
+                if(err) {
+                  return callback(err);
+                }
+
+                if(!foundDoc) {
+                  return callback(new Error('No entry found'));
+                }
+
+                doc = foundDoc;
+                callback(null);
+              });
+            }
+          } catch(err) {
+            callback(err);
+          }
+        },
+        // 2) update the object and save it
+        function(callback) {
+          try {
+
+            doc.title = document.title;
+            doc.fileName = document.fileName;
+            doc.previewLink = document.previewLink;
+            doc.amount = document.amount;
+            doc.senders = document.senders;
+            doc.tags = document.tags;
+            //doc.modified = new Date();
+
+            // if(document.created && _.isString(document.created)) {
+            //   doc.created = u.parseDate(document.created);
+            // }
+
+            if(document.alternativeId) {
+              doc.alternativeId = document.alternativeId;
+            }
+
+            doc.save(function(err, d) {
+              if(err) {
+                return callback(err);
+              }
+
+              if(!d) {
+                return callback(new Error('Item not saved!'));
+              }
+
+              doc = d;
+              callback(null);
+            });
+
+          } catch(err) {
+            callback(err);
+          }
+        }
+      ],
+      function(error, result) {
+        // I am done here
+        if(error) {
+          return deferred.reject(error);
+        }
+        deferred.resolve(doc);
+      });
+
+      return deferred.promise;
+    },
+
+    /**
+     * retrieve the full path to the document
+     * @param id {objectid} the document id
+     * 
+     * @return {deferred} a promise with the path to the file
+     */
+    getBinary: function(id) {
+      var deferred = q.defer(),
+        fileName,
+        filePath;
+        
+      Document.findById(id).exec(function (err, foundDoc) {
+        if(err) {
+          return deferred.reject(err);
+        }
+
+        if(!foundDoc) {
+          return deferred.reject(new Error('No entry found'));
+        }
+
+        // got the document, now read the data from the specified file
+        fileName = foundDoc.fileName;
+        if(fileName.indexOf('/') !== 0) {
+          fileName = '/' + fileName;
+        }
+        filePath = path.join(__dirname, '../../', config.application.upload.filePath) + fileName;
+
+        console.log('read file: ' + filePath);
+
+        fs.exists(filePath, function(exists) {
+          if (!exists) {
+            return deferred.reject(new Error('The file '  + filePath + ' does not exist!'));
+          }
+          deferred.resolve(filePath);
+        });
+
+      });
+
+      return deferred.promise;
+    },
+
+    /**
+     * take care of the temp uploaded file and move it to the final 
+     * destination. additonally update the filepath for the 
+     * document object
+     * @param document {Document} the document object
+     * @param tempFilename {String} the path to the temp upload
+     *
+     * @return {deferred} a promise with the Document object
+     */
+    handleDocumentUpload: function(document, tempFilename) {
+      var deferred = q.defer(),
+        uploadPath,
+        filePath,
+        self;
+
+      self = this;
+
+      if(tempFilename && tempFilename !== '') {
+          
+        // create a folder
+        createDir(document).then(function(folder) {
+
+          document.fileName = '/' + folder + '/' + document.fileName;
+
+          uploadPath = path.join(__dirname, '../../', config.application.upload.tempFilePath) + '/' + tempFilename;
+          filePath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + document.fileName;
+        
+          console.log('Will move file from ' + uploadPath + ' to ' + filePath);
+
+          return moveFile(uploadPath, filePath);
+        }).then(function() {
+          return self.save(document);
+        }).then(function(doc) {
+          deferred.resolve(doc);
+        }).catch(function(error) {
+          return deferred.reject(error);
+        }).done();
+
+      } else {
+        // there is no tempfile - so no need to post-process the document
+        deferred.resolve(document);
+      }
+
+      return deferred.promise;
+    }
+  };
+})();
 
 module.exports = DocumentService;

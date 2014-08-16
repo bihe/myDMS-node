@@ -11,7 +11,6 @@ var Document = require('../models/document.js');
 var randomstring = require('randomstring');
 var _ = require('lodash');
 var fs = require('fs');
-var mv = require('mv');
 var path = require('path');
 var DocumentService = require('../services/documentService');
 var MasterDataService = require('../services/masterDataService');
@@ -170,6 +169,9 @@ exports.document = function(req, res, next) {
     if( err ) {
       return base.handleError( req, res, next, err );
     }
+    if(!doc) {
+      return res.status(404).send('Document not found ' + req.params.id);
+    }
     res.json(doc);
   });
 };
@@ -182,8 +184,6 @@ exports.saveDocument = function( req, res, next ) {
   var document = {},
       tagList = [],
       senderList = [],
-      filePath,
-      uploadPath,
       masterDataService = new MasterDataService(),
       documentService = new DocumentService();
   
@@ -216,51 +216,14 @@ exports.saveDocument = function( req, res, next ) {
     .then(function(doc) {
       console.log('Saved the document: ' + doc);
 
-      // document was saved, I need to move the uploaded file from the temp-folder
-      // to the final document location
-
-      if(document.tempFilename && document.tempFilename !== '') {
-        
-        // create a folder
-        documentService.createDir(doc).then(function(folder) {
-
-          doc.fileName = '/' + folder + '/' + doc.fileName;
-
-          uploadPath = path.join(__dirname, '../../', config.application.upload.tempFilePath) + '/' + document.tempFilename;
-          filePath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + doc.fileName;
-        
-          console.log('Will move file from ' + uploadPath + ' to ' + filePath);
-
-          mv(uploadPath, filePath, function(error) {
-            if(error) {
-              console.log('Could not move file: ' + error);
-              console.log(error.stack);
-
-              throw error;
-            }
-
-            // moved - update the doc
-            documentService.save(doc).then(function(d)  {
-
-              return res.status(200).send('Document updated after move!');
-
-            }).catch(function(error) {
-              console.log(error.stack);
-              return res.status(500).send('Cannot save document! ' + error);
-            });
-
-          });
-
-        }).catch(function(error) {
-          console.log(error.stack);
-          return res.status(500).send('Cannot save document! ' + error);
-        });
-
-      } else {
-        // document not changed
-        return res.status(200).send('Document saved!');
+      // move files and update the document
+      return documentService.handleDocumentUpload(doc, document.tempFilename);
+    })
+    .then(function(doc) {
+      if(!doc) {
+        return res.status(500).send('Cannot save document - document is null!');
       }
-
+      return res.status(200).send('Document saved!');
     })
     .catch(function(error) {
       console.log(error.stack);
@@ -287,20 +250,40 @@ exports.documentDownload = function( req, res, next ) {
 
   console.log('Got param: ' + id);
 
-  documentService.getBinary(id).then(function(stream) {
+  documentService.getBinary(id).then(function(filePath) {
 
-    // This will wait until we know the readable stream is actually valid before piping
-    stream.on('open', function () {
-      // This just pipes the read stream to the response object (which goes to the client)
-      stream.pipe(res);
-    });
-
-    // This catches any errors that happen while creating the readable stream (usually invalid names)
-    stream.on('error', function(err) {
-      res.end(err);
+    // send the file to the requesting client
+    res.sendFile(filePath, function(error) {
+      if(error) {
+        res.status(500).send('Could not download file ' + error);
+      }
     });
 
   }).catch(function(error) {
     return res.status(404).send('Document not found! ' + error);
+  });
+};
+
+/* 
+ * url: /document/:id
+ * delete the given document
+ */
+exports.deleteDocument = function( req, res, next ) {
+  var id = req.params.id;
+
+  console.log('Got param: ' + id);
+
+  Document.findById(id, function (err, document) {
+    if(err) {
+      return res.status(500).send('Could not delete document ' + err);
+    }
+
+    document.remove(function(err) {
+      if(err) {
+        return res.status(500).send('Could not delete document ' + err);
+      }
+
+      return res.status(200).send('Document with id ' + id + ' removed!');
+    });
   });
 };

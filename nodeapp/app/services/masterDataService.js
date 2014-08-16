@@ -22,35 +22,8 @@ function MasterDataService() {
 /* 
  * method, logic implementation
  */
-MasterDataService.prototype = {
+MasterDataService.prototype = (function() {
   
-  /**
-   * handle existing and new Senders and return a
-   * consolidated list
-   *
-   * @param {array} objectList - the list to process
-   * @param {bool} allowEmptyList - should an empty list be allowed?
-   * @return {deferred} a promise with a list of sender-objects
-   */
-  createAndGetSenders: function( objectList, allowEmptyList ) {
-    allowEmptyList = typeof allowEmptyList !== 'undefined' ? allowEmptyList : false;
-    return this.__handleSendersAndTags( objectList, 'sender', allowEmptyList );
-  },
-
-  /**
-   * handle existing and new Tags and return a
-   * consolidated list
-   *
-  * @param {array} objectList - the list to process
-   * @param {bool} allowEmptyList - should an empty list be allowed?
-   * @return {deferred} a promise with a list of sender-objects
-   */
-  createAndGetTags: function( objectList, allowEmptyList ) {
-    allowEmptyList = typeof allowEmptyList !== 'undefined' ? allowEmptyList : false;
-    return this.__handleSendersAndTags( objectList, 'tag', allowEmptyList );
-  },
-
-
   /**
    * Supply a list of objects. The list contains __existing objects__
    * and __new__ object. The new objects are created, the existing 
@@ -62,7 +35,7 @@ MasterDataService.prototype = {
    * @param {bool} allowEmptyList - should an empty list be allowed?
    * @return {deferred} a promise with a list of sender-objects
    */
-  __handleSendersAndTags: function( objectList, type, allowEmptyList ) {
+  var __handleSendersAndTags = function( objectList, type, allowEmptyList ) {
     // the objectList needs to be iterated, check each entry
     // if it is available, if not create the object and put it into
     // a list, which is returned later
@@ -181,7 +154,38 @@ MasterDataService.prototype = {
     });
 
     return deferred.promise;
-  }
-};
+  };
+
+
+  // export public methods
+  return {
+    /**
+     * handle existing and new Senders and return and
+     * consolidated list
+     *
+     * @param {array} objectList - the list to process
+     * @param {bool} allowEmptyList - should an empty list be allowed?
+     * @return {deferred} a promise with a list of sender-objects
+     */
+    createAndGetSenders: function( objectList, allowEmptyList ) {
+      allowEmptyList = typeof allowEmptyList !== 'undefined' ? allowEmptyList : false;
+      return __handleSendersAndTags( objectList, 'sender', allowEmptyList );
+    },
+
+    /**
+     * handle existing and new Tags and return a
+     * consolidated list
+     *
+     * @param {array} objectList - the list to process
+     * @param {bool} allowEmptyList - should an empty list be allowed?
+     * @return {deferred} a promise with a list of sender-objects
+     */
+    createAndGetTags: function( objectList, allowEmptyList ) {
+      allowEmptyList = typeof allowEmptyList !== 'undefined' ? allowEmptyList : false;
+      return __handleSendersAndTags( objectList, 'tag', allowEmptyList );
+    }
+  };
+
+})();
 
 module.exports = MasterDataService;
