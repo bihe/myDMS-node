@@ -12,6 +12,7 @@ var tagsController = require('../controllers/tags');
 var senderController = require('../controllers/senders');
 var documentsController = require('../controllers/documents');
 var settingsController = require('../controllers/settings');
+var googleApi = require('../controllers/googleApi');
 var API = require('../config/version').api;
 
 // setup the routes and delegate logic to the controllers 
@@ -28,5 +29,9 @@ router.put('/api/' + API + '/document/', documentsController.saveDocument);
 router.post('/api/' + API + '/document/upload', documentsController.upload);
 router.delete('/api/' + API + '/document/:id', documentsController.deleteDocument);
 router.post('/api/' + API + '/settings', settingsController.save);
+
+router.get('/oauth/login', googleApi.login);
+router.get('/oauth/callback', googleApi.callback);
+router.get('/listfiles', googleApi.listfiles);
 
 module.exports = router;

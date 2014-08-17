@@ -21,7 +21,8 @@
     "mongoose": "3.8.x",
     "mv": "~2.0.3",
     "moment": "~2.8.1",
-    "multer": "~0.1.4"
+    "multer": "~0.1.4",
+    "googleapis": "~1.0.9"
   },
   "devDependencies": {
     "mocha": "1.x"
