@@ -11,12 +11,12 @@ var simpleSchema = new Schema({
   name: {
     type: String,
     trim: true,
-    equired: 'Title cannot be blank'
+    required: 'Title cannot be blank'
   },
   created: {
 		type: Date,
 		default: Date.now
-	},
+	}
 });
 
 simpleSchema.methods.toString = function() {

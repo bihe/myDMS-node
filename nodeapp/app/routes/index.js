@@ -12,10 +12,10 @@ var tagsController = require('../controllers/tags');
 var senderController = require('../controllers/senders');
 var documentsController = require('../controllers/documents');
 var settingsController = require('../controllers/settings');
-var googleApi = require('../controllers/googleApi');
+var googleApi = require('../controllers/googleapi');
 var API = require('../config/version').api;
 
-// setup the routes and delegate logic to the controllers 
+// setup the routes and delegate logic to the controllers
 // --------------------------------------------------------------------------
 
 router.get('/api/' + API + '/version', baseController.version);

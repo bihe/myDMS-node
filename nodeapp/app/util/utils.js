@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- * simple helpfer function to dump a object to console
+ * get the file-extension
  */
 module.exports.getExtension = function( filename ) {
   var i = filename.lastIndexOf('.');

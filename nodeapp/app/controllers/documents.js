@@ -17,14 +17,14 @@ var MasterDataService = require('../services/masterDataService');
 
 /*
  * url: /documents
- * called without any parameters just returns all of the available documents 
+ * called without any parameters just returns all of the available documents
  */
 exports.index = function( req, res, next ) {
   var filter = {}, filterValue,
       skip = 0, limit = 20,
       parts = [],
       logicalAnd = [];
-  
+
   if(req.query.skip) {
     skip = parseInt(req.query.skip, 10);
   }
@@ -96,9 +96,9 @@ exports.index = function( req, res, next ) {
   });
 };
 
-/* 
+/*
  * url: /document/upload
- * upload a binary document and store it temporarily, when the 
+ * upload a binary document and store it temporarily, when the
  * document is saved later on move the temp file to the target location
  */
 exports.upload = function( req, res, next ) {
@@ -181,7 +181,7 @@ exports.document = function(req, res, next) {
   });
 };
 
-/* 
+/*
  * url: /document/
  * create a new document and save it in the backend
  */
@@ -191,7 +191,7 @@ exports.saveDocument = function( req, res, next ) {
       senderList = [],
       masterDataService = new MasterDataService(),
       documentService = new DocumentService();
-  
+
   try {
 
     document = req.body;
@@ -204,7 +204,6 @@ exports.saveDocument = function( req, res, next ) {
 
     // validation done - at least we do have some data
     // use promises to handle tags, senders, and the document itself
-
     masterDataService.createAndGetTags(document.tags, true).then(function(list) {
       tagList = list;
       // start the promise chain
@@ -251,7 +250,7 @@ exports.saveDocument = function( req, res, next ) {
 
 };
 
-/* 
+/*
  * url: /document/download/:id
  * return the binary data of the document to the client
  */
@@ -275,7 +274,7 @@ exports.documentDownload = function( req, res, next ) {
   });
 };
 
-/* 
+/*
  * url: /document/:id
  * delete the given document
  */
