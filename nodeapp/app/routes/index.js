@@ -30,7 +30,7 @@ router.post('/api/' + API + '/document/upload', documentsController.upload);
 router.delete('/api/' + API + '/document/:id', documentsController.deleteDocument);
 router.post('/api/' + API + '/settings', settingsController.save);
 
-router.get('/oauth/login', googleApi.login);
+router.get('/oauth/connect', googleApi.connect);
 router.get('/oauth/callback', googleApi.callback);
 router.get('/listfiles', googleApi.listfiles);
 

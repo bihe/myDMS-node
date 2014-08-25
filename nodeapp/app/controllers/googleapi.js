@@ -13,10 +13,10 @@ var storageService = new StorageService();
 var oauthCredentials;
 
 /*
- * url: /oauth/login
+ * url: /oauth/connect
  * first step of the oauth login logic for google
  */
-exports.login = function(req, res, next) {
+exports.connect = function(req, res, next) {
   var authUrl;
   authUrl = storageService.generateAuthUrl();
   res.redirect(authUrl);
@@ -35,7 +35,7 @@ exports.callback = function(req, res, next) {
 
     storageService.getToken(code).then(function(credentials) {
       oauthCredentials = credentials;
-      res.redirect('/listfiles');
+      res.redirect('/#/settings/connection');
     }).catch(function(error) {
       console.log(error);
       return base.handleError(req, res, next, error);
@@ -58,4 +58,4 @@ exports.listfiles = function(req, res, next) {
     console.log(err);
     return res.status(500).send('Got an error: ' + err.code + ' / ' + err.message);
   }).done();
-}
+};
