@@ -1,3 +1,0 @@
-[submodule "nodeapp/public"]
-	path = nodeapp/public
-	url = https://github.com/bihe/myDMS-angular-ui.git
