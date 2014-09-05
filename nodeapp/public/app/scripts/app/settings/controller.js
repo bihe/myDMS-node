@@ -13,6 +13,7 @@ mydmsApp.controller('SettingsController', ['$scope'
   , '_'
   , '$modal'
   , '$window'
+  , '$base64'
   , function ($scope
     , $rootScope
     , backendService
@@ -20,7 +21,8 @@ mydmsApp.controller('SettingsController', ['$scope'
     , $routeParams
     , _
     , $modal
-    , $window) {
+    , $window
+    , base64) {
 
     // ------------------------------------------------------------------------
     // scope variables
@@ -50,7 +52,10 @@ mydmsApp.controller('SettingsController', ['$scope'
     // ------------------------------------------------------------------------
     if($routeParams && $routeParams.connectionState) {
       // TODO: verify the connection
-      console.log('got connection state: ' + $routeParams.connectionState);
+      console.log('got connection state: ' + base64.decode($routeParams.connectionState));
+
+
+
       $scope.activeTab = 'tabDrive';
       $scope.googleDrive.isProvided = true;
       $scope.googleDrive.isActive = true;
