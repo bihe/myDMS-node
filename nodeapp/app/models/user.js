@@ -17,6 +17,10 @@ var userSchema = new Schema({
     type: String,
     trim: true
   },
+  token: {
+    type: String,
+    trim: true
+  },
   created: {
     type: Date,
     default: new Date()

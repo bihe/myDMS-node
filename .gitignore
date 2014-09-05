@@ -126,5 +126,5 @@ nodeapp/public/webapp/bower_components/
 nodeapp/upload/
 nodeapp/tmp
 nodeapp/files
-
+nodeapp/sandbox.js
 nodeapp/app/config/google.js

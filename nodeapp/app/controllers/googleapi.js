@@ -8,7 +8,8 @@ var logger = require('../util/logger' );
 var utils = require('../util/utils' );
 var config = require('../config/application');
 var StorageService = require('../services/storageService');
-
+var UserService = require('../services/userService');
+var randomstring = require('randomstring');
 var storageService = new StorageService();
 var oauthCredentials;
 
@@ -27,7 +28,11 @@ exports.connect = function(req, res, next) {
  * second step of the oauth login logic for google
  */
 exports.callback = function(req, res, next) {
-  var code = req.query.code;
+  var code = req.query.code
+    , token = ''
+    , userService = new UserService()
+    , tokenParam = '';
+
   try {
     if(!code || code === '') {
       return res.status(500).send('Empty access token supplied!');
@@ -35,7 +40,19 @@ exports.callback = function(req, res, next) {
 
     storageService.getToken(code).then(function(credentials) {
       oauthCredentials = credentials;
-      res.redirect('/#/settings/connection');
+
+      token = randomstring.generate(16);
+      userService.setToken('540a09000de52f5b129f23d0', token).then(function() {
+
+        tokenParam = new Buffer(token).toString('base64');
+
+        res.redirect('/#/settings/connection/' + tokenParam);
+      }).catch(function(error) {
+        console.log(error.stack);
+        return base.handleError(req, res, next, error);
+      }).done();
+
+
     }).catch(function(error) {
       console.log(error);
       return base.handleError(req, res, next, error);

@@ -58,7 +58,7 @@ app.locals.basePath = config.application.basePath;
 // Mongoose connection handling
 // --------------------------------------------------------------------------
 
-var uristring = database.uri;
+var uristring = process.env.MONGODB || database.uri;
 mongoose.connect(uristring, { server: { socketOptions: { keepAlive: 1 } } });
 
 // CONNECTION EVENTS
