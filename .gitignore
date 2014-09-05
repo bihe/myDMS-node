@@ -122,7 +122,8 @@ nodeapp/public/node_modules/
 
 data
 nodeapp/debug-tests.sh
-nodeapp/public/webapp/bower_components/
+nodeapp/public/app/bower_components/
+nodeapp/public/node_modules
 nodeapp/upload/
 nodeapp/tmp
 nodeapp/files

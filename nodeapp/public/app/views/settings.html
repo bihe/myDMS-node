@@ -1,0 +1,107 @@
+<div class="row" ng-cloak>
+  <div class="col-xs-12 col-sm-12 col-md-12">
+    <h2 translate="settings.title">Settings</h2>
+    
+    <ul class="nav nav-tabs nav-justified">
+      <li ng-class="{'active': activeTab == 'tabImport'}" ><a href="" ng-click="showTab('tabImport')" >Import</a></li>
+      <li ng-class="{'active': activeTab == 'tabExport'}" ><a href="" ng-click="showTab('tabExport')">Export</a></li>
+      <li ng-class="{'active': activeTab == 'tabDrive'}" ><a href="" ng-click="showTab('tabDrive')">Storage</a></li>
+    </ul>
+
+    <div class="alert alert-danger" ng-if="saveSuccess === false" style="margin-top: 10px">
+      <span class="fa fa-flash form-control-feedback"></span>
+      <strong translate="global.saveError">Form Error!</strong>
+      <p>{{ saveErrorMessage }}</p>
+    </div>
+
+    <div class="alert alert-success" ng-if="saveSuccess && action" style="margin-top: 10px">
+      <span class="fa fa-check-circle-o form-control-feedback"></span>
+      <strong translate="global.saveSuccess">Success!</strong>
+      <span translate="settings.save">Seetings saved</span>
+      <p>{{ saveMessage }}</p>
+    </div>
+
+    <!-- Tab panes -->
+    <div style="padding: 5px">
+      <div  ng-if="activeTab == 'tabImport'">
+        <h4 translate="settings.import">Import</h4>
+        
+        <div class="panel panel-default">
+          <div class="panel-heading" translate="settings.tags">Tags</div>
+          <div class="panel-body" ng-class="{'has-error': rawTagsValid == false}">
+            
+            <textarea class="form-control" rows="3" id="tags" ng-model="input.rawTags" placeholder='["tag1","tag2"]' ></textarea>
+            <div class="alert alert-info alert-small" translate="settings.json">Use valid JSON format</div>
+
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading" translate="settings.senders">Senders</div>
+          <div class="panel-body" ng-class="{'has-error': rawSendersValid == false}">
+            <textarea class="form-control" rows="3" id="senders" ng-model="input.rawSenders" placeholder='["sender1","sender2"]'></textarea>
+            <div class="alert alert-info alert-small" translate="settings.json">Use valid JSON format</div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading" translate="settings.documents">Documents</div>
+          <div class="panel-body" ng-class="{'has-error': rawDocumentsValid == false}">
+            <textarea class="form-control" rows="5" id="documents" ng-model="input.rawDocuments" placeholder='[{
+  "fileName" : "2011_01_14/max_kindergarten_122010.pdf",
+  "title" : "Kindergarten Max Dez. 2010",
+  "previewLink" : null,
+  "created" : "2011-01-14",
+  "senders" : [ "Hallein" ],
+  "tags" : [ "Max" ],
+  "alternativeId" : "156kdv7z"
+}]'></textarea>
+            <div class="alert alert-info alert-small" translate="settings.json">Use valid JSON format</div>
+          </div>
+        </div>
+
+      </div>
+      <div  ng-if="activeTab == 'tabExport'">
+        <h4 translate="settings.export">Export</h4>
+
+
+      </div>
+        <div  ng-if="activeTab == 'tabDrive'">
+            <h4 translate="settings.drive">Drive</h4>
+
+            <p>Google Drive is used to store the physical documents. It is a cloud based storage system from Google. To access the files in Google Drive first
+            an authentication is needed. This is done via OAuth.</p>
+
+            <p>Currently Google Drive is ...</p>
+
+            <p>
+            <input
+                bs-switch
+                ng-model="googleDrive.isActive"
+                type="checkbox"
+                switch-on-text="ON"
+                switch-off-text="OFF"
+                switch-size="large"
+                ng-click="startConnect()"
+                />
+
+            </p>
+
+        </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="row">
+  
+
+  <div class="col-xs-12 col-sm-12 col-md-12 ">
+    <div class="pull-left">
+    <button type="button" class="btn btn-primary btn-lg" translate="global.cancel" id="btnCancel" ng-click="cancel('/')">Cancel</button>
+    </div>
+    <div class="pull-right">
+    <button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave" ng-click="save()">Save</button>
+    </div>
+  </div>
+</div>
