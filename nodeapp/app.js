@@ -16,13 +16,30 @@ var bodyParser = require('body-parser');
 var multer  = require('multer');
 var csrf = require('csurf');
 var mongoose = require('mongoose');
+var passport = require('passport');
+var GoogleStrategy = require('passport-google').Strategy;
 
 var routes = require('./app/routes');
 var config = require('./app/config/application');
+var google = require('./app/config/google');
 var database = require('./app/config/database');
+var SecurityService = require('./app/services/securityService');
 
 var app = express();
 var env = app.get('env') || 'development';
+
+
+// --------------------------------------------------------------------------
+// Passport setup
+// --------------------------------------------------------------------------
+var secService = new SecurityService();
+passport.use(new GoogleStrategy({
+    returnURL: google.returnUrl,
+    realm: google.realm
+  },
+  secService.findUser
+));
+
 
 // --------------------------------------------------------------------------
 // Application setup
@@ -43,14 +60,16 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(session({name: 'mydms', secret: config.application.secret}));
 app.use(cookieParser(config.application.secret));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(csrf());
 app.use(multer({ dest: path.join(__dirname, 'tmp') }));
 
 if(env === 'development') {
-  app.use(express.static(path.join(__dirname, 'public/app')));
+  app.use('/static/', express.static(path.join(__dirname, 'public/app')));
   app.use(favicon(__dirname + '/public/app/html5.ico'));
 } else if(env === 'production') {
-  app.use(express.static(path.join(__dirname, 'public/app/dist')));
+  app.use('/static', secService.authRequired, secService.authRequired, express.static(path.join(__dirname, 'public/app/dist')));
   app.use(favicon(__dirname + '/public/app/dist/html5.ico'));
 }
 app.disable('x-powered-by');

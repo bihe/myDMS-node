@@ -24,7 +24,9 @@
     "multer": "~0.1.4",
     "googleapis": "~1.0.9",
     "csurf": "~1.6.1",
-    "cookie-session": "~1.0.2"
+    "cookie-session": "~1.0.2",
+    "passport": "~0.2.1",
+    "passport-google": "~0.3.0"
   },
   "devDependencies": {
     "mocha": "1.x"

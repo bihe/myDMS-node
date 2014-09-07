@@ -97,7 +97,7 @@ mydmsApp.factory('backendService', ['$http', function($http) {
   // save a dcouemnt create/update
   function _saveDocument(postData, type) {
     return $http({
-      url: './api/1.0/document/',
+      url: '/api/1.0/document/',
       method: type,
       data: postData,
       headers: {'Content-Type': 'application/json'}
@@ -110,7 +110,7 @@ mydmsApp.factory('backendService', ['$http', function($http) {
      * @returns the angularjs promise object 
      */
     getDocuments: function() {
-      return $http.get('./api/1.0/documents');
+      return $http.get('/api/1.0/documents');
     },
 
     /**
@@ -118,7 +118,7 @@ mydmsApp.factory('backendService', ['$http', function($http) {
      * @returns the angularjs promise object 
      */
     getSenders: function() {
-      return $http.get('./api/1.0/senders');
+      return $http.get('/api/1.0/senders');
     },
 
     /**
@@ -126,7 +126,7 @@ mydmsApp.factory('backendService', ['$http', function($http) {
      * @returns the angularjs promise object 
      */
     getTags: function() {
-      return $http.get('./api/1.0/tags');
+      return $http.get('/api/1.0/tags');
     },
 
     /**
@@ -158,7 +158,7 @@ mydmsApp.factory('backendService', ['$http', function($http) {
       query += '&limit=' + maxResults;
       query += '&skip=' + skip;
 
-      return $http.get('./api/1.0/documents?a=b' + query);
+      return $http.get('/api/1.0/documents?a=b' + query);
     },
 
     /**
@@ -168,7 +168,7 @@ mydmsApp.factory('backendService', ['$http', function($http) {
      */
     processSettings: function(postData) {
       return $http({
-        url: './api/1.0/settings/',
+        url: '/api/1.0/settings/',
         method: 'POST',
         data: postData,
         headers: {'Content-Type': 'application/json'}
@@ -181,7 +181,7 @@ mydmsApp.factory('backendService', ['$http', function($http) {
      * @returns the angularjs promise object 
      */
     getDocumentById: function(id) {
-      return $http.get('./api/1.0/document/' + id);
+      return $http.get('/api/1.0/document/' + id);
     },
 
     /**
@@ -208,7 +208,7 @@ mydmsApp.factory('backendService', ['$http', function($http) {
      * @returns the angularjs promise object 
      */
     deleteDocument: function(id) {
-      return $http.delete('./api/1.0/document/' + id);
+      return $http.delete('/api/1.0/document/' + id);
     }
   };
 }]);
