@@ -10,9 +10,11 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
+var session = require('cookie-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var multer  = require('multer');
+var csrf = require('csurf');
 var mongoose = require('mongoose');
 
 var routes = require('./app/routes');
@@ -39,7 +41,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-app.use(cookieParser());
+app.use(session({name: 'mydms', secret: config.application.secret}));
+app.use(cookieParser(config.application.secret));
+app.use(csrf());
 app.use(multer({ dest: path.join(__dirname, 'tmp') }));
 
 if(env === 'development') {
@@ -89,6 +93,20 @@ process.on('SIGINT', function() {
     console.log('Mongoose default connection disconnected through app termination');
     process.exit(0);
   });
+});
+
+// --------------------------------------------------------------------------
+// CSRF handling with angular
+// --------------------------------------------------------------------------
+
+app.use(function(req, res, next) {
+
+  if(!req.session.currentToken) {
+    var csrfToken = req.csrfToken();
+    res.cookie('XSRF-TOKEN', csrfToken);
+    req.session.currentToken = csrfToken;
+  }
+  next();
 });
 
 // --------------------------------------------------------------------------

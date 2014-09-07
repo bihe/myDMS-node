@@ -140,7 +140,7 @@ describe('Backend', function() {
         assert(!err, err);
         User.findOne({}).exec(function(err, foundUser) {
           assert(!err, err);
-          foundUser.googleToken = { a: 'b', c: { aa: 'bb', c: 'cc', d: 'dd'}};
+          foundUser.token = { a: 'b', c: { aa: 'bb', c: 'cc', d: 'dd'}};
 
           foundUser.save(function(err) {
 
@@ -148,8 +148,8 @@ describe('Backend', function() {
               assert(!err, err);
               console.log(foundUser);
 
-              assert.equal(foundUser.googleToken.a, 'b', 'User object path does not match b!');
-              assert.equal(foundUser.googleToken.c.c, 'cc', 'User object path does not match cc!');
+              assert.equal(foundUser.token.a, 'b', 'User object path does not match b!');
+              assert.equal(foundUser.token.c.c, 'cc', 'User object path does not match cc!');
 
               done();
             });
@@ -189,13 +189,19 @@ describe('Backend', function() {
       user.save(function(err, u) {
         assert(!err, err);
 
-        var userService = new UserService();
+        var userService = new UserService()
+          , token = {};
 
-        userService.setToken(u._id, '--token--').then(function() {
+        token.val = 1;
+        token.a = 'b';
+
+        userService.setToken(u._id, token).then(function() {
           return userService.findUserById(u._id);
         }).then(function(user) {
           assert(user, 'No user!');
-          assert.equal(user.token, '--token--', 'Wrong token!');
+          //logger.logDump('## TOKEN ##', user.token);
+          assert.equal(user.token.val, token.val, 'Wrong token!');
+          assert.equal(user.token.a, token.a, 'Wrong token!');
 
         }).catch(function(error) {
           console.log(error.stack);

@@ -50,9 +50,9 @@ mydmsApp.controller('SettingsController', ['$scope'
     // ------------------------------------------------------------------------
     // startup actions / events
     // ------------------------------------------------------------------------
-    if($routeParams && $routeParams.connectionState) {
+    if($routeParams && $routeParams.connection) {
       // TODO: verify the connection
-      console.log('got connection state: ' + base64.decode($routeParams.connectionState));
+      console.log('check for connection state!');
 
 
 

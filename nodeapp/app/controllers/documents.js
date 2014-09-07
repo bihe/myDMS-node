@@ -84,7 +84,7 @@ exports.index = function( req, res, next ) {
 
   logger.dump(filter);
 
-  Document.find(filter).sort({created: -1})
+  Document.find(filter).sort({created: -1, title: 1})
   .skip(skip)
   .limit(limit)
   .populate('tags senders')

@@ -3,6 +3,13 @@
 /*
  * simple helper function to dump a object to console
  */
-exports.dump = function( object ) {
-  console.log(JSON.stringify(object, null, 4));
+
+module.exports = {
+  dump: function( object ) {
+    console.log(JSON.stringify(object, null, 4));
+  },
+
+  logDump: function( logMessage, object ) {
+    console.log(logMessage + ': ' + JSON.stringify(object, null, 4));
+  }
 };

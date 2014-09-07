@@ -31,7 +31,7 @@ mydmsApp
                     templateUrl: 'views/settings.html',
                     controller: 'SettingsController'
                 })
-                .when('/settings/connection/:connectionState', {
+                .when('/settings/:connection', {
                   templateUrl: 'views/settings.html',
                   controller: 'SettingsController'
                 })

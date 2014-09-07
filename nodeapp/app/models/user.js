@@ -17,15 +17,14 @@ var userSchema = new Schema({
     type: String,
     trim: true
   },
-  token: {
-    type: String,
-    trim: true
+  tokenDate: {
+    type: Date
   },
   created: {
     type: Date,
     default: new Date()
   },
-  googleToken: Schema.Types.Mixed
+  token: Schema.Types.Mixed
 });
 
 userSchema.methods.toString = function() {

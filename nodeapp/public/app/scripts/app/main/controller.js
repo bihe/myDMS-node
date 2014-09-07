@@ -3,7 +3,20 @@
 /*
  * handel the main screen
  */
-mydmsApp.controller('MainController', ['$scope', '$rootScope', '$location', 'backendService', 'stateService', '_', function ($scope, $rootScope, $location, backendService, stateService, _) {
+mydmsApp.controller('MainController', ['$scope'
+  , '$rootScope'
+  , '$location'
+  , 'backendService'
+  , 'stateService'
+  , 'storageService'
+  , '_'
+  , function ($scope
+    , $rootScope
+    , $location
+    , backendService
+    , stateService
+    , storageService
+    , _) {
 
   // ------------------------------------------------------------------------
   // initialisation
@@ -161,7 +174,5 @@ mydmsApp.controller('MainController', ['$scope', '$rootScope', '$location', 'bac
       alert('Error: ' + data + '\nHTTP-Status: ' + status);
     });
   }
-
- 
 
 }]);

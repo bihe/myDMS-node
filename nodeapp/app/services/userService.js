@@ -76,19 +76,20 @@ UserService.prototype = (function() {
     /**
      * set the token for the given user
      * @param userid {objectid} the id of user
-     * @param token {string} a token
+     * @param token {object} a token
      *
      * @return {deferred} promise
      */
     setToken: function(userid, token) {
       var deferred = q.defer();
 
-      User.where({ _id: userid }).update({ $set: { token: token }}, function(err, numberAffected) {
+      User.where({ _id: userid }).update({ $set: { token: token, tokenDate: new Date() }}, function(err, numberAffected) {
         if(err) {
           return deferred.reject(err);
         }
 
         if(numberAffected === 1) {
+
           return deferred.resolve();
         }
 
@@ -96,13 +97,6 @@ UserService.prototype = (function() {
       });
 
       return deferred.promise;
-    },
-
-    /**
-     *
-     */
-    updateAccount: function(accountObject) {
-      
     }
 
   };

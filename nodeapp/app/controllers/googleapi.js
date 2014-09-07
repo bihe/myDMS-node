@@ -30,8 +30,7 @@ exports.connect = function(req, res, next) {
 exports.callback = function(req, res, next) {
   var code = req.query.code
     , token = ''
-    , userService = new UserService()
-    , tokenParam = '';
+    , userService = new UserService();
 
   try {
     if(!code || code === '') {
@@ -41,12 +40,9 @@ exports.callback = function(req, res, next) {
     storageService.getToken(code).then(function(credentials) {
       oauthCredentials = credentials;
 
-      token = randomstring.generate(16);
-      userService.setToken('540a09000de52f5b129f23d0', token).then(function() {
+      userService.setToken('540a09000de52f5b129f23d0', credentials).then(function() {
 
-        tokenParam = new Buffer(token).toString('base64');
-
-        res.redirect('/#/settings/connection/' + tokenParam);
+        res.redirect('/#/settings/connection');
       }).catch(function(error) {
         console.log(error.stack);
         return base.handleError(req, res, next, error);
