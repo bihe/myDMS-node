@@ -7,8 +7,10 @@
 var version = require('../config/version');
 
 // the index path - render the mustache template
-exports.index = function(req, res){
-  res.render('index', {templates: 'mustache template'});
+exports.login = function(req, res) {
+  res.locals.errors = req.flash();
+  console.log(res.locals.errors);
+  res.render('login', { messages: res.locals.errors });
 };
 
 // return the current version as plain/text

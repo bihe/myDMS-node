@@ -26,7 +26,7 @@ UserService.prototype = (function() {
   return {
 
     /**
-     * find a user by email
+     * find a user by id
      * @param id {objectid} the id
      *
      * @return {deferred} promise with the given user
@@ -38,11 +38,7 @@ UserService.prototype = (function() {
         if(err) {
           return deferred.reject(err);
         }
-        if(user) {
-          return deferred.resolve(user);
-        }
-
-        return deferred.reject(new Error('No user found for email ' + email));
+        return deferred.resolve(user);
       });
 
       return deferred.promise;
@@ -63,11 +59,28 @@ UserService.prototype = (function() {
         if(err) {
           return deferred.reject(err);
         }
-        if(user) {
-          return deferred.resolve(user);
-        }
+        return deferred.resolve(user);
+      });
 
-        return deferred.reject(new Error('No user found for email ' + email));
+      return deferred.promise;
+    },
+
+    /**
+     * find a user by openId
+     * @param email {string} the user email
+     *
+     * @return {deferred} promise with the given user
+     */
+    findUserByOpenId: function(openid) {
+      var deferred = q.defer()
+        , filter = {};
+
+      filter.openid = openid;
+      User.findOne( filter ).exec(function (err, user) {
+        if(err) {
+          return deferred.reject(err);
+        }
+        return deferred.resolve(user);
       });
 
       return deferred.promise;

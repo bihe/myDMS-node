@@ -17,6 +17,10 @@ var userSchema = new Schema({
     type: String,
     trim: true
   },
+  openid: {
+    type: String,
+    trim: true
+  },
   tokenDate: {
     type: Date
   },

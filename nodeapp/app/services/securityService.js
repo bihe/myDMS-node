@@ -15,7 +15,8 @@ function SecurityService() {
 }
 
 /*
- * method, logic implementation
+ * SecurityService implements necessary methods for passport
+ * authentication logic
  */
 SecurityService.prototype = (function() {
 
@@ -33,41 +34,67 @@ SecurityService.prototype = (function() {
     findUser: function(identifier, profile, callback) {
       var userService = new UserService();
       // use the first email!
-      userService.findUserByEmail(profile.emails[0].value).then(function(user) {
-        callback(null, user);
+      userService.findUserByOpenId(identifier).then(function(user) {
+        if(!user) {
+          console.info('Could not find the user!');
+          return callback(null, false, { message: 'The supplied Google account is not allowed to use this service!' });
+        }
+
+        // also check the email of the user
+        if(user.email === profile.emails[0].value) {
+          console.info('Got authenticated user: ' + user.displayName);
+          callback(null, user);
+        } else {
+          console.error('The email address of the given account did not match!');
+          callback(null, false, { message: 'The supplied Google account is not allowed to use this service! A wrong email address is used!' });
+        }
       }).catch(function(error) {
         console.error('Could not find the user! ' + error);
         callback(error, null);
       }).done();
     },
 
-    // Simple route middleware to ensure user is authenticated.
-    //   Use this route middleware on any resource that needs to be protected.  If
-    //   the request is authenticated (typically via a persistent login session),
-    //   the request will proceed.  Otherwise, the user will be redirected to the
-    //   login page.
+    /**
+     * Simple route middleware to ensure user is authenticated
+     * @param req
+     * @param res
+     * @param next
+     * @returns {*}
+     */
     authRequired: function(req, res, next) {
       if (req.isAuthenticated()) {
         return next();
       }
       res.redirect('/login')
+    },
+
+    /**
+     * To support persistent login sessions, Passport needs to be able to
+     * serialize users into and deserialize users out of the session.
+     * @param user
+     * @param callback
+     */
+    serializeUser: function(user, callback) {
+      // simple logic, just use the id of the user!
+      callback(null, user._id);
+    },
+
+    /**
+     * deserialize the user from the session
+     * @param obj
+     * @param callback
+     */
+    deserializeUser: function(obj, callback) {
+      // in the session juse the user-id was serialized
+      // use the id to load the user again
+      var userService = new UserService();
+      userService.findUserById(obj).then(function(user) {
+        callback(null, user);
+      }).catch(function(error) {
+        console.error('Could not find the user! ' + error);
+        callback(error, null);
+      }).done();
     }
-
-
-//    // Passport session setup.
-////   To support persistent login sessions, Passport needs to be able to
-////   serialize users into and deserialize users out of the session.  Typically,
-////   this will be as simple as storing the user ID when serializing, and finding
-////   the user by ID when deserializing.  However, since this example does not
-////   have a database of user records, the complete Google profile is serialized
-////   and deserialized.
-//    passport.serializeUser(function(user, done) {
-//      done(null, user);
-//    });
-//
-//  passport.deserializeUser(function(obj, done) {
-//    done(null, obj);
-//  });
   };
 
 })();

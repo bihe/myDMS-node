@@ -16,6 +16,7 @@ var bodyParser = require('body-parser');
 var multer  = require('multer');
 var csrf = require('csurf');
 var mongoose = require('mongoose');
+var flash = require('connect-flash');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google').Strategy;
 
@@ -33,6 +34,9 @@ var env = app.get('env') || 'development';
 // Passport setup
 // --------------------------------------------------------------------------
 var secService = new SecurityService();
+
+passport.serializeUser(secService.serializeUser);
+passport.deserializeUser(secService.deserializeUser);
 passport.use(new GoogleStrategy({
     returnURL: google.returnUrl,
     realm: google.realm
@@ -59,6 +63,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(session({name: 'mydms', secret: config.application.secret}));
+app.use(flash());
 app.use(cookieParser(config.application.secret));
 app.use(passport.initialize());
 app.use(passport.session());
