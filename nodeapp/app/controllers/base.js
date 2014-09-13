@@ -6,6 +6,11 @@
 
 var version = require('../config/version');
 
+// the index path just redirects to /static
+exports.index = function(req, res) {
+  res.redirect('/static');
+};
+
 // the index path - render the mustache template
 exports.login = function(req, res) {
   res.locals.errors = req.flash();

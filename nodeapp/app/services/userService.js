@@ -86,6 +86,26 @@ UserService.prototype = (function() {
       return deferred.promise;
     },
 
+
+    /**
+     * get the token for a given user-id
+     * @param id {objectid} the id
+     *
+     * @return {deferred} promise with a token
+     */
+    getTokenFromUser: function(id) {
+      var deferred = q.defer();
+
+      User.findById(id).exec(function (err, user) {
+        if(err) {
+          return deferred.reject(err);
+        }
+        return deferred.resolve(user.token);
+      });
+
+      return deferred.promise;
+    },
+
     /**
      * set the token for the given user
      * @param userid {objectid} the id of user

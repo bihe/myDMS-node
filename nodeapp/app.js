@@ -21,6 +21,9 @@ var passport = require('passport');
 var GoogleStrategy = require('passport-google').Strategy;
 
 var routes = require('./app/routes');
+var apiRoutes = require('./app/routes/api');
+var authRoutes = require('./app/routes/auth');
+var driveRoutes = require('./app/routes/drive');
 var config = require('./app/config/application');
 var google = require('./app/config/google');
 var database = require('./app/config/database');
@@ -137,7 +140,10 @@ app.use(function(req, res, next) {
 // Route handling
 // --------------------------------------------------------------------------
 
-app.use('/', routes);
+app.use('/auth', authRoutes);
+app.use('/api', secService.authRequired, apiRoutes);
+app.use('/oauth', secService.authRequired, driveRoutes);
+app.use('/', secService.authRequired, routes);
 
 // --------------------------------------------------------------------------
 // Error handling

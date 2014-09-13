@@ -33,7 +33,7 @@ SecurityService.prototype = (function() {
      */
     findUser: function(identifier, profile, callback) {
       var userService = new UserService();
-      // use the first email!
+      console.log(identifier);
       userService.findUserByOpenId(identifier).then(function(user) {
         if(!user) {
           console.info('Could not find the user!');
@@ -65,7 +65,7 @@ SecurityService.prototype = (function() {
       if (req.isAuthenticated()) {
         return next();
       }
-      res.redirect('/login')
+      res.redirect('/auth/login')
     },
 
     /**
@@ -85,7 +85,12 @@ SecurityService.prototype = (function() {
      * @param callback
      */
     deserializeUser: function(obj, callback) {
-      // in the session juse the user-id was serialized
+      // just return the id
+      callback(null, obj);
+
+      /* rather resource hungry, only load the user when needed!
+
+      // in the session the user-id was serialized
       // use the id to load the user again
       var userService = new UserService();
       userService.findUserById(obj).then(function(user) {
@@ -94,6 +99,8 @@ SecurityService.prototype = (function() {
         console.error('Could not find the user! ' + error);
         callback(error, null);
       }).done();
+
+      */
     }
   };
 

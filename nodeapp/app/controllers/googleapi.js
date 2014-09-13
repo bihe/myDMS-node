@@ -9,16 +9,14 @@ var utils = require('../util/utils' );
 var config = require('../config/application');
 var StorageService = require('../services/storageService');
 var UserService = require('../services/userService');
-var randomstring = require('randomstring');
-var storageService = new StorageService();
-var oauthCredentials;
 
 /*
  * url: /oauth/connect
  * first step of the oauth login logic for google
  */
 exports.connect = function(req, res, next) {
-  var authUrl;
+  var authUrl
+    , storageService = new StorageService();
   authUrl = storageService.generateAuthUrl();
   res.redirect(authUrl);
 };
@@ -30,27 +28,24 @@ exports.connect = function(req, res, next) {
 exports.callback = function(req, res, next) {
   var code = req.query.code
     , token = ''
-    , userService = new UserService();
+    , userService = new UserService()
+    , storageService = new StorageService();
 
   try {
     if(!code || code === '') {
       return res.status(500).send('Empty access token supplied!');
     }
 
+    // get the token and store it with the user
     storageService.getToken(code).then(function(credentials) {
-      oauthCredentials = credentials;
 
-      userService.setToken('540a09000de52f5b129f23d0', credentials).then(function() {
+      return userService.setToken(req.user, credentials);
+    }).then(function() {
 
-        res.redirect('/#/settings/connection');
-      }).catch(function(error) {
-        console.log(error.stack);
-        return base.handleError(req, res, next, error);
-      }).done();
-
-
+      res.redirect('/static/#/settings/connection');
     }).catch(function(error) {
-      console.log(error);
+
+      console.log(error.stack);
       return base.handleError(req, res, next, error);
     }).done();
 
@@ -60,14 +55,23 @@ exports.callback = function(req, res, next) {
 };
 
 /*
- * url: /listfiles
+ * url: /oauth/listfiles
  * display files from google drive
  */
 exports.listfiles = function(req, res, next) {
-  storageService.listfiles('title contains \'media_rechnung.pdf\'', oauthCredentials).then(function (response) {
+  var userService = new UserService()
+    , storageService = new StorageService();
+
+  // get the user-id and retrieve the necessary token
+  userService.getTokenFromUser(req.user).then(function(token) {
+
+    return storageService.listfiles('title contains \'media_rechnung.pdf\'', token);
+  }).then(function(response) {
+
     console.log(response);
     res.status(200).send(response);
   }).catch(function (err) {
+
     console.log(err);
     return res.status(500).send('Got an error: ' + err.code + ' / ' + err.message);
   }).done();
