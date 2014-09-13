@@ -8,5 +8,23 @@ mydmsApp.controller('LanguageController', ['$scope', '$translate', function ($sc
   };
 }]);
 
-mydmsApp.controller('MenuController', ['$scope', function ($scope) {
+mydmsApp.controller('AccountController', ['$scope'
+  , 'backendService'
+  , function ($scope
+    , backendService) {
+
+  // ------------------------------------------------------------------------
+  // scope variables
+  // ------------------------------------------------------------------------
+  $scope.user = {};
+
+  // ------------------------------------------------------------------------
+  // startup-logic
+  // ------------------------------------------------------------------------
+  backendService.getUser().success(function (data, status, headers, config) {
+    $scope.user = data;
+  }).error(function (data, status, headers, config) {
+    console.log('Error: ' + data);
+  });
+
 }]);

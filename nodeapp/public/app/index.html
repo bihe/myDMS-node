@@ -62,50 +62,34 @@
                 
                 <ul class="nav navbar-nav navbar-right">
                 
-                    <li class="dropdown pointer">
-                            <a class="dropdown-toggle" data-toggle="dropdown">
-                                <span>
-                                    <span class="glyphicon glyphicon-user"></span>
-                                    <span class="hidden-tablet" translate="global.menu.account.main">
-                                        Account
-                                    </span>
-                                    <b class="caret"></b>
-                                </span>
-                            </a>
-                            <ul class="dropdown-menu" ng-controller="MenuController">
-                                <!-- <li ng-show="authenticated"><a href="#/settings"><span class="glyphicon glyphicon-wrench"></span>
-                                    &nbsp;<span translate="global.menu.account.settings">Settings</span></a></li>
-                                 -->
-                              
-                                <li ng-show="authenticated"><a href="#/metrics"><span class="glyphicon glyphicon-dashboard"></span>
-                                    &nbsp;<span translate="global.menu.account.metrics">Metrics</span></a></li>
-                                <li ng-show="authenticated"><a href="#/logs"><span class="glyphicon glyphicon-tasks"></span>
-                                    &nbsp;<span translate="global.menu.account.logs">Logs</span></a></li>
-                                <li ng-show="authenticated"><a href="#/logout"><span class="glyphicon glyphicon-log-out"></span>
-                                    &nbsp;<span translate="global.menu.account.logout">Log out</span></a></li>
-                                <li ng-hide="authenticated"><a href="#/login"><span class="glyphicon glyphicon-log-in"></span>
-                                    &nbsp;<span translate="global.menu.account.login">Authenticate</span></a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown pointer" ng-controller="LanguageController">
-                            <a class="dropdown-toggle" data-toggle="dropdown">
-                                <span>
-                                    <span class="glyphicon glyphicon-flag"></span>
-                                    <span class="hidden-tablet" translate="global.menu.language">Language</span>
-                                    <b class="caret"></b>
-                                </span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li active-menu="en">
-                                    <a href="#" ng-click="changeLanguage(&apos;en&apos;)"><span class="flag-icon gb"></span>
-                                        &nbsp;<span translate="global.language.en">English</span></a>
-                                </li>
-                                <li active-menu="de">
-                                    <a href="#" ng-click="changeLanguage(&apos;de&apos;)"><span class="flag-icon at"></span>
-                                        &nbsp;<span translate="global.language.de">German</span></a>
-                                </li>
-                            </ul>
-                        </li>
+                    <li class="" ng-controller="AccountController">
+                        <a class="">
+                            <span ng-cloak class="ng-cloak">
+                                <span class="glyphicon glyphicon-user"></span>
+                                {{ user.displayName }}
+
+                            </span>
+                        </a>
+                    </li>
+                    <li class="dropdown pointer" ng-controller="LanguageController">
+                        <a class="dropdown-toggle" data-toggle="dropdown">
+                            <span>
+                                <span class="glyphicon glyphicon-flag"></span>
+                                <span class="hidden-tablet" translate="global.menu.language">Language</span>
+                                <b class="caret"></b>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li active-menu="en">
+                                <a href="#" ng-click="changeLanguage(&apos;en&apos;)"><span class="flag-icon gb"></span>
+                                    &nbsp;<span translate="global.language.en">English</span></a>
+                            </li>
+                            <li active-menu="de">
+                                <a href="#" ng-click="changeLanguage(&apos;de&apos;)"><span class="flag-icon at"></span>
+                                    &nbsp;<span translate="global.language.de">German</span></a>
+                            </li>
+                        </ul>
+                    </li>
              
                 </ul>
                 

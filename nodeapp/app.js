@@ -1,8 +1,7 @@
-/*jslint node: true */
-
 /**
  * Module dependencies.
  */
+
 'use strict';
 
 var http = require('http');
@@ -77,7 +76,7 @@ if(env === 'development') {
   app.use('/static/', express.static(path.join(__dirname, 'public/app')));
   app.use(favicon(__dirname + '/public/app/html5.ico'));
 } else if(env === 'production') {
-  app.use('/static', secService.authRequired, secService.authRequired, express.static(path.join(__dirname, 'public/app/dist')));
+  app.use('/static', express.static(path.join(__dirname, 'public/app/dist')));
   app.use(favicon(__dirname + '/public/app/dist/html5.ico'));
 }
 app.disable('x-powered-by');

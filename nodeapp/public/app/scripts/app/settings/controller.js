@@ -50,17 +50,20 @@ mydmsApp.controller('SettingsController', ['$scope'
     // ------------------------------------------------------------------------
     // startup actions / events
     // ------------------------------------------------------------------------
+
+    backendService.getUser().success(function (data, status, headers, config) {
+
+      if(data.hasToken) {
+        $scope.googleDrive.isProvided = true;
+        $scope.googleDrive.isActive = true;
+      }
+    }).error(function (data, status, headers, config) {
+      console.log('Error: ' + data);
+    });
+
     if($routeParams && $routeParams.connection) {
-      // TODO: verify the connection
-      console.log('check for connection state!');
-
-
-
       $scope.activeTab = 'tabDrive';
-      $scope.googleDrive.isProvided = true;
-      $scope.googleDrive.isActive = true;
     }
-
 
     // ------------------------------------------------------------------------
     // actions

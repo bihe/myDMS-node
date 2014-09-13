@@ -74,6 +74,7 @@ UserService.prototype = (function() {
     findUserByOpenId: function(openid) {
       var deferred = q.defer()
         , filter = {};
+      // TODO: encrypt openid string
 
       filter.openid = openid;
       User.findOne( filter ).exec(function (err, user) {
@@ -100,6 +101,7 @@ UserService.prototype = (function() {
         if(err) {
           return deferred.reject(err);
         }
+        // TODO: decrypt token
         return deferred.resolve(user.token);
       });
 
@@ -115,14 +117,13 @@ UserService.prototype = (function() {
      */
     setToken: function(userid, token) {
       var deferred = q.defer();
-
+      // TODO: encrypt token
       User.where({ _id: userid }).update({ $set: { token: token, tokenDate: new Date() }}, function(err, numberAffected) {
         if(err) {
           return deferred.reject(err);
         }
 
         if(numberAffected === 1) {
-
           return deferred.resolve();
         }
 

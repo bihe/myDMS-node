@@ -209,6 +209,14 @@ mydmsApp.factory('backendService', ['$http', function($http) {
      */
     deleteDocument: function(id) {
       return $http.delete('/api/1.0/document/' + id);
+    },
+
+    /**
+     * get the user
+     * @returns the angularjs promise object
+     */
+    getUser: function() {
+      return $http.get('/api/1.0/user');
     }
   };
 }]);
