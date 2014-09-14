@@ -9,6 +9,7 @@ var passport = require('passport');
 var router = express.Router();
 
 var baseController = require('../controllers/base');
+var google = require('../config/google');
 
 // setup the routes and delegate logic to the controllers
 // --------------------------------------------------------------------------
@@ -19,7 +20,7 @@ router.get('/login', baseController.login);
 //   request.  The first step in Google authentication will involve redirecting
 //   the user to google.com.  After authenticating, Google will redirect the
 //   user back to this application at /auth/google/return
-router.get('/google', passport.authenticate('google'));
+router.get('/google', passport.authenticate('google', { scope: google.SCOPE}));
 
 // GET /google/return
 //   Use passport.authenticate() as route middleware to authenticate the

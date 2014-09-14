@@ -34,7 +34,7 @@ exports.user = function(req, res) {
     if(user.token.access_token) {
       viewModel.hasToken = true;
     }
-
+    viewModel.thumb = user.thumb;
     viewModel.displayName = user.displayName;
     viewModel.email = user.email;
 

@@ -31,23 +31,30 @@ SecurityService.prototype = (function() {
      * @param profile
      * @param callback
      */
-    findUser: function(identifier, profile, callback) {
-      var userService = new UserService();
-      console.log(identifier);
-      userService.findUserByOpenId(identifier).then(function(user) {
-        if(!user) {
+    findOAuthUser: function(accessToken, refreshToken, profile, callback) {
+      var userService = new UserService()
+        , credentials = {}
+        , foundUser = null;
+
+      userService.findUserByEmail(profile._json.email).then(function(user) {
+        if (!user) {
           console.info('Could not find the user!');
           return callback(null, false, { message: 'The supplied Google account is not allowed to use this service!' });
         }
 
-        // also check the email of the user
-        if(user.email === profile.emails[0].value) {
-          console.info('Got authenticated user: ' + user.displayName);
-          callback(null, user);
-        } else {
-          console.error('The email address of the given account did not match!');
-          callback(null, false, { message: 'The supplied Google account is not allowed to use this service! A wrong email address is used!' });
-        }
+        foundUser = user;
+        console.info('Got authenticated user: ' + foundUser.displayName);
+
+        // setup a token
+        credentials.access_token = accessToken;
+        credentials.token_type = 'Bearer';
+        credentials.expiry_date = null;
+
+        return userService.setTokenAndProfile(user._id, credentials, profile._json);
+
+      }).then(function() {
+
+        callback(null, foundUser);
       }).catch(function(error) {
         console.error('Could not find the user! ' + error);
         callback(error, null);

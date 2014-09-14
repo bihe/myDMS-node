@@ -35,7 +35,7 @@ StorageService.prototype = (function() {
   var authClient = function() {
     var oauth2Client = new googleapis.auth.OAuth2(googleConfig.CLIENT_ID
       , googleConfig.CLIENT_SECRET
-      , googleConfig.redirectUrl);
+      , googleConfig.RETURN_URL);
 
     return oauth2Client;
   };
@@ -55,47 +55,22 @@ StorageService.prototype = (function() {
       throw new Error('No credentials supplied!');
     }
     return oauth2Client;
-  }
+  };
+
+  /**
+   * check the validity of the given credentials
+   * @param credentials
+   */
+  var checkCredentials = function(credentials) {
+
+    if(typeof credentials === 'object' && credentials.access_token) {
+      return true;
+    }
+    return false;
+  };
 
   // public section
   return {
-
-    /**
-     * get the authentication URL
-     *
-     * @return {string} the generated auth URL
-     */
-    generateAuthUrl: function() {
-      var authUrl = authClient().generateAuthUrl({ scope: googleConfig.SCOPE });
-      return authUrl;
-    },
-
-    /**
-     * get the oauth token of the supplied code
-     * @param code
-     *
-     * @return {promise} a promise object - returning the oauth credentials
-     */
-    getToken: function(code) {
-      var deferred = q.defer();
-      // request access token
-      authClient().getToken(code, function(err, tokens) {
-        if(err) {
-          return q.reject(err);
-        }
-        try {
-          console.log(tokens);
-          //authClient().setCredentials(tokens);
-
-          return deferred.resolve(tokens);
-
-        } catch (error) {
-          return q.reject(error);
-        }
-      });
-
-      return deferred.promise;
-    },
 
     /**
      * list files from the storage system
@@ -105,7 +80,15 @@ StorageService.prototype = (function() {
      * @return {promise} a promise object
      */
     listfiles: function(query, credentials) {
-      var deferred = q.defer();
+      var deferred = q.defer()
+        , error = {};
+
+      if(checkCredentials(credentials) === false) {
+        error = new Error('credentials not valid!');
+        error.code = 500;
+        deferred.reject(error);
+        return deferred.promise;
+      }
 
       try {
         drive.files.list({
@@ -114,12 +97,12 @@ StorageService.prototype = (function() {
           auth: authClientUse(credentials)
         }, function(err, response) {
           if(err) {
-            return q.reject(err);
+            return deferred.reject(err);
           }
           return deferred.resolve(response);
         });
       } catch(err) {
-        return q.reject(err);
+        return deferred.reject(err);
       }
 
       return deferred.promise;

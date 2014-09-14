@@ -17,7 +17,7 @@ var userSchema = new Schema({
     type: String,
     trim: true
   },
-  openid: {
+  thumb: {
     type: String,
     trim: true
   },
@@ -28,7 +28,8 @@ var userSchema = new Schema({
     type: Date,
     default: new Date()
   },
-  token: Schema.Types.Mixed
+  token: Schema.Types.Mixed,
+  profile: Schema.Types.Mixed
 });
 
 userSchema.methods.toString = function() {

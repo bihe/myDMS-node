@@ -17,7 +17,7 @@ var csrf = require('csurf');
 var mongoose = require('mongoose');
 var flash = require('connect-flash');
 var passport = require('passport');
-var GoogleStrategy = require('passport-google').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var routes = require('./app/routes');
 var apiRoutes = require('./app/routes/api');
@@ -40,10 +40,11 @@ var secService = new SecurityService();
 passport.serializeUser(secService.serializeUser);
 passport.deserializeUser(secService.deserializeUser);
 passport.use(new GoogleStrategy({
-    returnURL: google.returnUrl,
-    realm: google.realm
+    clientID: google.CLIENT_ID,
+    clientSecret: google.CLIENT_SECRET,
+    callbackURL: google.RETURN_URL
   },
-  secService.findUser
+  secService.findOAuthUser
 ));
 
 
@@ -53,7 +54,7 @@ passport.use(new GoogleStrategy({
 
 // server settings
 app.set('port', process.env.PORT || 3000);
-app.set('host', '127.0.0.1');
+app.set('host', process.env.HOST || '127.0.0.1');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'app/views'));
@@ -141,7 +142,7 @@ app.use(function(req, res, next) {
 
 app.use('/auth', authRoutes);
 app.use('/api', secService.authRequired, apiRoutes);
-app.use('/oauth', secService.authRequired, driveRoutes);
+app.use('/drive', secService.authRequired, driveRoutes);
 app.use('/', secService.authRequired, routes);
 
 // --------------------------------------------------------------------------

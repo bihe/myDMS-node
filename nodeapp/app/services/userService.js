@@ -7,7 +7,9 @@
 
 var async = require('async')
   , q = require('q')
-  , User = require('../models/user');
+  , Iron = require('iron')
+  , User = require('../models/user')
+  , s = require('../config/security');
 
 /**
  * @constructor
@@ -66,29 +68,6 @@ UserService.prototype = (function() {
     },
 
     /**
-     * find a user by openId
-     * @param email {string} the user email
-     *
-     * @return {deferred} promise with the given user
-     */
-    findUserByOpenId: function(openid) {
-      var deferred = q.defer()
-        , filter = {};
-      // TODO: encrypt openid string
-
-      filter.openid = openid;
-      User.findOne( filter ).exec(function (err, user) {
-        if(err) {
-          return deferred.reject(err);
-        }
-        return deferred.resolve(user);
-      });
-
-      return deferred.promise;
-    },
-
-
-    /**
      * get the token for a given user-id
      * @param id {objectid} the id
      *
@@ -101,33 +80,47 @@ UserService.prototype = (function() {
         if(err) {
           return deferred.reject(err);
         }
-        // TODO: decrypt token
-        return deferred.resolve(user.token);
+        // decrypt the auth token
+        Iron.unseal(user.token, s.secret, Iron.defaults, function(err, unsealed) {
+          if(err) {
+            return deferred.reject(err);
+          }
+          return deferred.resolve(unsealed);
+        });
+
+
       });
 
       return deferred.promise;
     },
 
     /**
-     * set the token for the given user
+     * set the token and profile for the given user
      * @param userid {objectid} the id of user
      * @param token {object} a token
+     * @param profile {object} a profile
      *
      * @return {deferred} promise
      */
-    setToken: function(userid, token) {
+    setTokenAndProfile: function(userid, token, profile) {
       var deferred = q.defer();
-      // TODO: encrypt token
-      User.where({ _id: userid }).update({ $set: { token: token, tokenDate: new Date() }}, function(err, numberAffected) {
+
+      // use iron to encrypt the object
+      Iron.seal(token, s.secret, Iron.defaults, function(err, sealed) {
         if(err) {
           return deferred.reject(err);
         }
+        User.where({ _id: userid }).update({ $set: { token: sealed, tokenDate: new Date(), profile: profile }}, function(err, numberAffected) {
+          if(err) {
+            return deferred.reject(err);
+          }
 
-        if(numberAffected === 1) {
-          return deferred.resolve();
-        }
+          if(numberAffected === 1) {
+            return deferred.resolve();
+          }
 
-        return deferred.reject(new Error('No update performed!'));
+          return deferred.reject(new Error('No update performed!'));
+        });
       });
 
       return deferred.promise;

@@ -36,9 +36,9 @@ mydmsApp.controller('SettingsController', ['$scope'
     $scope.action = false;
     $scope.saveMessage = '';
     $scope.saveErrorMessage = '';
-    $scope.googleDrive = {};
-    $scope.googleDrive.isActive = false;
-    $scope.googleDrive.isProvided = false;
+//    $scope.googleDrive = {};
+//    $scope.googleDrive.isActive = false;
+//    $scope.googleDrive.isProvided = false;
 
     var myModal = $modal({ scope: $scope
       , title: 'Connect Drive'
@@ -51,19 +51,19 @@ mydmsApp.controller('SettingsController', ['$scope'
     // startup actions / events
     // ------------------------------------------------------------------------
 
-    backendService.getUser().success(function (data, status, headers, config) {
-
-      if(data.hasToken) {
-        $scope.googleDrive.isProvided = true;
-        $scope.googleDrive.isActive = true;
-      }
-    }).error(function (data, status, headers, config) {
-      console.log('Error: ' + data);
-    });
-
-    if($routeParams && $routeParams.connection) {
-      $scope.activeTab = 'tabDrive';
-    }
+//    backendService.getUser().success(function (data, status, headers, config) {
+//
+//      if(data.hasToken) {
+//        $scope.googleDrive.isProvided = true;
+//        $scope.googleDrive.isActive = true;
+//      }
+//    }).error(function (data, status, headers, config) {
+//      console.log('Error: ' + data);
+//    });
+//
+//    if($routeParams && $routeParams.connection) {
+//      $scope.activeTab = 'tabDrive';
+//    }
 
     // ------------------------------------------------------------------------
     // actions
@@ -127,32 +127,32 @@ mydmsApp.controller('SettingsController', ['$scope'
       });
     };
 
-    // start the google drive connection
-    $scope.startConnect = function() {
-      if(!$scope.googleDrive.isProvided) {
-        myModal.$promise.then(myModal.show);
-      }
-    };
-
-    // create google drive connection
-    $scope.connect = function() {
-      console.log('connect google drive!');
-      // redirect to start the oauth logic
-      $window.location.href = '/oauth/connect';
-    };
-
-    // ------------------------------------------------------------------------
-    // watch scope elements
-    // ------------------------------------------------------------------------
-
-    $scope.$watch('googleDrive.isActive', function() {
-      console.info('Google Drive switch selected: ' + $scope.googleDrive.isActive);
-      if($scope.googleDrive.isActive === true) {
-        $scope.startConnect();
-      } else {
-        $scope.googleDrive.isProvided = false;
-      }
-    });
+//    // start the google drive connection
+//    $scope.startConnect = function() {
+//      if(!$scope.googleDrive.isProvided) {
+//        myModal.$promise.then(myModal.show);
+//      }
+//    };
+//
+//    // create google drive connection
+//    $scope.connect = function() {
+//      console.log('connect google drive!');
+//      // redirect to start the oauth logic
+//      $window.location.href = '/oauth/connect';
+//    };
+//
+//    // ------------------------------------------------------------------------
+//    // watch scope elements
+//    // ------------------------------------------------------------------------
+//
+//    $scope.$watch('googleDrive.isActive', function() {
+//      console.info('Google Drive switch selected: ' + $scope.googleDrive.isActive);
+//      if($scope.googleDrive.isActive === true) {
+//        $scope.startConnect();
+//      } else {
+//        $scope.googleDrive.isProvided = false;
+//      }
+//    });
 
     // ------------------------------------------------------------------------
     // events

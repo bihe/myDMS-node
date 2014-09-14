@@ -280,3 +280,14 @@ ul.items li
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
     display: none !important;
 }
+
+
+
+.userProfile {
+    background-size: 25px 25px;
+    border-radius: 50%;
+    display: block;
+    margin: -1px;
+    height: 25px;
+    width: 25px;
+}

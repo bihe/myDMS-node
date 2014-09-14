@@ -5,7 +5,7 @@
     <ul class="nav nav-tabs nav-justified">
       <li ng-class="{'active': activeTab == 'tabImport'}" ><a href="" ng-click="showTab('tabImport')" >Import</a></li>
       <li ng-class="{'active': activeTab == 'tabExport'}" ><a href="" ng-click="showTab('tabExport')">Export</a></li>
-      <li ng-class="{'active': activeTab == 'tabDrive'}" ><a href="" ng-click="showTab('tabDrive')">Storage</a></li>
+
     </ul>
 
     <div class="alert alert-danger" ng-if="saveSuccess === false" style="margin-top: 10px">
@@ -66,7 +66,7 @@
 
 
       </div>
-        <div  ng-if="activeTab == 'tabDrive'">
+        <div  ng-if="activeTab == '__NOT_USED_tabDrive'">
             <h4 translate="settings.drive">Drive</h4>
 
             <p>Google Drive is used to store the physical documents. It is a cloud based storage system from Google. To access the files in Google Drive first

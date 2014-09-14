@@ -61,16 +61,7 @@
                 
                 
                 <ul class="nav navbar-nav navbar-right">
-                
-                    <li class="" ng-controller="AccountController">
-                        <a class="">
-                            <span ng-cloak class="ng-cloak">
-                                <span class="glyphicon glyphicon-user"></span>
-                                {{ user.displayName }}
 
-                            </span>
-                        </a>
-                    </li>
                     <li class="dropdown pointer" ng-controller="LanguageController">
                         <a class="dropdown-toggle" data-toggle="dropdown">
                             <span>
@@ -90,6 +81,18 @@
                             </li>
                         </ul>
                     </li>
+
+                    <li class="" ng-controller="AccountController">
+                       <a class="" title="{{ user.displayName}}
+({{ user.email }})" aria-haspopup="true" aria-expanded="false">
+                            <span ng-cloak class="ng-cloak">
+                                <span class="userProfile" style="background-image: url('{{ user.thumb }}')"></span>
+
+
+                            </span>
+                        </a>
+                    </li>
+
              
                 </ul>
                 
