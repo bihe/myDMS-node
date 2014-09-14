@@ -316,6 +316,24 @@ DocumentService.prototype = (function() {
      */
     endDocumentChange: function(id) {
       return stateUpdate(id, 'done');
+    },
+
+    /**
+     * get a document object by the id
+     * @param id
+     * @returns {Promise.promise|*}
+     */
+    getDocumentById: function(id) {
+      var deferred = q.defer();
+
+      Document.findById(id, function (err, document) {
+        if (err) {
+          return deferred.reject(err);
+        }
+        deferred.resolve(document);
+      });
+
+      return deferred.promise;
     }
 
   };

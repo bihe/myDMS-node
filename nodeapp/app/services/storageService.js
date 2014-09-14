@@ -10,6 +10,7 @@ var q = require('q');
 var config = require('../config/application');
 var googleConfig = require('../config/google');
 var googleapis = require('googleapis');
+var request = require('request');
 
 /**
  * @constructor
@@ -62,7 +63,6 @@ StorageService.prototype = (function() {
    * @param credentials
    */
   var checkCredentials = function(credentials) {
-
     if(typeof credentials === 'object' && credentials.access_token) {
       return true;
     }
@@ -252,6 +252,7 @@ StorageService.prototype = (function() {
               result.title = response.items[0].title;
               result.parent = response.items[0].parents[0].id;
               result.contentUrl = response.items[0].webContentLink;
+              result.previewUrl = response.items[0].alternateLink;
               result.thumb = response.items[0].thumbnailLink;
               result.createdDate = response.items[0].createdDate;
 
@@ -268,7 +269,6 @@ StorageService.prototype = (function() {
       }
       return deferred.promise;
     },
-
 
     upload: function(folderName, file, credentials) {
       var deferred = q.defer();

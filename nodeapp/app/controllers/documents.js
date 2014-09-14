@@ -3,17 +3,19 @@
  */
 'use strict';
 
+var _ = require('lodash');
+var fs = require('fs');
+var path = require('path');
 var base = require('./base');
 var logger = require('../util/logger' );
 var utils = require('../util/utils' );
 var config = require('../config/application');
 var Document = require('../models/document.js');
-var randomstring = require('randomstring');
-var _ = require('lodash');
-var fs = require('fs');
-var path = require('path');
+var StorageService = require('../services/storageService');
 var DocumentService = require('../services/documentService');
 var MasterDataService = require('../services/masterDataService');
+var UserService = require('../services/userService');
+var google = require('../config/google');
 
 /*
  * url: /documents
@@ -255,23 +257,59 @@ exports.saveDocument = function( req, res, next ) {
  * return the binary data of the document to the client
  */
 exports.documentDownload = function( req, res, next ) {
-  var id = req.params.id,
-      documentService = new DocumentService();
+  var id = req.params.id
+    , documentService = new DocumentService()
+    , storageService = new StorageService()
+    , userService = new UserService()
+    , parts = []
+    , folderName
+    , searchFileName
+    , document
+    , credentials;
 
   console.log('Got param: ' + id);
 
-  documentService.getBinary(id).then(function(filePath) {
+  // get the user-id and retrieve the necessary token
+  userService.getTokenFromUser(req.user).then(function(token) {
+    // got the user credentials to access the backend-system
+    credentials = token;
+    return documentService.getDocumentById(id);
+  }).then(function(doc) {
+    document = doc;
+    // got the document, based on the path query the google drive backend service
+    // split the document filename /dir/file
+    // parts[0] is an empty string, index 1 and 2 contain the relevant parts
+    parts = document.fileName.split('/');
+    folderName = parts[1];
+    searchFileName = parts[2];
+    console.log('Use folder ' + folderName + ' file ' + searchFileName + ' parent ' + google.drive.PARENT_ID);
+    return storageService.folderExists(folderName, google.drive.PARENT_ID, credentials);
 
-    // send the file to the requesting client
-    res.sendFile(filePath, function(error) {
-      if(error) {
-        res.status(500).send('Could not download file ' + error);
-      }
-    });
+  }).then(function(result) {
+    // check if the folder is available
+    if (result.exists === true) {
+      // use the folder-id to search for the specific file
+      return storageService.getFile(searchFileName, result.id, credentials);
+    } else {
+      // perform a local search for the document
+      documentService.getBinary(id).then(function (filePath) {
+        // send the file to the requesting client
+        res.sendFile(filePath, function (error) {
+          if (error) {
+            return res.status(500).send('Could not download file ' + error);
+          }
+        });
+      }).catch(function (error) {
+        return res.status(404).send('Document not found! ' + error);
+      }).done();
+    }
+  }).then(function(result) {
+    res.redirect(result.previewUrl);
 
   }).catch(function(error) {
+    console.log(error);
     return res.status(404).send('Document not found! ' + error);
-  });
+  }).done();
 };
 
 /*
