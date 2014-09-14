@@ -48,7 +48,7 @@ SecurityService.prototype = (function() {
         // setup a token
         credentials.access_token = accessToken;
         credentials.token_type = 'Bearer';
-        credentials.expiry_date = null;
+        credentials.expiry_date = (new Date()).getTime() + 120 * 1000; // set two minutes
 
         return userService.setTokenAndProfile(user._id, credentials, profile._json);
 
