@@ -3,5 +3,7 @@ node_js:
   - "0.10"
 services:
   - mongodb
-before_install: "cd nodeapp"
+before_install:
+  - "cd nodeapp"
+  - "copy app/config/_security_template.js app/config/security.js"
 script: "make test"

@@ -104,9 +104,27 @@ StorageService.prototype = (function() {
       } catch(err) {
         return deferred.reject(err);
       }
+      return deferred.promise;
+    },
+
+    createFolder: function(folderName, credentials) {
+      var deferred = q.defer();
+
+      return deferred.promise;
+    },
+
+    upload: function(folderName, file, credentials) {
+      var deferred = q.defer();
+
+      return deferred.promise;
+    },
+
+    getFile: function(fileId, credentials) {
+      var deferred = q.defer();
 
       return deferred.promise;
     }
+
   };
 
 })();
