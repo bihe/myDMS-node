@@ -2,7 +2,6 @@
 
 /**
  * @author Henrik Binggl
- *
  */
 
 var async = require('async')
