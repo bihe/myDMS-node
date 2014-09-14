@@ -10,5 +10,6 @@ var router = express.Router();
 var googleApi = require('../controllers/googleapi');
 
 router.get('/listfiles', googleApi.listfiles);
+router.get('/getfile', googleApi.getfile);
 
 module.exports = router;

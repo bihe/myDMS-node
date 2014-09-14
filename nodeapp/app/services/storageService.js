@@ -107,19 +107,170 @@ StorageService.prototype = (function() {
       return deferred.promise;
     },
 
-    createFolder: function(folderName, credentials) {
-      var deferred = q.defer();
+    /**
+     * check if ghe given folder exists
+     * @param {string} folderName
+     * @param {string} parent
+     * @param {object} credentials
+     * @returns {promise|*}
+     */
+    folderExists: function(folderName, parent, credentials) {
+      var deferred = q.defer()
+        , error = {}
+        , query = 'mimeType = "application/vnd.google-apps.folder" and "' + parent
+          + '" in parents and title = "' + folderName
+          + '" and explicitlyTrashed = false'
+        , result = {};
 
+      if(checkCredentials(credentials) === false) {
+        error = new Error('credentials not valid!');
+        error.code = 500;
+        deferred.reject(error);
+        return deferred.promise;
+      }
+
+      try {
+        drive.files.list({
+          corpus: 'DEFAULT',
+          'q': query,
+          auth: authClientUse(credentials)
+        }, function(err, response) {
+          if(err) {
+            return deferred.reject(err);
+          }
+
+          result.exists = false;
+          // check the response object
+          // title must match, parent must match
+          if(response.items && response.items.length === 1) {
+            if(response.items[0].title === folderName && response.items[0].parents[0].id === parent) {
+              result.exists = true;
+              result.id = response.items[0].id;
+              result.title = response.items[0].title;
+              result.parent = response.items[0].parents[0].id;
+
+            }
+          }
+          return deferred.resolve(result);
+        });
+      } catch(err) {
+        return deferred.reject(err);
+      }
       return deferred.promise;
     },
+
+    /**
+     * create a new folder with the given name
+     * @param {string} folderName
+     * @param {string} parent
+     * @param {object} credentials
+     * @returns {promise|*}
+     */
+    createFolder: function(folderName, parent, credentials) {
+      var deferred = q.defer()
+        , error = {}
+        , result = {};
+
+      if(checkCredentials(credentials) === false) {
+        error = new Error('credentials not valid!');
+        error.code = 500;
+        deferred.reject(error);
+        return deferred.promise;
+      }
+
+      try {
+
+        this.folderExists(folderName, parent, credentials).then(function(response) {
+          if(response.exists === false) {
+            drive.files.insert({
+              resource: {
+                title: folderName,
+                mimeType: 'application/vnd.google-apps.folder',
+                parents: [ { id: parent } ]
+              },
+              auth: authClientUse(credentials)
+            }, function(err, response) {
+              if(err) {
+                return deferred.reject(err);
+              }
+
+              result.exists = false; // was created
+              result.id = response.id;
+              result.title = response.title;
+              result.parent = response.parents[0].id;
+
+              return deferred.resolve(result);
+            });
+          } else {
+            return deferred.resolve(response);
+          }
+
+        }).catch(function (err) {
+          return deferred.reject(err);
+        }).done();
+
+      } catch(err) {
+        return deferred.reject(err);
+      }
+      return deferred.promise;
+    },
+
+    /**
+     * get a file
+     * @param {string} fileName
+     * @param {string} parent
+     * @param {object} credentials
+     * @returns {promise|*}
+     */
+    getFile: function(fileName, parent, credentials) {
+      var deferred = q.defer()
+        , error = {}
+        , query = ''
+        , result = {};
+
+      if(checkCredentials(credentials) === false) {
+        error = new Error('credentials not valid!');
+        error.code = 500;
+        deferred.reject(error);
+        return deferred.promise;
+      }
+
+      try {
+        query = '"' + parent + '" in parents and title = "' + fileName
+          + '" and explicitlyTrashed = false';
+        this.listfiles(query, credentials).then(function(response) {
+          result.exists = false;
+          // check the response object
+          // title must match, parent must match
+          if(response.items && response.items.length > 0) {
+            if(response.items[0].title === fileName && response.items[0].parents[0].id === parent) {
+
+              console.log(response);
+
+              result.exists = true;
+              result.id = response.items[0].id;
+              result.title = response.items[0].title;
+              result.parent = response.items[0].parents[0].id;
+              result.contentUrl = response.items[0].webContentLink;
+              result.thumb = response.items[0].thumbnailLink;
+              result.createdDate = response.items[0].createdDate;
+
+            }
+          }
+          return deferred.resolve(result);
+
+        }).catch(function (err) {
+          return deferred.reject(err);
+        }).done();
+
+      } catch(err) {
+        return deferred.reject(err);
+      }
+      return deferred.promise;
+    },
+
 
     upload: function(folderName, file, credentials) {
-      var deferred = q.defer();
-
-      return deferred.promise;
-    },
-
-    getFile: function(fileId, credentials) {
       var deferred = q.defer();
 
       return deferred.promise;
