@@ -254,7 +254,7 @@ DocumentService.prototype = (function() {
 
     /**
      * take care of the temp uploaded file and move it to the final 
-     * destination. additonally update the filepath for the 
+     * destination. additionally update the filepath for the
      * document object
      * @param document {Document} the document object
      * @param tempFilename {String} the path to the temp upload

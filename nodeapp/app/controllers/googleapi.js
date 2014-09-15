@@ -53,3 +53,24 @@ exports.getfile  = function(req, res, next) {
     return res.status(500).send('Got an error: ' + err.code + ' / ' + err.message);
   }).done();
 };
+
+
+exports.uploadfile  = function(req, res, next) {
+  var userService = new UserService()
+    , storageService = new StorageService()
+    ;
+
+  // get the user-id and retrieve the necessary token
+  userService.getTokenFromUser(req.user).then(function(token) {
+
+    return storageService.upload({path: '/home/henrik/tmp/test.pdf', name: 'test.pdf', mimeType: 'application/pdf'}, '0B_XK0TbSeuZUU2J6NnpuRDBIcTA', token);
+  }).then(function(response) {
+
+    console.log(response);
+    res.status(200).send(response);
+  }).catch(function (err) {
+
+    console.log(err);
+    return res.status(500).send('Got an error: ' + err.code + ' / ' + err.message);
+  }).done();
+};

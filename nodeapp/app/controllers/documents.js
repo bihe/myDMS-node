@@ -279,9 +279,17 @@ exports.documentDownload = function( req, res, next ) {
     // got the document, based on the path query the google drive backend service
     // split the document filename /dir/file
     // parts[0] is an empty string, index 1 and 2 contain the relevant parts
+    console.log(document.fileName);
     parts = document.fileName.split('/');
-    folderName = parts[1];
-    searchFileName = parts[2];
+    if(parts && parts.length === 3) {
+      // leading slash
+      folderName = parts[1];
+      searchFileName = parts[2];
+    } else if(parts && parts.length === 2) {
+      // no leading slash
+      folderName = parts[0];
+      searchFileName = parts[1];
+    }
     console.log('Use folder ' + folderName + ' file ' + searchFileName + ' parent ' + google.drive.PARENT_ID);
     return storageService.folderExists(folderName, google.drive.PARENT_ID, credentials);
 
@@ -304,7 +312,12 @@ exports.documentDownload = function( req, res, next ) {
       }).done();
     }
   }).then(function(result) {
-    res.redirect(result.previewUrl);
+    if(result) {
+      res.redirect(result.previewUrl);
+    }
+    else {
+      return res.status(404).send('Document not found! ');
+    }
 
   }).catch(function(error) {
     console.log(error);

@@ -26,8 +26,9 @@ SecurityService.prototype = (function() {
   return {
 
     /**
-     * associate a given user the the id, profile provided by the external auth service
-     * @param identifier
+     * find an user by the supplied profile data for oauth
+     * @param accessToken
+     * @param refreshToken
      * @param profile
      * @param callback
      */
@@ -48,7 +49,8 @@ SecurityService.prototype = (function() {
         // setup a token
         credentials.access_token = accessToken;
         credentials.token_type = 'Bearer';
-        credentials.expiry_date = (new Date()).getTime() + 120 * 1000; // set two minutes
+        credentials.refresh_token = refreshToken;
+        credentials.expiry_date = (new Date()).getTime() + 3600 * 1000; // one hour
 
         return userService.setTokenAndProfile(user._id, credentials, profile._json);
 

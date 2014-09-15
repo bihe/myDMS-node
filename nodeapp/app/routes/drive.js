@@ -11,5 +11,6 @@ var googleApi = require('../controllers/googleapi');
 
 router.get('/listfiles', googleApi.listfiles);
 router.get('/getfile', googleApi.getfile);
+router.get('/uploadfile', googleApi.uploadfile);
 
 module.exports = router;

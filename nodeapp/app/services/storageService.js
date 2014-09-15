@@ -7,6 +7,7 @@
 
 var async = require('async');
 var q = require('q');
+var fs = require('fs');
 var config = require('../config/application');
 var googleConfig = require('../config/google');
 var googleapis = require('googleapis');
@@ -270,12 +271,92 @@ StorageService.prototype = (function() {
       return deferred.promise;
     },
 
-    upload: function(folderName, file, credentials) {
-      var deferred = q.defer();
+    /**
+     * upload a file
+     * @param {object} file
+     * @param {string} file.name the name of the file
+     * @param {string} file.mimeType the given mime-type
+     * @param {string} file.path the path to the file
+     * @param {string} parent
+     * @param {object} credentials
+     * @returns {Promise.promise|*}
+     */
+    upload: function(file, parent, credentials) {
+      var deferred = q.defer()
+        , error = {}
+        , result = {}
+        , that;
+
+      if(checkCredentials(credentials) === false) {
+        error = new Error('credentials not valid!');
+        error.code = 500;
+        deferred.reject(error);
+        return deferred.promise;
+      }
+      that = this;
+      // read the binary file, either update it or create it
+      fs.readFile(file.path, function (err, data) {
+        if (err) return deferred.reject(err);
+
+        // check if the file exists
+        that.getFile(file.name, parent, credentials).then(function(res) {
+          // just update the payload
+          if(res.exists === true) {
+            drive.files.update({
+              fileId: res.id,
+              media: {
+                mimeType: file.mimeType,
+                body: data
+              },
+              auth: authClientUse(credentials)
+            }, function(err, response) {
+              if(err) {
+                return deferred.reject(err);
+              }
+
+              result.exists = true; // was overwritten
+              result.id = response.id;
+              result.title = response.title;
+              result.parent = response.parents[0].id;
+
+              return deferred.resolve(result);
+            });
+          // create a new one
+          } else {
+            drive.files.insert({
+              resource: {
+                title: file.name,
+                mimeType: file.mimeType,
+                parents: [ { id: parent } ]
+              },
+              media: {
+                mimeType: file.mimeType,
+                body: data
+              },
+
+              auth: authClientUse(credentials)
+            }, function(err, response) {
+              if(err) {
+                return deferred.reject(err);
+              }
+
+              result.exists = false; // was created
+              result.id = response.id;
+              result.title = response.title;
+              result.parent = response.parents[0].id;
+
+              return deferred.resolve(result);
+            });
+          }
+
+        }).catch(function (err) {
+          return deferred.reject(err);
+        }).done();
+
+      });
 
       return deferred.promise;
     }
-
   };
 
 })();
