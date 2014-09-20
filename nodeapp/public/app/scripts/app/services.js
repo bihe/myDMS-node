@@ -217,6 +217,14 @@ mydmsApp.factory('backendService', ['$http', function($http) {
      */
     getUser: function() {
       return $http.get('/api/1.0/user');
+    },
+
+    /**
+     * logout the current user
+     * @returns the angularjs promise object
+     */
+    logoutUser: function() {
+      return $http.post('/api/1.0/user/logout');
     }
   };
 }]);

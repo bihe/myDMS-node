@@ -257,7 +257,8 @@ ul.items li
 }
 
 .adobe {
-    background-image:url('http://farm8.staticflickr.com/7383/9899900453_4540cf9de6_c.jpg');
+    background-color: #f1a417;
+    /*background-image:url('http://farm8.staticflickr.com/7383/9899900453_4540cf9de6_c.jpg');*/
 }
 
 .modal-backdrop.am-fade {

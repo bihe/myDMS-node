@@ -246,8 +246,6 @@ StorageService.prototype = (function() {
           if(response.items && response.items.length > 0) {
             if(response.items[0].title === fileName && response.items[0].parents[0].id === parent) {
 
-              console.log(response);
-
               result.exists = true;
               result.id = response.items[0].id;
               result.title = response.items[0].title;

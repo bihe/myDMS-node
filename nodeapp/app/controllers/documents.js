@@ -16,6 +16,7 @@ var DocumentService = require('../services/documentService');
 var MasterDataService = require('../services/masterDataService');
 var UserService = require('../services/userService');
 var google = require('../config/google');
+var randomstring = require('randomstring');
 
 /*
  * url: /documents
@@ -151,6 +152,7 @@ exports.upload = function( req, res, next ) {
         return base.handleError( req, res, next, err );
       }
       result = {};
+      result.contentType = fileObject.mimetype;
       result.fileName = tempFileName;
       result.originalFileName = fileObject.originalname;
       result.size = fileObject.size;
@@ -191,6 +193,8 @@ exports.saveDocument = function( req, res, next ) {
   var document = {},
       tagList = [],
       senderList = [],
+      credentials,
+      userService = new UserService(),
       masterDataService = new MasterDataService(),
       documentService = new DocumentService();
 
@@ -206,16 +210,22 @@ exports.saveDocument = function( req, res, next ) {
 
     // validation done - at least we do have some data
     // use promises to handle tags, senders, and the document itself
-    masterDataService.createAndGetTags(document.tags, true).then(function(list) {
+
+    // get the user-id and retrieve the necessary token
+    userService.getTokenFromUser(req.user).then(function(token) {
+      credentials = token;
+      return masterDataService.createAndGetTags(document.tags, true);
+    }).then(function(list) {
       tagList = list;
       // start the promise chain
-      return masterDataService.createAndGetSenders(document.senders);
+      return masterDataService.createAndGetSenders(document.senders, false);
     })
     .then(function(list) {
       senderList = list;
       // got both - overwrite the lists of the object
       document.tags = tagList;
       document.senders = senderList;
+      document.created = null; // I do not want to update the creation date!
 
       return documentService.save(document);
     })
@@ -223,7 +233,7 @@ exports.saveDocument = function( req, res, next ) {
       console.log('Saved the document: ' + doc);
 
       // move files and update the document
-      return documentService.handleDocumentUpload(doc, document.tempFilename);
+      return documentService.handleDocumentUpload(doc, document, credentials);
     })
     .then(function(doc) {
       // when a document is saved, the state is changed
@@ -238,13 +248,14 @@ exports.saveDocument = function( req, res, next ) {
       return res.status(200).send('Document saved!');
     })
     .catch(function(error) {
+      logger.dump(error);
       console.log(error.stack);
       return res.status(500).send('Cannot save document! ' + error);
     })
     .done();
 
   } catch(err) {
-    console.log('Got an error: ' + err);
+    logger.dump(err);
     console.log(err.stack);
 
     return res.status(500).send('Cannot save document! ' + err);

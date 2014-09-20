@@ -3,6 +3,6 @@
 'use strict';
 
 var database = {};
-database.uri = 'mongodb://localhost/mydms';
+database.uri = 'mongodb://localhost/--DATABASENAME--';
 
 module.exports = database;

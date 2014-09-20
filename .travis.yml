@@ -6,5 +6,7 @@ services:
 before_install:
   - "cd nodeapp"
   - "cp app/config/_security_template.js app/config/security.js"
-  - "cp app/config/_google_template_.js app/config/google.js"
+  - "cp app/config/_google_template.js app/config/google.js"
+  - "cp app/config/_database_template.js app/config/database.js"
+  - "cp app/config/_application_template.js app/config/application.js"
 script: "make test"

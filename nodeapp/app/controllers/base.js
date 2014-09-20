@@ -19,6 +19,19 @@ exports.login = function(req, res) {
   res.render('login', { messages: res.locals.errors });
 };
 
+// logout the current user
+exports.logout = function(req, res) {
+  var result = {};
+  result.success = true;
+  try {
+    req.logout();
+  } catch(error) {
+    result.success = false;
+    result.error = error;
+  }
+  res.json(result);
+};
+
 // return the current version as plain/text
 exports.version = function(req, res) {
 	res.write(version.number);

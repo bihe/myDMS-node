@@ -83,7 +83,7 @@ mydmsApp.controller('DocumentController', ['$scope', 'backendService', '$locatio
 
   // save the document
   $scope.save = function(valid) {
-    var postData = '';
+    var postData;
 
     $scope.formValidationError = false;
     if(!valid) {
@@ -191,6 +191,7 @@ mydmsApp.controller('DocumentController', ['$scope', 'backendService', '$locatio
         // file is uploaded successfully
         console.log(data);
         $scope.document.fileName = data.originalFileName;
+        $scope.document.contentType = data.contentType;
         $scope.document.tempFilename = data.fileName;
         $scope.document.size = data.size;
 

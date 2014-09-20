@@ -30,5 +30,6 @@ router.post('/' + API + '/document/upload', documentsController.upload);
 router.delete('/' + API + '/document/:id', documentsController.deleteDocument);
 router.post('/' + API + '/settings', settingsController.save);
 router.get('/' + API + '/user', baseController.user);
+router.post('/' + API + '/user/logout', baseController.logout);
 
 module.exports = router;
