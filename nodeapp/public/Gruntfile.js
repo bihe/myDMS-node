@@ -11,12 +11,12 @@ var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
-  require('time-grunt')(grunt); 
+  require('time-grunt')(grunt);
 
   grunt.initConfig({
     yeoman: {
       // configurable paths
-      app: require('./app/bower.json').appPath || 'app',
+      app: require('./bower.json').appPath || 'app',
       dist: 'app/dist'
     },
     watch: {
@@ -252,7 +252,7 @@ module.exports = function (grunt) {
         }]
       },
       styles: {
-        files: [ 
+        files: [
           {
             expand: true,
             cwd: 'app/styles',

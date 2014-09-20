@@ -122,7 +122,9 @@ nodeapp/public/node_modules/
 
 data
 nodeapp/debug-tests.sh
+nodeapp/start_prod.sh
 nodeapp/public/app/bower_components/
+nodeapp/public/app/dist/
 nodeapp/public/node_modules
 nodeapp/upload/
 nodeapp/tmp
