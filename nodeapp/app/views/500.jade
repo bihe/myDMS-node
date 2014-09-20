@@ -6,7 +6,7 @@ html(lang="en")
         meta(name="viewport", content="width=device-width, initial-scale=1")
         title 500: Error occured!
         
-        link(href="#{basePath}bower_components/bootstrap/dist/css/bootstrap.css", rel="stylesheet")
+        link(href="#{basePath}static/bower_components/bootstrap/dist/css/bootstrap.css", rel="stylesheet")
         
         
         |<!--[if lt IE 9]>
@@ -23,6 +23,6 @@ html(lang="en")
                 if settings['error-stack']
                     h3 Details:
                     pre= error.stack
-        script(src="#{basePath}bower_components/jquery/jquery.js")
-        script(src="#{basePath}bower_components/bootstrap/dist/js/bootstrap.js")
+        script(src="#{basePath}static/bower_components/jquery/dist/jquery.js")
+        script(src="#{basePath}static/bower_components/bootstrap/dist/js/bootstrap.js")
 <!-- IE needs 512+ bytes: http://blogs.msdn.com/b/ieinternals/archive/2010/08/19/http-error-pages-in-internet-explorer.aspx -->

@@ -1,0 +1,294 @@
+body {
+  min-height: 1000px;
+  padding-top: 70px;
+  overflow-y: hidden;
+}
+
+
+.full-container {
+  padding: 0 15px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.container {
+  margin-right: 10px;
+  margin-left: 10px;
+  max-width:100%;
+}
+
+ul.items
+{
+  text-align: center; 
+  list-style-type: none;  
+  width: 200px;
+}
+
+ul.items li
+{
+    /*float: left; */
+    display: inline;   
+}
+
+.label-normal {
+  font-weight: normal;  
+  font-size: inhert;
+}
+
+.double-line {
+  line-height: 2.5;
+}
+
+.clear { clear: both; }
+
+.well-220 {
+  min-width: 220px;
+}
+
+
+.bs-documents {
+  padding-left: 0;
+  padding-bottom: 1px;
+  margin-bottom: 20px;
+  list-style: none;
+  overflow: hidden;
+}
+.bs-documents li {
+  float: left;
+  width: 20%;
+  height: 115px;
+  padding: 10px;
+  margin: 0 -1px -1px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+.bs-documents .document {
+  display: block;
+  margin: 5px 5px  10px;
+  font-size: 24px;
+}
+
+.label-tag {
+  font-size: 14pt;
+  margin: 3px;
+}
+
+.tag-padding {
+  margin-top: 20px;
+}
+
+.upload-drop-area {
+  padding: 15px;
+  border: 2px dashed #cccccc;
+  width: 300px;
+  font-weight: bold;
+  font-style: italic;
+  font-size: medium;
+  text-align: center;
+  color: #999999;
+}
+
+.upload-drop-area-invalid {
+  color: #a94442;
+  border: 2px dashed #a94442;
+}
+
+.upload-drop-area-drag {
+  border: 2px dashed #428bca;
+  color: #428bca;
+}
+
+.label-big {
+  font-size: 14pt;
+  margin: 3px;
+}
+
+
+
+.document {
+  float: left;
+  width: 20%;
+  padding: 6px;
+  min-height: 200px;
+  min-width: 150px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.document-info {
+  font-size: smaller;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.well {
+  margin-bottom: 5px;
+}
+
+.alert-small {
+  margin-top: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  margin-bottom: 1px;
+}
+
+.label-huge {
+  font-size: 24pt;
+}
+
+.document-entry {
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.documnet-info {
+  text-align: left;
+  margin-bottom: 10px;
+  margin-top: 15px;
+  font-size: 10pt;
+}
+
+.document-name {
+  font-weight: bold;
+  text-align: center;
+  text-decoration: underline;
+  font-size: 10pt;
+}
+
+.document-meta {
+  color: #bbbbbb;
+}
+
+.document-footer {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.tag {
+  float: left;
+  margin-bottom: 3px;
+  padding: 5px;
+}
+
+#loading {
+  width: 100%;
+  padding: 10px;
+  position: absolute;
+  bottom: 10px;
+  z-index: 5;
+  color: #ffffff;
+  background: #000000;
+  opacity: 0.7;
+  left: 0;
+}
+
+#documentContainer {
+  min-height: 600px;
+  height: 700px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+
+/**
+ * CARD layout
+ * @see https://github.com/triceam/cards-ui/blob/master/assets/css/styles.css
+ */
+
+.card {
+    background:#FFF;
+    border:1px solid #AAA;
+    border-bottom:3px solid #BBB;
+    padding:0px;
+    overflow:hidden;
+    /*width: 250px;*/
+    height: 220px;
+}
+
+.card h1 {
+    margin:0px;
+    padding:10px;
+    padding-bottom:0px;
+}
+
+.card p {
+    margin:0px;
+    padding:10px;
+}
+
+.card-image {
+    width:100%;
+    height:100px;
+    padding:0px;
+    margin:0px;
+    background-position:center;
+    background-repeat:no-repeat;
+    position:relative;
+    overflow:hidden;
+}
+
+.card-image h2 {
+  font-size: 12pt;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+}
+
+.card-image h1, 
+.card-image h2,
+.card-image h3, 
+.card-image h4, 
+.card-image h5, 
+.card-image h6 {
+    position:absolute;
+    bottom:0px;
+    width:100%;
+    color:white;
+    background:rgba(0,0,0,0.65);
+    margin:0px;
+    padding:6px;
+    border:none;
+}
+
+.adobe {
+    background-color: #f1a417;
+    /*background-image:url('http://farm8.staticflickr.com/7383/9899900453_4540cf9de6_c.jpg');*/
+}
+
+.modal-backdrop.am-fade {
+    opacity: .5;
+    transition: opacity .15s linear;
+}
+.modal-backdrop.am-fade.ng-enter {
+    opacity: 0;
+}
+.modal-backdrop.am-fade.ng-enter.ng-enter-active {
+    opacity: .5;
+}
+.modal-backdrop.am-fade.ng-leave {
+    opacity: .5;
+}
+.modal-backdrop.am-fade.ng-leave.ng-leave-active {
+    opacity: 0;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+
+
+
+.userProfile {
+    background-size: 25px 25px;
+    border-radius: 50%;
+    display: block;
+    margin: -1px;
+    height: 25px;
+    width: 25px;
+}

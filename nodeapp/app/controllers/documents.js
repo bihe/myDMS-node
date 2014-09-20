@@ -3,17 +3,20 @@
  */
 'use strict';
 
+var _ = require('lodash');
+var fs = require('fs');
+var path = require('path');
 var base = require('./base');
 var logger = require('../util/logger' );
 var utils = require('../util/utils' );
 var config = require('../config/application');
 var Document = require('../models/document.js');
-var randomstring = require('randomstring');
-var _ = require('lodash');
-var fs = require('fs');
-var path = require('path');
+var StorageService = require('../services/storageService');
 var DocumentService = require('../services/documentService');
 var MasterDataService = require('../services/masterDataService');
+var UserService = require('../services/userService');
+var google = require('../config/google');
+var randomstring = require('randomstring');
 
 /*
  * url: /documents
@@ -84,7 +87,7 @@ exports.index = function( req, res, next ) {
 
   logger.dump(filter);
 
-  Document.find(filter).sort({created: -1})
+  Document.find(filter).sort({created: -1, title: 1})
   .skip(skip)
   .limit(limit)
   .populate('tags senders')
@@ -149,6 +152,7 @@ exports.upload = function( req, res, next ) {
         return base.handleError( req, res, next, err );
       }
       result = {};
+      result.contentType = fileObject.mimetype;
       result.fileName = tempFileName;
       result.originalFileName = fileObject.originalname;
       result.size = fileObject.size;
@@ -189,6 +193,8 @@ exports.saveDocument = function( req, res, next ) {
   var document = {},
       tagList = [],
       senderList = [],
+      credentials,
+      userService = new UserService(),
       masterDataService = new MasterDataService(),
       documentService = new DocumentService();
 
@@ -204,16 +210,22 @@ exports.saveDocument = function( req, res, next ) {
 
     // validation done - at least we do have some data
     // use promises to handle tags, senders, and the document itself
-    masterDataService.createAndGetTags(document.tags, true).then(function(list) {
+
+    // get the user-id and retrieve the necessary token
+    userService.getTokenFromUser(req.user).then(function(token) {
+      credentials = token;
+      return masterDataService.createAndGetTags(document.tags, true);
+    }).then(function(list) {
       tagList = list;
       // start the promise chain
-      return masterDataService.createAndGetSenders(document.senders);
+      return masterDataService.createAndGetSenders(document.senders, false);
     })
     .then(function(list) {
       senderList = list;
       // got both - overwrite the lists of the object
       document.tags = tagList;
       document.senders = senderList;
+      document.created = null; // I do not want to update the creation date!
 
       return documentService.save(document);
     })
@@ -221,7 +233,7 @@ exports.saveDocument = function( req, res, next ) {
       console.log('Saved the document: ' + doc);
 
       // move files and update the document
-      return documentService.handleDocumentUpload(doc, document.tempFilename);
+      return documentService.handleDocumentUpload(doc, document, credentials);
     })
     .then(function(doc) {
       // when a document is saved, the state is changed
@@ -236,13 +248,14 @@ exports.saveDocument = function( req, res, next ) {
       return res.status(200).send('Document saved!');
     })
     .catch(function(error) {
+      logger.dump(error);
       console.log(error.stack);
       return res.status(500).send('Cannot save document! ' + error);
     })
     .done();
 
   } catch(err) {
-    console.log('Got an error: ' + err);
+    logger.dump(err);
     console.log(err.stack);
 
     return res.status(500).send('Cannot save document! ' + err);
@@ -255,23 +268,72 @@ exports.saveDocument = function( req, res, next ) {
  * return the binary data of the document to the client
  */
 exports.documentDownload = function( req, res, next ) {
-  var id = req.params.id,
-      documentService = new DocumentService();
+  var id = req.params.id
+    , documentService = new DocumentService()
+    , storageService = new StorageService()
+    , userService = new UserService()
+    , parts = []
+    , folderName
+    , searchFileName
+    , document
+    , credentials;
 
   console.log('Got param: ' + id);
 
-  documentService.getBinary(id).then(function(filePath) {
+  // get the user-id and retrieve the necessary token
+  userService.getTokenFromUser(req.user).then(function(token) {
+    // got the user credentials to access the backend-system
+    credentials = token;
+    return documentService.getDocumentById(id);
+  }).then(function(doc) {
+    document = doc;
+    // got the document, based on the path query the google drive backend service
+    // split the document filename /dir/file
+    // parts[0] is an empty string, index 1 and 2 contain the relevant parts
+    console.log(document.fileName);
+    parts = document.fileName.split('/');
+    if(parts && parts.length === 3) {
+      // leading slash
+      folderName = parts[1];
+      searchFileName = parts[2];
+    } else if(parts && parts.length === 2) {
+      // no leading slash
+      folderName = parts[0];
+      searchFileName = parts[1];
+    }
+    console.log('Use folder ' + folderName + ' file ' + searchFileName + ' parent ' + google.drive.PARENT_ID);
+    return storageService.folderExists(folderName, google.drive.PARENT_ID, credentials);
 
-    // send the file to the requesting client
-    res.sendFile(filePath, function(error) {
-      if(error) {
-        res.status(500).send('Could not download file ' + error);
-      }
-    });
+  }).then(function(result) {
+    // check if the folder is available
+    if (result.exists === true) {
+      // use the folder-id to search for the specific file
+      return storageService.getFile(searchFileName, result.id, credentials);
+    } else {
+      // perform a local search for the document
+      documentService.getBinary(id).then(function (filePath) {
+        // send the file to the requesting client
+        res.sendFile(filePath, function (error) {
+          if (error) {
+            return res.status(500).send('Could not download file ' + error);
+          }
+        });
+      }).catch(function (error) {
+        return res.status(404).send('Document not found! ' + error);
+      }).done();
+    }
+  }).then(function(result) {
+    if(result) {
+      res.redirect(result.previewUrl);
+    }
+    else {
+      return res.status(404).send('Document not found! ');
+    }
 
   }).catch(function(error) {
+    console.log(error);
     return res.status(404).send('Document not found! ' + error);
-  });
+  }).done();
 };
 
 /*

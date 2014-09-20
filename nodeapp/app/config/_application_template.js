@@ -10,7 +10,7 @@ config.version = version;
 
 config.application = {};
 config.application.basePath = '/';
-config.application.secret = 'iF7iephuyowoyaew';
+config.application.secret = '--SECRET--';
 
 // defint allowed values for uploaded files
 config.application.upload = {};

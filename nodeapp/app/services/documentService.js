@@ -18,6 +18,8 @@ var Document = require('../models/document');
 var config = require('../config/application');
 var _ = require('lodash');
 var u = require('../util/utils');
+var StorageService = require('./storageService');
+var google = require('../config/google');
 
 /**
  * @constructor
@@ -127,14 +129,13 @@ DocumentService.prototype = (function() {
      */
     save: function(document) {
       var deferred = q.defer(),
-          doc, self;
+          doc;
 
       // again use a async approach
       // 1) check if new one -- create a document
       //  or fetch a document
       // 2) update the object with the supplied data
       //  and save the object again
-      self = this;
       async.series([
         // 1) check the supplied documentId
         function(callback) {
@@ -254,34 +255,43 @@ DocumentService.prototype = (function() {
 
     /**
      * take care of the temp uploaded file and move it to the final 
-     * destination. additonally update the filepath for the 
-     * document object
+     * destination. use the storageservice to interact with the backend system.
+     * additionally update the filepath for the document object
      * @param document {Document} the document object
-     * @param tempFilename {String} the path to the temp upload
+     * @param savedDocument {object} the saved document
+     * @param credentials {object} credentials to interact with the storage service
      *
      * @return {deferred} a promise with the Document object
      */
-    handleDocumentUpload: function(document, tempFilename) {
-      var deferred = q.defer(),
-        uploadPath,
-        filePath,
-        self;
+    handleDocumentUpload: function(document, savedDocument, credentials) {
+      var deferred = q.defer()
+        , uploadPath
+        , file = {}
+        , self
+        , tempFilename
+        , fileName = ''
+        , folderName
+        , storageService = new StorageService();
 
       self = this;
+      tempFilename = savedDocument.tempFilename;
 
       if(tempFilename && tempFilename !== '') {
           
         // create a folder
-        createDir(document).then(function(folder) {
-
-          document.fileName = '/' + folder + '/' + document.fileName;
+        folderName = moment(document.created).format('YYYY_MM_DD');
+        storageService.createFolder(folderName, google.drive.PARENT_ID, credentials).then(function(result) {
+          fileName = document.fileName;
+          document.fileName = '/' + folderName + '/' + document.fileName;
 
           uploadPath = path.join(__dirname, '../../', config.application.upload.tempFilePath) + '/' + tempFilename;
-          filePath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + document.fileName;
-        
-          console.log('Will move file from ' + uploadPath + ' to ' + filePath);
 
-          return moveFile(uploadPath, filePath);
+          console.log('Will move file from temp path ' + uploadPath + ' to backend location ' + folderName);
+          file.name = fileName;
+          file.mimeType = savedDocument.contentType;
+          file.path = uploadPath;
+
+          return storageService.upload(file, result.id, credentials);
         }).then(function() {
           return self.save(document);
         }).then(function(doc) {
@@ -316,6 +326,24 @@ DocumentService.prototype = (function() {
      */
     endDocumentChange: function(id) {
       return stateUpdate(id, 'done');
+    },
+
+    /**
+     * get a document object by the id
+     * @param id
+     * @returns {Promise.promise|*}
+     */
+    getDocumentById: function(id) {
+      var deferred = q.defer();
+
+      Document.findById(id, function (err, document) {
+        if (err) {
+          return deferred.reject(err);
+        }
+        deferred.resolve(document);
+      });
+
+      return deferred.promise;
     }
 
   };

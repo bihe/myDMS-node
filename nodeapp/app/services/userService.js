@@ -2,12 +2,13 @@
 
 /**
  * @author Henrik Binggl
- *
  */
 
 var async = require('async')
   , q = require('q')
-  , User = require('../models/user');
+  , Iron = require('iron')
+  , User = require('../models/user')
+  , s = require('../config/security');
 
 /**
  * @constructor
@@ -26,7 +27,7 @@ UserService.prototype = (function() {
   return {
 
     /**
-     * find a user by email
+     * find a user by id
      * @param id {objectid} the id
      *
      * @return {deferred} promise with the given user
@@ -38,11 +39,7 @@ UserService.prototype = (function() {
         if(err) {
           return deferred.reject(err);
         }
-        if(user) {
-          return deferred.resolve(user);
-        }
-
-        return deferred.reject(new Error('No user found for email ' + email));
+        return deferred.resolve(user);
       });
 
       return deferred.promise;
@@ -63,46 +60,69 @@ UserService.prototype = (function() {
         if(err) {
           return deferred.reject(err);
         }
-        if(user) {
-          return deferred.resolve(user);
-        }
-
-        return deferred.reject(new Error('No user found for email ' + email));
+        return deferred.resolve(user);
       });
 
       return deferred.promise;
     },
 
     /**
-     * set the token for the given user
-     * @param userid {objectid} the id of user
-     * @param token {string} a token
+     * get the token for a given user-id
+     * @param id {objectid} the id
      *
-     * @return {deferred} promise
+     * @return {deferred} promise with a token
      */
-    setToken: function(userid, token) {
+    getTokenFromUser: function(id) {
       var deferred = q.defer();
 
-      User.where({ _id: userid }).update({ $set: { token: token }}, function(err, numberAffected) {
+      User.findById(id).exec(function (err, user) {
         if(err) {
           return deferred.reject(err);
         }
+        // decrypt the auth token
+        Iron.unseal(user.token, s.secret, Iron.defaults, function(err, unsealed) {
+          if(err) {
+            return deferred.reject(err);
+          }
+          return deferred.resolve(unsealed);
+        });
 
-        if(numberAffected === 1) {
-          return deferred.resolve();
-        }
 
-        return deferred.reject(new Error('No update performed!'));
       });
 
       return deferred.promise;
     },
 
     /**
+     * set the token and profile for the given user
+     * @param userid {objectid} the id of user
+     * @param token {object} a token
+     * @param profile {object} a profile
      *
+     * @return {deferred} promise
      */
-    updateAccount: function(accountObject) {
-      
+    setTokenAndProfile: function(userid, token, profile) {
+      var deferred = q.defer();
+
+      // use iron to encrypt the object
+      Iron.seal(token, s.secret, Iron.defaults, function(err, sealed) {
+        if(err) {
+          return deferred.reject(err);
+        }
+        User.where({ _id: userid }).update({ $set: { token: sealed, tokenDate: new Date(), profile: profile }}, function(err, numberAffected) {
+          if(err) {
+            return deferred.reject(err);
+          }
+
+          if(numberAffected === 1) {
+            return deferred.resolve();
+          }
+
+          return deferred.reject(new Error('No update performed!'));
+        });
+      });
+
+      return deferred.promise;
     }
 
   };
