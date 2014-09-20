@@ -11,7 +11,6 @@ var fs = require('fs');
 var config = require('../config/application');
 var googleConfig = require('../config/google');
 var googleapis = require('googleapis');
-var request = require('request');
 
 /**
  * @constructor
