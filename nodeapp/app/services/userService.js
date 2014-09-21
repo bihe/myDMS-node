@@ -79,29 +79,30 @@ UserService.prototype = (function() {
         if(err) {
           return deferred.reject(err);
         }
-        // decrypt the auth token
-        Iron.unseal(user.token, s.secret, Iron.defaults, function(err, unsealed) {
-          if(err) {
-            return deferred.reject(err);
-          }
-          return deferred.resolve(unsealed);
-        });
-
-
+        if(user.token && user.token !== '') {
+          // decrypt the auth token
+          Iron.unseal(user.token, s.secret, Iron.defaults, function(err, unsealed) {
+            if(err) {
+              return deferred.reject(err);
+            }
+            return deferred.resolve(unsealed);
+          });
+        } else {
+          return deferred.reject(new Error('No token available!'));
+        }
       });
 
       return deferred.promise;
     },
 
     /**
-     * set the token and profile for the given user
+     * set the token with the given userid
      * @param userid {objectid} the id of user
      * @param token {object} a token
-     * @param profile {object} a profile
      *
      * @return {deferred} promise
      */
-    setTokenAndProfile: function(userid, token, profile) {
+    setToken: function(userid, token) {
       var deferred = q.defer();
 
       // use iron to encrypt the object
@@ -109,7 +110,7 @@ UserService.prototype = (function() {
         if(err) {
           return deferred.reject(err);
         }
-        User.where({ _id: userid }).update({ $set: { token: sealed, tokenDate: new Date(), profile: profile }}, function(err, numberAffected) {
+        User.where({ _id: userid }).update({ $set: { token: sealed, tokenDate: new Date() }}, function(err, numberAffected) {
           if(err) {
             return deferred.reject(err);
           }
@@ -123,8 +124,56 @@ UserService.prototype = (function() {
       });
 
       return deferred.promise;
-    }
+    },
 
+    /**
+     * clear the token with the given userid
+     * @param userid {objectid} the id of user
+     *
+     * @return {deferred} promise
+     */
+    clearToken: function(userid) {
+      var deferred = q.defer();
+
+      User.where({ _id: userid }).update({ $set: { token: '', tokenDate: null }}, function(err, numberAffected) {
+        if(err) {
+          return deferred.reject(err);
+        }
+
+        if(numberAffected === 1) {
+          return deferred.resolve();
+        }
+
+        return deferred.reject(new Error('No update performed!'));
+      });
+     
+      return deferred.promise;
+    },
+
+    /**
+     * set the profile for the given user
+     * @param userid {objectid} the id of user
+     * @param profile {object} a profile
+     *
+     * @return {deferred} promise
+     */
+    setProfile: function(userid, profile) {
+      var deferred = q.defer();
+
+      User.where({ _id: userid }).update({ $set: { profile: profile }}, function(err, numberAffected) {
+        if(err) {
+          return deferred.reject(err);
+        }
+
+        if(numberAffected === 1) {
+          return deferred.resolve();
+        }
+
+        return deferred.reject(new Error('No update performed!'));
+      });
+
+      return deferred.promise;
+    }
   };
 
 })();

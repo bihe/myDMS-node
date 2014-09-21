@@ -62,6 +62,7 @@
         "documents": "Dokumente",
         "drive": "Google Drive",
         "connect": "Verbinden",
+        "disconnect": "Trennen",
         "driveConnect": "Verbinde Google Drive",
         "headingDrive": "Durch Drücken des Buttons wird der Google Drive Account verbunden.",
         "json": "Gültiges, richtig formatiertes JSON als Eingabe!",

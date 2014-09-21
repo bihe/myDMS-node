@@ -62,6 +62,7 @@
         "documents": "Documents",
         "drive": "Google Drive",
         "connect": "Connect",
+        "disconnect": "Disconnect",
         "driveConnect": "Connect Google Drive",
         "headingDrive": "Click the link to connect to the Google Drive Account",
         "json": "Use well-formed valid JSON for input!",

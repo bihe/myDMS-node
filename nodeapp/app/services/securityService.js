@@ -34,7 +34,6 @@ SecurityService.prototype = (function() {
      */
     findOAuthUser: function(accessToken, refreshToken, profile, callback) {
       var userService = new UserService()
-        , credentials = {}
         , foundUser = null;
 
       userService.findUserByEmail(profile._json.email).then(function(user) {
@@ -46,13 +45,7 @@ SecurityService.prototype = (function() {
         foundUser = user;
         console.info('Got authenticated user: ' + foundUser.displayName);
 
-        // setup a token
-        credentials.access_token = accessToken;
-        credentials.token_type = 'Bearer';
-        credentials.refresh_token = refreshToken;
-        credentials.expiry_date = (new Date()).getTime() + 3600 * 1000; // one hour
-
-        return userService.setTokenAndProfile(user._id, credentials, profile._json);
+        return userService.setProfile(user._id, profile._json);
 
       }).then(function() {
 

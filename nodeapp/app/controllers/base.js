@@ -44,7 +44,7 @@ exports.user = function(req, res) {
   userService.findUserById(req.user).then(function(user) {
     var viewModel = {};
     viewModel.hasToken = false;
-    if(user.token.access_token) {
+    if(user.token && user.token !== '' && user.tokenDate) {
       viewModel.hasToken = true;
     }
     viewModel.thumb = user.thumb;

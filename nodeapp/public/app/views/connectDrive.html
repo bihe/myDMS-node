@@ -3,7 +3,7 @@
     <p class="text-muted" translate="settings.headingDrive">Click the link to connect to the Google Drive Account.</p>
     <p>
 
-        <button type="button" class="btn btn-success btn-lg" translate="settings.connect" ng-click="connect()">Connect</button>
-
+        <button type="button" ng-show="connection == 0" class="btn btn-success btn-lg" translate="settings.connect" ng-click="connect()">Connect</button>
+        <button type="button" ng-show="connection == 1" class="btn btn-danger btn-lg" translate="settings.disconnect" ng-click="disconnect()">Disconnect</button>
     </p>
 </div>

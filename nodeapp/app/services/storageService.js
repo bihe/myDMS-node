@@ -8,8 +8,9 @@
 var async = require('async');
 var q = require('q');
 var fs = require('fs');
+var logger = require('../util/logger');
 var config = require('../config/application');
-var googleConfig = require('../config/google');
+var googleConfig = require('../config/google').drive;
 var googleapis = require('googleapis');
 
 /**
@@ -71,6 +72,70 @@ StorageService.prototype = (function() {
 
   // public section
   return {
+
+    /**
+     * get the authentication URL
+     *
+     * @return {string} the generated auth URL
+     */
+    generateAuthUrl: function() {
+      var authUrl = authClient().generateAuthUrl({ scope: googleConfig.SCOPE, access_type: 'offline', approval_prompt: 'force' });
+      return authUrl;
+    },
+
+    /**
+     * get the oauth token of the supplied code
+     * @param code
+     *
+     * @return {promise} a promise object - returning the oauth credentials
+     */
+    exractToken: function(code) {
+      var deferred = q.defer();
+
+      // request access token
+      authClient().getToken(code, function(err, tokens) {
+        if(err) {
+          console.log(err);
+          return deferred.reject(err);
+        }
+        try {
+          console.log(tokens);
+          return deferred.resolve(tokens);
+
+        } catch (error) {
+          return q.reject(error);
+        }
+      });
+
+      return deferred.promise;
+    },
+
+    /**
+     * revoke the token 
+     * @param credentials
+     * 
+     * @return {promise} a promise object 
+     */
+    revokeToken: function(credentials) {
+      var deferred = q.defer();
+
+      if(checkCredentials(credentials) === false) {
+        error = new Error('credentials not valid!');
+        error.code = 500;
+        deferred.reject(error);
+        return deferred.promise;
+      }
+
+      // revoke the token
+      authClient().revokeToken(credentials.access_token, function(err, response) {
+        if(err) {
+          return deferred.reject(err);
+        }
+        return deferred.resolve(response);
+      });
+
+      return deferred.promise;
+    },
 
     /**
      * list files from the storage system
