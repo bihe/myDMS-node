@@ -284,6 +284,7 @@ exports.documentDownload = function( req, res, next ) {
   userService.getTokenFromUser(req.user).then(function(token) {
     // got the user credentials to access the backend-system
     credentials = token;
+
     return documentService.getDocumentById(id);
   }).then(function(doc) {
     document = doc;
