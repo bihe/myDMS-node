@@ -81,6 +81,7 @@ if(env === 'development') {
   app.use(favicon(__dirname + '/public/app/dist/html5.ico'));
 }
 app.disable('x-powered-by');
+app.enable('trust proxy');
 
 // view settings
 app.locals.basePath = config.application.basePath;
@@ -90,7 +91,7 @@ app.locals.basePath = config.application.basePath;
 // --------------------------------------------------------------------------
 
 var uristring = process.env.MONGODB || database.uri;
-mongoose.connect(uristring, { server: { socketOptions: { keepAlive: 1 } } });
+mongoose.connect(uristring, database.options);
 
 // CONNECTION EVENTS
 // When successfully connected
