@@ -17,7 +17,7 @@ var UserService = require('../app/services/userService');
 var uristring = database.uri + '_integration';
 console.log(uristring);
 if(mongoose.connection.readyState !== 1) {
-  mongoose.connect(uristring, { user: 'mydms', pass: 'mydms'}, function (err) {
+  mongoose.connect(uristring, database.options, function (err) {
     if (err) {
       console.log('ERROR connecting to: ' + uristring + '. ' + err);
       return;

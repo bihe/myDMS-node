@@ -311,17 +311,19 @@ exports.documentDownload = function( req, res, next ) {
       // use the folder-id to search for the specific file
       return storageService.getFile(searchFileName, result.id, credentials);
     } else {
-      // perform a local search for the document
-      documentService.getBinary(id).then(function (filePath) {
-        // send the file to the requesting client
-        res.sendFile(filePath, function (error) {
-          if (error) {
-            return res.status(500).send('Could not download file ' + error);
-          }
-        });
-      }).catch(function (error) {
-        return res.status(404).send('Document not found! ' + error);
-      }).done();
+      // // perform a local search for the document
+      // documentService.getBinary(id).then(function (filePath) {
+      //   // send the file to the requesting client
+      //   res.sendFile(filePath, function (error) {
+      //     if (error) {
+      //       return res.status(500).send('Could not download file ' + error);
+      //     }
+      //   });
+      // }).catch(function (error) {
+      //   return res.status(404).send('Document not found! ' + error);
+      // }).done();
+
+      return res.status(404).send('Document not found! ');
     }
   }).then(function(result) {
     if(result) {

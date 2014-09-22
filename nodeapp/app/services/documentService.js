@@ -52,37 +52,37 @@ DocumentService.prototype = (function() {
     return deferred.promise;
   };
 
-  /**
-   * creates a folder for the document based on the creation date
-   * if the folder exists only return the foldername
-   * @param document {Document} the document object
-   *
-   * @return {String} folderName
-   */
-  var createDir = function(document) {
-    var deferred = q.defer(),
-      dirPath,
-      dirName;
+  // /**
+  //  * creates a folder for the document based on the creation date
+  //  * if the folder exists only return the foldername
+  //  * @param document {Document} the document object
+  //  *
+  //  * @return {String} folderName
+  //  */
+  // var createDir = function(document) {
+  //   var deferred = q.defer(),
+  //     dirPath,
+  //     dirName;
 
-    dirName = moment(document.created).format('YYYY_MM_DD');
-    dirPath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + dirName;
+  //   dirName = moment(document.created).format('YYYY_MM_DD');
+  //   dirPath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + dirName;
 
-    fs.exists(dirPath, function(exists) {
-      if (exists) {
-        return deferred.resolve(dirName);
-      }
-      // create the dir
-      fs.mkdir(dirPath, function(error){
-        if(error){
-          return deferred.reject(error);
-        }
+  //   fs.exists(dirPath, function(exists) {
+  //     if (exists) {
+  //       return deferred.resolve(dirName);
+  //     }
+  //     // create the dir
+  //     fs.mkdir(dirPath, function(error){
+  //       if(error){
+  //         return deferred.reject(error);
+  //       }
 
-        return deferred.resolve(dirName);
-      });
-    });
+  //       return deferred.resolve(dirName);
+  //     });
+  //   });
     
-    return deferred.promise;
-  };
+  //   return deferred.promise;
+  // };
 
   /**
    * update the document statue
@@ -212,46 +212,46 @@ DocumentService.prototype = (function() {
       return deferred.promise;
     },
 
-    /**
-     * retrieve the full path to the document
-     * @param id {objectid} the document id
-     * 
-     * @return {deferred} a promise with the path to the file
-     */
-    getBinary: function(id) {
-      var deferred = q.defer(),
-        fileName,
-        filePath;
+    // /**
+    //  * retrieve the full path to the document
+    //  * @param id {objectid} the document id
+    //  * 
+    //  * @return {deferred} a promise with the path to the file
+    //  */
+    // getBinary: function(id) {
+    //   var deferred = q.defer(),
+    //     fileName,
+    //     filePath;
         
-      Document.findById(id).exec(function (err, foundDoc) {
-        if(err) {
-          return deferred.reject(err);
-        }
+    //   Document.findById(id).exec(function (err, foundDoc) {
+    //     if(err) {
+    //       return deferred.reject(err);
+    //     }
 
-        if(!foundDoc) {
-          return deferred.reject(new Error('No entry found'));
-        }
+    //     if(!foundDoc) {
+    //       return deferred.reject(new Error('No entry found'));
+    //     }
 
-        // got the document, now read the data from the specified file
-        fileName = foundDoc.fileName;
-        if(fileName.indexOf('/') !== 0) {
-          fileName = '/' + fileName;
-        }
-        filePath = path.join(__dirname, '../../', config.application.upload.filePath) + fileName;
+    //     // got the document, now read the data from the specified file
+    //     fileName = foundDoc.fileName;
+    //     if(fileName.indexOf('/') !== 0) {
+    //       fileName = '/' + fileName;
+    //     }
+    //     filePath = path.join(__dirname, '../../', config.application.upload.filePath) + fileName;
 
-        console.log('read file: ' + filePath);
+    //     console.log('read file: ' + filePath);
 
-        fs.exists(filePath, function(exists) {
-          if (!exists) {
-            return deferred.reject(new Error('The file '  + filePath + ' does not exist!'));
-          }
-          deferred.resolve(filePath);
-        });
+    //     fs.exists(filePath, function(exists) {
+    //       if (!exists) {
+    //         return deferred.reject(new Error('The file '  + filePath + ' does not exist!'));
+    //       }
+    //       deferred.resolve(filePath);
+    //     });
 
-      });
+    //   });
 
-      return deferred.promise;
-    },
+    //   return deferred.promise;
+    // },
 
     /**
      * take care of the temp uploaded file and move it to the final 
@@ -295,7 +295,14 @@ DocumentService.prototype = (function() {
         }).then(function() {
           return self.save(document);
         }).then(function(doc) {
-          deferred.resolve(doc);
+          // remove the uploaded file
+          fs.unlink(uploadPath, function (err) {
+            if (err) {
+              return deferred.reject(err);
+            }
+            deferred.resolve(doc);
+          });
+          
         }).catch(function(error) {
           return deferred.reject(error);
         }).done();
