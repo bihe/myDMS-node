@@ -17,7 +17,7 @@ var UserService = require('../app/services/userService');
 var uristring = database.uri + '_integration';
 console.log(uristring);
 if(mongoose.connection.readyState !== 1) {
-  mongoose.connect(uristring, function (err) {
+  mongoose.connect(uristring, { user: 'mydms', pass: 'mydms'}, function (err) {
     if (err) {
       console.log('ERROR connecting to: ' + uristring + '. ' + err);
       return;
@@ -198,11 +198,11 @@ describe('Backend', function() {
         token.val = 1;
         token.a = 'b';
 
-        userService.setTokenAndProfile(u._id, token, profile).then(function() {
+        userService.setProfile(u._id, profile).then(function() {
           return userService.findUserById(u._id);
         }).then(function(user) {
           assert(user, 'No user!');
-          logger.logDump('## TOKEN ##', user.token);
+          logger.logDump('## PROFILE ##', user.profile);
 
         }).catch(function(error) {
           console.log(error.stack);
