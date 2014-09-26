@@ -13,7 +13,7 @@ google.RETURN_URL = 'http://localhost:3000/auth/google/return';
 google.drive = {};
 google.drive.CLIENT_ID = '';
 google.drive.CLIENT_SECRET = '';
-google.drive.SCOPE = ['https://www.googleapis.com/auth/drive'];
+google.drive.SCOPE = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file'];
 google.drive.RETURN_URL = '';
 google.drive.PARENT_ID = '--FOLDER--ID--';
 

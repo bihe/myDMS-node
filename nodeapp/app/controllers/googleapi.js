@@ -84,10 +84,11 @@ exports.callback = function(req, res, next) {
 };
 
 
-/*
- * url: /drive/listfiles
- * display files from google drive
- */
+
+/*!
+ * only for local DEVELOPMENT
+ *
+
 exports.listfiles = function(req, res, next) {
   var userService = new UserService()
     , storageService = new StorageService();
@@ -148,3 +149,7 @@ exports.uploadfile  = function(req, res, next) {
     return res.status(500).send('Got an error: ' + err.code + ' / ' + err.message);
   }).done();
 };
+
+
+*
+*/
