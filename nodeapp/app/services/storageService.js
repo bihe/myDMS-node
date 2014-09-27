@@ -305,6 +305,9 @@ StorageService.prototype = (function() {
           + '" and explicitlyTrashed = false';
         this.listfiles(query, credentials).then(function(response) {
           result.exists = false;
+
+          console.log(response);
+
           // check the response object
           // title must match, parent must match
           if(response.items && response.items.length > 0) {

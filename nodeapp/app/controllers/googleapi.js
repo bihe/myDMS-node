@@ -34,15 +34,17 @@ exports.disconnect = function(req, res, next) {
   try {
 
     // get the user-id and retrieve the necessary token
-    userService.getTokenFromUser(req.user).then(function(credentials) {
+    userService.clearToken(req.user).then(function() {
+      return userService.getTokenFromUser(req.user);
+    }).then(function(credentials) {
       return storageService.revokeToken(credentials);
     }).then(function(response) {
-      return userService.clearToken(req.user);
-    }).then(function() {
       res.redirect('/static/#/settings/connection');
     }).catch(function(error) {
       console.log(error);
-      return base.handleError(req, res, next, error);
+      // anyway, forward to the settings screen
+      res.redirect('/static/#/settings/connection');
+      //return base.handleError(req, res, next, error);
     }).done();
   } catch(err) {
     return base.handleError(req, res, next, err);

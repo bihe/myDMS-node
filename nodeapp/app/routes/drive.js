@@ -14,9 +14,11 @@ router.get('/connect', googleApi.connect);
 router.get('/disconnect', googleApi.disconnect);
 router.get('/return', googleApi.callback);
 
-
+/*!
+ * LOVAL DEVELOPMENT 
 router.get('/listfiles', googleApi.listfiles);
 router.get('/getfile', googleApi.getfile);
 router.get('/uploadfile', googleApi.uploadfile);
-
+ */
+ 
 module.exports = router;

@@ -24,7 +24,7 @@ var randomstring = require('randomstring');
  */
 exports.index = function( req, res, next ) {
   var filter = {}, filterValue,
-      skip = 0, limit = 20,
+      skip = 0, limit = 40,
       parts = [],
       logicalAnd = [];
 

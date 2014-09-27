@@ -39,17 +39,29 @@
         </div>
     
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-12" >
 
               <!-- infinite scroll plugin area -->
-              <div ng-cloak infini-scroll="moreResults" scroll-threshold="50" id="documentContainer">
-                <div class="document" ng-repeat="doc in documents">
-
+              <div ng-cloak infini-scroll="moreResults" scroll-threshold="50" id="documentContainer" style="padding-top:10px; ">
+                <div class="document" ng-repeat="doc in documents" style="position:relative;">
                   
-                  <div class="card">
-                      <div class="card-image adobe">
-                          <h2 ng-click="editDocument(doc._id)" id="{{ doc._id }}" title="{{ doc.fileName }}"><i class="fa fa-edit"></i> {{ doc.title }}</h2>
+                  <div class="price-badge">
+                    <span ng-if="doc.amount > 0" class="amount label label-danger" >
+                      <i class="fa fa-euro"></i> <strong>{{ doc.amount }}</strong>
+                    </span>
+                  </div>
+
+                  <div class="card" style="position:relative" >
+                      
+                      <div class="card-image transparent-back">
+                          <h2 ng-click="editDocument(doc._id)" id="{{ doc._id }}" title="{{ doc.fileName }}"> {{ doc.title }} </h2>
+
+                          <div class="download-button">
+                            <a href="/api/1.0/document/download/{{ doc._id }}" id="{{ doc._id }}" target="_blank"> <i class="fa fa-cloud-download download-icon"></i> </a>
+                          </div>
+        
                       </div>
+
                       <p>
 
                           <span ng-repeat="sender in doc.senders" >
@@ -61,24 +73,13 @@
                           </span>
 
                       </p>
-                     
-                      <div class="document-footer">
-                        <div class="pull-left">
-                          <span ng-if="doc.amount > 0" class="amount label label-danger" >
-                            <i class="fa fa-euro"></i> <strong>{{ doc.amount }}</strong>
-                          </span>
-                        </div>
-                        <div class="pull-right">
-                          <i class="fa fa-cloud-download"></i> <a href="/api/1.0/document/download/{{ doc._id }}" id="{{ doc._id }}" target="_blank">download</a>
-                        </div>
-                        <div style="height:30px"></div>
-                        <div class="pull-left document-info">
-                          <span  class="document-meta">c</span>: {{ doc.created | date : 'dd.MM.yyyy' }}
-                        </div>
-                        <div class="pull-right document-info">
-                          <span class="document-meta">m</span>: {{ doc.modified | date : 'dd.MM.yyyy' }}
-                        </div>
+                      
+                      <div class="creation-date info-text">
+                        <span  class="document-meta">c</span>:{{ doc.created | date : 'dd.MM.yyyy' }}
+                      </div>
 
+                      <div class="modification-date info-text">
+                        <span class="document-meta">m</span>:{{ doc.modified | date : 'dd.MM.yyyy' }}
                       </div>
                      
                   </div>

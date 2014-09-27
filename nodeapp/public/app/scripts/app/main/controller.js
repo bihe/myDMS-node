@@ -21,7 +21,7 @@ mydmsApp.controller('MainController', ['$scope'
   // ------------------------------------------------------------------------
   // initialisation
   // ------------------------------------------------------------------------
-  var maxResults = 20;
+  var maxResults = 40;
 
   $scope.search = {};
   $scope.documents = [];
