@@ -152,13 +152,15 @@ mydmsApp.controller('MainController', ['$scope'
   } else {
   
     // retrieve the documents on load
-    $scope.busy = $scope.loading = true;
-    backendService.getDocuments().success( function(data) {
-      $scope.documents = data;
-      $scope.busy = $scope.loading = false;
-    }).error( function(data, status, headers) {
-      alert('Error: ' + data + '\nHTTP-Status: ' + status);
-    });
+    // $scope.busy = $scope.loading = true;
+    // backendService.getDocuments().success( function(data) {
+    //   $scope.documents = data;
+    //   $scope.page = 1;
+    //   $scope.busy = $scope.loading = false;
+    // }).error( function(data, status, headers) {
+    //   alert('Error: ' + data + '\nHTTP-Status: ' + status);
+    // });
+    $rootScope.$emit('::doSearch::');
 
     // retrieve the senders on load
     backendService.getSenders().success( function(data) {
