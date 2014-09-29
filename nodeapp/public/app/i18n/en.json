@@ -32,6 +32,7 @@
         "title": "Welcome, myDMS!",
         "subtitle": "This is your homepage",
         "search": "Search!",
+        "more_search": "more ...",
         "addDoc": "Add Document",
         "searchheader": "Filter the search results",
         "selectsender": "Select a sender",

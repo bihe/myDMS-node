@@ -30,6 +30,7 @@ mydmsApp.controller('MainController', ['$scope'
   $scope.page = 0;
   $scope.busy = false;
   $scope.loading = false;
+  $scope.toggleShowOptions = false;
 
   // ------------------------------------------------------
   // events
@@ -48,6 +49,10 @@ mydmsApp.controller('MainController', ['$scope'
   // ------------------------------------------------------------------------
   // actions
   // ------------------------------------------------------------------------
+
+  $scope.showMoreSearchOptions = function() {
+    $scope.toggleShowOptions = !$scope.toggleShowOptions;
+  };
 
   $scope.editDocument = function(id) {
     stateService.set($scope);

@@ -17,23 +17,6 @@ module.exports = function (grunt) {
       app: require('./bower.json').appPath || 'app',
       dist: 'app/dist'
     },
-    watch: {
-    styles: {
-        files: ['app/styles/{,*/}*.css'],
-        tasks: ['copy:styles', 'autoprefixer']
-      },
-    livereload: {
-        options: {
-          livereload: 35729
-        },
-        files: [
-          'app/{,*/}*.html',
-          '.tmp/styles/{,*/}*.css',
-          '{.tmp/,}app/scripts/{,*/}*.js',
-          'app/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
-        ]
-      }
-    },
     autoprefixer: {
       options: ['last 1 version'],
       dist: {
@@ -57,15 +40,6 @@ module.exports = function (grunt) {
         }]
       },
       server: '.tmp'
-    },
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc'
-      },
-      all: [
-        'Gruntfile.js',
-        'app/scripts/{,*/}*.js'
-      ]
     },
     // not used since Uglify task does concat,
     // but still available if needed
@@ -276,15 +250,15 @@ module.exports = function (grunt) {
       ],
       dist: [
         'copy:styles',
-        'imagemin',
         'svgmin',
+        'imagemin',
         'htmlmin',
         'copy:fonts',
         'copy:i18n',
         'copy:images4styles'
       ]
     },
-    ngmin: {
+    ngAnnotate: {
       dist: {
         files: [{
           expand: true,
@@ -305,14 +279,6 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('test', [
-    'clean:server',
-    'concurrent:test',
-    'autoprefixer',
-    'connect:test',
-    'karma'
-  ]);
-
   grunt.registerTask('build', [
     'clean:dist',
     'useminPrepare',
@@ -320,7 +286,7 @@ module.exports = function (grunt) {
     'autoprefixer',
     'concat',
     'copy:dist',
-    'ngmin',
+    'ngAnnotate',
     'cssmin',
     'uglify',
     'rev',
@@ -328,7 +294,6 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('default', [
-    'test',
     'build'
   ]);
 };

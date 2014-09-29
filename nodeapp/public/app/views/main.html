@@ -2,39 +2,45 @@
 <div class="row" >
     <div class="col-xs-12 col-sm-12 col-md-12">
 
-        <div class="panel panel-primary">
-          <div class="panel-heading" translate="main.searchheader">Panel heading without title</div>
-          <div class="panel-body">
-            
-           <form class="form-inline" role="form" id="filterForm">
-              <div class="form-group">  
-                <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="search.dateFrom" ng-change="doSearch()">
-              </div>
-              <div class="form-group">
-                <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="search.dateTo" ng-change="doSearch()">
-              </div>
-              <div class="form-group" >
-                  <select class="form-control" id="senders" ng-options="sender.name for sender in senders" ng-model="search.sender" ng-change="doSearch()">
-                      <option value="" translate="main.selectsender">Select a sender</option>
-                  </select>
-              </div>
-              <div class="form-group" >
-                  <select class="form-control" id="tags" ng-options="tag.name for tag in tags" ng-model="search.tag" ng-change="doSearch()">
-                      <option value="" translate="main.selecttag">Select a tag</option>
-                  </select>
-              </div>
-              <div class="form-group" >
-                <input type="text" class="form-control" placeholder="Search" id="search" ng-model="search.term" ng-change="doSearch()">
-              </div>
-              <div class="form-group">
-                <button type="button" class="btn btn-success btn-sm" ng-click="doSearch()">
-                  <span class="glyphicon glyphicon-search"></span>
-                  <span translate="main.search">Search</span>
-                </button>
-              </div>
-           
-            </form>
+        <div class="row" style="margin-top:25px;margin-bottom:20px;">
+          <div class="col-md-12">
+            <div class="center-block width-80">
+                <div>
+                  <div class="input-group input-group-lg">
+                    <input type="text" class="form-control" placeholder="Search" id="search" ng-model="search.term" ng-change="doSearch()">
+                    <div class="input-group-btn">
+                      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
+                      <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                        <li><a href="#" translate="main.search" ng-click="doSearch()">Search!</a></li>
+                        <li><a href="#" translate="main.more_search" ng-click="showMoreSearchOptions()">more</a></li>
+                      </ul>
+                    </div><!-- /btn-group -->
+                  </div><!-- /input-group -->
+                </div>
 
+                <div style="text-align:center" ng-show="toggleShowOptions">
+                  <br/>
+                  <form class="form-inline" role="form" id="filterForm">
+                      <div class="form-group">  
+                        <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="search.dateFrom" ng-change="doSearch()">
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="search.dateTo" ng-change="doSearch()">
+                      </div>
+                      <div class="form-group">
+                          <select class="form-control" id="senders" ng-options="sender.name for sender in senders" ng-model="search.sender" ng-change="doSearch()">
+                              <option value="" translate="main.selectsender">Select a sender</option>
+                          </select>
+                      </div>
+                      <div class="form-group">
+                          <select class="form-control" id="tags" ng-options="tag.name for tag in tags" ng-model="search.tag" ng-change="doSearch()">
+                              <option value="" translate="main.selecttag">Select a tag</option>
+                          </select>
+                      </div>
+                  </form>
+                  <hr/>
+                </div>
+            </div>
           </div>
         </div>
     
@@ -42,8 +48,8 @@
           <div class="col-md-12" >
 
               <!-- infinite scroll plugin area -->
-              <div ng-cloak infini-scroll="moreResults" scroll-threshold="50" id="documentContainer" style="padding-top:10px; ">
-                <div class="document" ng-repeat="doc in documents" style="position:relative;">
+              <div ng-cloak infini-scroll="moreResults" scroll-threshold="50" id="documentContainer" style="padding-top:10px; " >
+                <div class="document " ng-repeat="doc in documents" style="position:relative;">
                   
                   <div class="price-badge">
                     <span ng-if="doc.amount > 0" class="amount label label-danger" >
