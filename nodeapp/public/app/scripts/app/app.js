@@ -46,9 +46,8 @@ mydmsApp
                 suffix: '.json'
             });
 
-            $translateProvider.preferredLanguage('en');
-            //$translateProvider.determinePreferredLanguage();
-
+            $translateProvider.preferredLanguage('de');
+            
             // remember language
             $translateProvider.useCookieStorage();
         }])

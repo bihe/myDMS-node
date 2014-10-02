@@ -33,6 +33,7 @@
         "subtitle": "This is your homepage",
         "search": "Search!",
         "more_search": "more ...",
+        "less_search": "less ...",
         "addDoc": "Add Document",
         "searchheader": "Filter the search results",
         "selectsender": "Select a sender",

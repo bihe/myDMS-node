@@ -74,10 +74,10 @@ app.use(csrf());
 app.use(multer({ dest: path.join(__dirname, 'tmp') }));
 
 if(env === 'development') {
-  app.use('/static/', express.static(path.join(__dirname, 'public/app')));
+  app.use('/static/', express.static(path.join(__dirname, 'public/app'), {maxAge: '5d'}));
   app.use(favicon(__dirname + '/public/app/html5.ico'));
 } else if(env === 'production') {
-  app.use('/static', express.static(path.join(__dirname, 'public/app/dist')));
+  app.use('/static', express.static(path.join(__dirname, 'public/app/dist'), {maxAge: '5d'}));
   app.use(favicon(__dirname + '/public/app/dist/html5.ico'));
 }
 app.disable('x-powered-by');
@@ -179,7 +179,7 @@ if (env === 'development') {
 // 404 handler with content type specific results
 app.use(function(req, res, next){
   res.status(404);
-  
+
   // respond with html page
   if (req.accepts('html')) {
     res.render('404', { url: req.url });

@@ -13,7 +13,7 @@
         },
         "language": {
             "en": "Englisch",
-            "de": "Deutsch"            
+            "de": "Deutsch"
         },
         "settings": "Settings",
         "cancel": "Abbrechen",
@@ -33,6 +33,7 @@
         "subtitle": "Dies ist Ihre Hauptseite",
         "search": "Suche!",
         "more_search": "mehr ...",
+        "less_search": "weniger ...",
         "addDoc": "Neues Dokument",
         "searchheader": "Filter die Suchergebnisse",
         "selectsender": "Absender auswählen",
