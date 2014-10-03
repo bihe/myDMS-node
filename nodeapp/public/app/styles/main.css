@@ -19,19 +19,19 @@ body {
 
 ul.items
 {
-  text-align: center; 
-  list-style-type: none;  
+  text-align: center;
+  list-style-type: none;
   width: 200px;
 }
 
 ul.items li
 {
     /*float: left; */
-    display: inline;   
+    display: inline;
 }
 
 .label-normal {
-  font-weight: normal;  
+  font-weight: normal;
   font-size: inhert;
 }
 
@@ -241,11 +241,11 @@ ul.items li
   margin-right:10px;
 }
 
-.card-image h1, 
+.card-image h1,
 .card-image h2,
-.card-image h3, 
-.card-image h4, 
-.card-image h5, 
+.card-image h3,
+.card-image h4,
+.card-image h5,
 .card-image h6 {
     position:absolute;
     bottom:0px;
@@ -297,7 +297,7 @@ ul.items li
 }
 
 .info-text {
-  font-size: 8pt;
+  font-size: 6pt;
 }
 
 .modal-backdrop.am-fade {

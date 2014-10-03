@@ -26,5 +26,21 @@
   },
   "engines": {
     "node": ">=0.10.0"
+  },
+  "jshintConfig": {
+    "curly":true,
+    "devel":true,
+    "eqeqeq": true,
+    "globals":{
+      "angular": true
+    }
+    "indent":2,
+    "quotmark": "single",
+    "strict": true,
+    "trailing": true,
+    "undef":true,
+    "unused":true,
+    "jquery": true,
+    "laxcomma": true
   }
 }

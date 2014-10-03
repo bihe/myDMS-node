@@ -184,5 +184,25 @@ exports.save = function( req, res, next ) {
 
     return res.status(500).send('Cannot save settings! ' + err);
   }
+};
 
+/*
+ * url: /settings/maintenance
+ * perform some maintenance/cleanup operations
+ */
+exports.doMaintenance = function(req, res) {
+  var options, itemCount = 0;
+
+  try {
+    options = req.body;
+
+
+    return res.status(200).send('Operation executed successfully!');
+
+  } catch(err) {
+    console.log('Got an error: ' + err);
+    console.log(err.stack);
+
+    return res.status(500).send('Cannot start maintenance work! ' + err);
+  }
 };

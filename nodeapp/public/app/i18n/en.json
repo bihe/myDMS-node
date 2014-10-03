@@ -26,7 +26,10 @@
         "invalidForm": "Form input invalid or incomplete, please check your input!",
         "saveError": "Error on save!",
         "file": "File",
-        "saveSuccess": "Save success!"
+        "saveSuccess": "Save success!",
+        "actionSuccess": "Action success!",
+        "actionError": "Action error!",
+        "dowork": "Go!"
     },
     "main": {
         "title": "Welcome, myDMS!",
@@ -66,8 +69,15 @@
         "connect": "Connect",
         "disconnect": "Disconnect",
         "driveConnect": "Connect Google Drive",
+        "drivestatus": "Currently Google Drive is ...",
+        "drivestory": "Google Drive is used to store the physical documents. It is a cloud based storage system from Google. To access the files in Google Drive first an authentication is needed. This is done via OAuth.",
         "headingDrive": "Click the link to connect to the Google Drive Account",
         "json": "Use well-formed valid JSON for input!",
-        "save": "The imported data was saved successfully!"
+        "save": "The imported data was saved successfully!",
+        "storage": "Storage Backend",
+        "maintenance": "Maintenance",
+        "maintenancejobs": "Perform some cleanup operations on the filesystem and database level (temp files, orphaned entries in the database, ...)",
+        "deletetempfiles": "Delete temp files",
+        "deletedirtydbentries": "Delete 'dirty' database entries"
     }
 }
