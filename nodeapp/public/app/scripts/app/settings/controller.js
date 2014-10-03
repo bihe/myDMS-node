@@ -40,6 +40,9 @@ mydmsApp.controller('SettingsController', ['$scope'
     $scope.googleDrive = {};
     $scope.googleDrive.isActive = false;
     $scope.googleDrive.isProvided = false;
+    $scope.maintenance = {};
+    $scope.maintenance.deletetempfiles = false;
+    $scope.maintenance.deletedirtydbentries = false;
 
     var myModal = $modal({ scope: $scope
       , title: 'Connect Drive'
@@ -154,6 +157,26 @@ mydmsApp.controller('SettingsController', ['$scope'
       console.log('disconnect google drive!');
       // redirect to start the oauth logic
       $window.location.href = '/drive/disconnect';
+    };
+
+    // start the maintenance work stuff
+    $scope.dowork = function() {
+      if($scope.maintenance.deletetempfiles ||  $scope.maintenance.deletedirtydbentries) {
+        backendService.doMaintenance($scope.maintenance).success(function (data, status, headers, config) {
+          $scope.actionSuccess = true;
+          $scope.actionError = false;
+          $scope.actionMessage = data;
+
+          $scope.maintenance.deletetempfiles = $scope.maintenance.deletedirtydbentries = false;
+
+        }).error(function (data, status, headers, config) {
+          $scope.actionError = true;
+          $scope.actionSuccess = false;
+          $scope.actionMessage = data;
+        });
+      } else {
+        return;
+      }
     };
 
     // ------------------------------------------------------------------------

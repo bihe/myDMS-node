@@ -26,7 +26,10 @@
         "invalidForm": "Eingaben ungültig oder unvollständig, bitte erneut überprüfen!",
         "saveError": "Fehler beim Speichern!",
         "file": "Datei",
-        "saveSuccess": "Speichern erfolgreich!"
+        "saveSuccess": "Speichern erfolgreich!",
+        "actionSuccess": "Die Aktion war erfolgreich!",
+        "actionError": "Fehler während der Ausführung!",
+        "dowork": "Los!"
     },
     "main": {
         "title": "Willkommen, myDMS!",
@@ -65,9 +68,16 @@
         "drive": "Google Drive",
         "connect": "Verbinden",
         "disconnect": "Trennen",
+        "drivestatus": "Status von Google Drive ist ...",
+        "drivestory": "Google Drive wird als Ablage für die Dokumente verwendet. Google Drive ist ein Cloud-basiertes Speicher-System von Google. Um auf die Dateien zugreifen zu können ist eine Authentifizierung notwendig. Diese wird mit OAuth durchgeführt.",
         "driveConnect": "Verbinde Google Drive",
         "headingDrive": "Durch Drücken des Buttons wird der Google Drive Account verbunden.",
         "json": "Gültiges, richtig formatiertes JSON als Eingabe!",
-        "save": "Die zu importierendend Daten wurden erfolgreich gespeichert!"
+        "save": "Die zu importierendend Daten wurden erfolgreich gespeichert!",
+        "storage": "Datei Backend",
+        "maintenance": "Wartung",
+        "maintenancejobs": "Bereinige das Dateisystem bzw. die Datenbank von temporären Einträgen (Temp-Files, 'ditry' Einträge in der Datenbank, ...)",
+        "deletetempfiles": "Temporäre Dateien löschen",
+        "deletedirtydbentries": "Lösche 'dirty' Einträge in der Datenbank"
     }
 }

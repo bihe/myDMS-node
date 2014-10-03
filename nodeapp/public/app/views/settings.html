@@ -1,11 +1,12 @@
 <div class="row" ng-cloak>
   <div class="col-xs-12 col-sm-12 col-md-12">
     <h2 translate="settings.title">Settings</h2>
-    
+
     <ul class="nav nav-tabs nav-justified">
       <li ng-class="{'active': activeTab == 'tabImport'}" ><a href="" ng-click="showTab('tabImport')" >Import</a></li>
       <li ng-class="{'active': activeTab == 'tabExport'}" ><a href="" ng-click="showTab('tabExport')">Export</a></li>
-      <li ng-class="{'active': activeTab == 'tabDrive'}" ><a href="" ng-click="showTab('tabDrive')">Storage</a></li>
+      <li ng-class="{'active': activeTab == 'tabDrive'}" ><a href="" ng-click="showTab('tabDrive')" translate="settings.storage">Storage</a></li>
+      <li ng-class="{'active': activeTab == 'tabMaintenance'}" ><a href="" ng-click="showTab('tabMaintenance')" translate="settings.maintenance">Maintenance</a></li>
     </ul>
 
     <div class="alert alert-danger" ng-if="saveSuccess === false" style="margin-top: 10px">
@@ -25,11 +26,11 @@
     <div style="padding: 5px">
       <div  ng-if="activeTab == 'tabImport'">
         <h4 translate="settings.import">Import</h4>
-        
+
         <div class="panel panel-default">
           <div class="panel-heading" translate="settings.tags">Tags</div>
           <div class="panel-body" ng-class="{'has-error': rawTagsValid == false}">
-            
+
             <textarea class="form-control" rows="3" id="tags" ng-model="input.rawTags" placeholder='["tag1","tag2"]' ></textarea>
             <div class="alert alert-info alert-small" translate="settings.json">Use valid JSON format</div>
 
@@ -60,6 +61,10 @@
           </div>
         </div>
 
+        <div class="pull-right">
+        <button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave" ng-click="save()">Save</button>
+        </div>
+
       </div>
       <div  ng-if="activeTab == 'tabExport'">
         <h4 translate="settings.export">Export</h4>
@@ -69,10 +74,10 @@
         <div  ng-if="activeTab == 'tabDrive'">
             <h4 translate="settings.drive">Drive</h4>
 
-            <p>Google Drive is used to store the physical documents. It is a cloud based storage system from Google. To access the files in Google Drive first
+            <p translate="settings.drivestory">Google Drive is used to store the physical documents. It is a cloud based storage system from Google. To access the files in Google Drive first
             an authentication is needed. This is done via OAuth.</p>
 
-            <p>Currently Google Drive is ...</p>
+            <p translate="settings.drivestatus">Currently Google Drive is ...</p>
 
             <p>
             <input
@@ -88,20 +93,56 @@
             </p>
 
         </div>
+
+
+        <div  ng-if="activeTab == 'tabMaintenance'">
+            <h4 translate="settings.maintenance">Maintenance</h4>
+
+            <p translate="settings.maintenancejobs">Maintenance Jobs</p>
+
+
+            <div class="alert alert-success" ng-if="actionSuccess" style="margin-top: 10px">
+              <span class="fa fa-check-circle-o "></span>
+              <strong translate="global.actionSuccess">Success!</strong>
+
+              <p>{{ actionMessage }}</p>
+            </div>
+
+            <div class="alert alert-danger" ng-if="actionError" style="margin-top: 10px">
+              <span class="fa fa fa-flash"></span>
+              <strong translate="global.actionError">Error!</strong>
+
+              <p>{{ actionMessage }}</p>
+            </div>
+
+
+            <form role="form" name="form1" id="form1" novalidate>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-model="maintenance.deletetempfiles"> <span translate="settings.deletetempfiles">deletetemp</span>
+                </label>
+              </div>
+
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-model="maintenance.deletedirtydbentries"> <span translate="settings.deletedirtydbentries">deletedirtydbentries</span>
+                </label>
+              </div>
+
+
+
+              <div class="pull-right">
+              <button type="button" class="btn btn-success btn-lg" translate="global.dowork" ng-disabled="!maintenance.deletetempfiles && !maintenance.deletedirtydbentries" id="btnDoWork" ng-click="dowork()">Start</button>
+              </div>
+            </form>
+
+
+
+
+
+        </div>
+
     </div>
 
-  </div>
-</div>
-
-<div class="row">
-  
-
-  <div class="col-xs-12 col-sm-12 col-md-12 ">
-    <div class="pull-left">
-    <button type="button" class="btn btn-primary btn-lg" translate="global.cancel" id="btnCancel" ng-click="cancel('/')">Cancel</button>
-    </div>
-    <div class="pull-right">
-    <button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave" ng-click="save()">Save</button>
-    </div>
   </div>
 </div>
