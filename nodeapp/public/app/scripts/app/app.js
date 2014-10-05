@@ -5,6 +5,7 @@
 var mydmsApp = angular.module('mydmsApp', ['ngResource'
     , 'ngRoute'
     , 'ngCookies'
+    , 'ngAnimate'                         // use animation
     , 'pascalprecht.translate'            // translate angular elements
     , 'angularFileUpload'                 // handel file-upload the angular way
     , 'chieffancypants.loadingBar'        // loading indicator for xhr requests
@@ -47,7 +48,7 @@ mydmsApp
             });
 
             $translateProvider.preferredLanguage('de');
-            
+
             // remember language
             $translateProvider.useCookieStorage();
         }])

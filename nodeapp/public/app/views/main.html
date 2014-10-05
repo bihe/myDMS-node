@@ -7,7 +7,7 @@
             <div class="center-block width-80">
                 <div>
                   <div class="input-group input-group-lg">
-                    <input type="text" class="form-control" placeholder="{{ 'main.search' | translate }}" id="search" ng-model="search.term" ng-change="doSearch()">
+                    <input type="text" class="form-control" placeholder="{{ 'main.search' | translate }}" id="search" ng-model="search.term" ng-change="doSearchWait()">
                     <div class="input-group-btn">
                       <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
                       <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -50,7 +50,7 @@
 
               <!-- infinite scroll plugin area -->
               <div ng-cloak infini-scroll="moreResults" scroll-threshold="50" id="documentContainer" style="padding-top:10px; " >
-                <div class="document " ng-repeat="doc in documents" style="position:relative;">
+                <div class="document animate-repeat" ng-repeat="doc in documents" style="position:relative;">
 
                   <div class="price-badge">
                     <span ng-if="doc.amount > 0" class="amount label label-danger" >

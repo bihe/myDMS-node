@@ -2,12 +2,15 @@
 
 'use strict';
 
+var fs = require('fs');
+var path = require('path');
 var assert = require('assert');
 var Tag = require('../app/models/tag.js');
 var Sender = require('../app/models/sender.js');
 var Document = require('../app/models/document.js');
 var User = require('../app/models/user.js');
 var database = require('../app/config/database');
+var config = require('../app/config/application');
 var mongoose = require('mongoose');
 var logger = require('../app/util/logger');
 var MasterDataService = require('../app/services/masterDataService');
@@ -15,6 +18,7 @@ var DocumentService = require('../app/services/documentService');
 var UserService = require('../app/services/userService');
 
 var uristring = database.uri + '_integration';
+
 console.log(uristring);
 if(mongoose.connection.readyState !== 1) {
   mongoose.connect(uristring, database.options, function (err) {
@@ -443,58 +447,89 @@ describe('Backend', function() {
 
       });
 
+    it('should update a document object', function(done) {
+      var documentService = new DocumentService(),
+          dataService = new MasterDataService(),
+          tagList,
+          senderList;
 
-      it('should update a document object', function(done) {
-        var documentService = new DocumentService(),
-            dataService = new MasterDataService(),
-            tagList,
-            senderList;
+      Document.findOne({title: 'TEST'}).exec(function (err, foundDoc) {
+        assert(!err, err);
 
-        Document.findOne({title: 'TEST'}).exec(function (err, foundDoc) {
-          assert(!err, err);
+        testDocument._id = foundDoc._id;
+        testDocument.title = foundDoc.title;
+        testDocument.amount = foundDoc.amount;
 
-          testDocument._id = foundDoc._id;
-          testDocument.title = foundDoc.title;
-          testDocument.amount = foundDoc.amount;
+        dataService.createAndGetTags(testDocument.tags).then(function(list) {
+          tagList = list;
 
-          dataService.createAndGetTags(testDocument.tags).then(function(list) {
-            tagList = list;
+          assert(list, 'No tags supplied');
 
-            assert(list, 'No tags supplied');
+          return dataService.createAndGetSenders(testDocument.senders);
+        })
+        .then(function(list) {
+          senderList = list;
 
-            return dataService.createAndGetSenders(testDocument.senders);
-          })
-          .then(function(list) {
-            senderList = list;
+          assert(list, 'No senders supplied');
 
-            assert(list, 'No senders supplied');
+          testDocument.tags = tagList;
+          testDocument.senders = senderList;
 
-            testDocument.tags = tagList;
-            testDocument.senders = senderList;
-
-            return documentService.save(testDocument);
-          })
-          .then(function(doc) {
-            assert(doc, 'No document returned !' );
-            assert.equal(doc.title, 'TEST', 'Wrong title');
-            assert.equal(doc.senders.length, 1, 'Wrong number of senders');
+          return documentService.save(testDocument);
+        })
+        .then(function(doc) {
+          assert(doc, 'No document returned !' );
+          assert.equal(doc.title, 'TEST', 'Wrong title');
+          assert.equal(doc.senders.length, 1, 'Wrong number of senders');
 
 
-            console.log('\n' + doc);
-            logger.dump(doc);
+          console.log('\n' + doc);
+          logger.dump(doc);
+
+          done();
+        })
+       .catch(function(error) {
+          console.log(error.stack);
+          // Handle any error from all above steps
+          assert(!error, 'Error thrown!');
+        })
+        .done();
+
+      });
+
+    });
+
+    it('Delete files in the temp folder', function(done) {
+      var documentService = new DocumentService()
+        , folder = ''
+        , folders = [];
+
+      folder = path.join(__dirname, '..', config.application.upload.tempFilePath);
+      folders.push(folder);
+
+      // create test files
+      fs.writeFile(path.join(folder, 'tempfil1'), 'content', function(err) {
+        assert(!err, 'Error thrown!');
+
+        fs.writeFile(path.join(folder, 'tempfil2'), 'content', function(err) {
+          assert(!err, 'Error thrown!');
+
+          documentService.clearFiles(folders).then(function(numFiles) {
+            assert.equal(numFiles, 2, 'Wrong number of files deleted!');
 
             done();
-          })
-         .catch(function(error) {
-            console.log(error.stack);
-            // Handle any error from all above steps
-            assert(!error, 'Error thrown!');
-          })
+
+          }).catch(function(error) {
+             console.log(error.stack);
+             // Handle any error from all above steps
+             assert(!error, 'Error thrown!');
+           })
           .done();
 
         });
-
       });
+
+    });
   });
 
 });

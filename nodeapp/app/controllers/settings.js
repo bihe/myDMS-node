@@ -12,6 +12,7 @@ var MasterDataService = require('../services/masterDataService');
 var _ = require('lodash');
 var async = require('async');
 var moment = require('moment');
+var path = require('path');
 
 
 /**
@@ -191,13 +192,58 @@ exports.save = function( req, res, next ) {
  * perform some maintenance/cleanup operations
  */
 exports.doMaintenance = function(req, res) {
-  var options, itemCount = 0;
+  var options
+    , itemCount = 0
+    , folders = []
+    , folder = ''
+    , message = ''
+    , documentService = new DocumentService();
 
   try {
     options = req.body;
+    // possible options are
+    // deletetempfiles ... clear the temp uploaed files
+    // deletedirtydbentries ... clear the 'dirty' entries in the database
 
+    async.series([
+      function(callback) {
+        // clear the temp-files in the upload folder
+        if(options.deletetempfiles && options.deletetempfiles === true) {
+          folder = path.join(__dirname, '../..', config.application.upload.tempFilePath);
+          folders.push(folder);
+          // also clear the upload temp path
+          folder = path.join(__dirname, '../..', 'tmp');
+          folders.push(folder);
 
-    return res.status(200).send('Operation executed successfully!');
+          documentService.clearFiles(folders).then(function(numFiles) {
+            message = 'Cleaned folder(s) and deleted ' + numFiles + ' files.';
+            callback(null);
+          }).catch(function(error) {
+             return callback(error);
+           })
+          .done();
+        } else {
+          callback(null);
+        }
+      },
+      function(callback) {
+        // clear the temp-files in the upload folder
+        if(options.deletedirtydbentries && options.deletedirtydbentries === true) {
+          callback(null);
+        } else {
+          callback(null);
+        }
+      }
+
+    ], function (err, result) {
+        if(err) {
+          console.log('Got an error: ' + err);
+          console.log(err.stack);
+
+          return res.status(500).send('Cannot start maintenance work! ' + err);
+        }
+        return res.status(200).send('Operation executed successfully! ' + message);
+    });
 
   } catch(err) {
     console.log('Got an error: ' + err);

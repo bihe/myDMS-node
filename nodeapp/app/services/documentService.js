@@ -18,6 +18,7 @@ var Document = require('../models/document');
 var config = require('../config/application');
 var _ = require('lodash');
 var u = require('../util/utils');
+var logger = require('../util/logger');
 var StorageService = require('./storageService');
 var google = require('../config/google');
 
@@ -27,7 +28,7 @@ var google = require('../config/google');
 function DocumentService() {
 }
 
-/* 
+/*
  * method, logic implementation
  */
 DocumentService.prototype = (function() {
@@ -52,43 +53,11 @@ DocumentService.prototype = (function() {
     return deferred.promise;
   };
 
-  // /**
-  //  * creates a folder for the document based on the creation date
-  //  * if the folder exists only return the foldername
-  //  * @param document {Document} the document object
-  //  *
-  //  * @return {String} folderName
-  //  */
-  // var createDir = function(document) {
-  //   var deferred = q.defer(),
-  //     dirPath,
-  //     dirName;
-
-  //   dirName = moment(document.created).format('YYYY_MM_DD');
-  //   dirPath = path.join(__dirname, '../../', config.application.upload.filePath) + '/' + dirName;
-
-  //   fs.exists(dirPath, function(exists) {
-  //     if (exists) {
-  //       return deferred.resolve(dirName);
-  //     }
-  //     // create the dir
-  //     fs.mkdir(dirPath, function(error){
-  //       if(error){
-  //         return deferred.reject(error);
-  //       }
-
-  //       return deferred.resolve(dirName);
-  //     });
-  //   });
-    
-  //   return deferred.promise;
-  // };
-
   /**
    * update the document statue
    * @param id {ObjectId} the id of the documnet
    * @param state {String} the document state
-   * 
+   *
    * @return {deferred} a promise object of the Document
    */
   var stateUpdate = function(id, newState) {
@@ -117,12 +86,12 @@ DocumentService.prototype = (function() {
 
     return deferred.promise;
   };
-  
+
 
   // those methods are public accessible
   return {
     /**
-     * save the document or create a new one, depending on the 
+     * save the document or create a new one, depending on the
      * supplied id
      *
      * @return {deferred} a promise with the saved document
@@ -212,49 +181,8 @@ DocumentService.prototype = (function() {
       return deferred.promise;
     },
 
-    // /**
-    //  * retrieve the full path to the document
-    //  * @param id {objectid} the document id
-    //  * 
-    //  * @return {deferred} a promise with the path to the file
-    //  */
-    // getBinary: function(id) {
-    //   var deferred = q.defer(),
-    //     fileName,
-    //     filePath;
-        
-    //   Document.findById(id).exec(function (err, foundDoc) {
-    //     if(err) {
-    //       return deferred.reject(err);
-    //     }
-
-    //     if(!foundDoc) {
-    //       return deferred.reject(new Error('No entry found'));
-    //     }
-
-    //     // got the document, now read the data from the specified file
-    //     fileName = foundDoc.fileName;
-    //     if(fileName.indexOf('/') !== 0) {
-    //       fileName = '/' + fileName;
-    //     }
-    //     filePath = path.join(__dirname, '../../', config.application.upload.filePath) + fileName;
-
-    //     console.log('read file: ' + filePath);
-
-    //     fs.exists(filePath, function(exists) {
-    //       if (!exists) {
-    //         return deferred.reject(new Error('The file '  + filePath + ' does not exist!'));
-    //       }
-    //       deferred.resolve(filePath);
-    //     });
-
-    //   });
-
-    //   return deferred.promise;
-    // },
-
     /**
-     * take care of the temp uploaded file and move it to the final 
+     * take care of the temp uploaded file and move it to the final
      * destination. use the storageservice to interact with the backend system.
      * additionally update the filepath for the document object
      * @param document {Document} the document object
@@ -277,7 +205,7 @@ DocumentService.prototype = (function() {
       tempFilename = savedDocument.tempFilename;
 
       if(tempFilename && tempFilename !== '') {
-          
+
         // create a folder
         folderName = moment(document.created).format('YYYY_MM_DD');
         storageService.createFolder(folderName, google.drive.PARENT_ID, credentials).then(function(result) {
@@ -302,7 +230,7 @@ DocumentService.prototype = (function() {
             }
             deferred.resolve(doc);
           });
-          
+
         }).catch(function(error) {
           return deferred.reject(error);
         }).done();
@@ -318,8 +246,8 @@ DocumentService.prototype = (function() {
     /**
      * start the document edit process by updating the document status
      * @param id {ObjectId} the id of the documnet
-     * 
-     * @return {deferred} a promise object 
+     *
+     * @return {deferred} a promise object
      */
     beginDocumentChange: function(id) {
       return stateUpdate(id, 'dirty');
@@ -328,8 +256,8 @@ DocumentService.prototype = (function() {
     /**
      * end the document edit process by updating the document status
      * @param id {ObjectId} the id of the documnet
-     * 
-     * @return {deferred} a promise object 
+     *
+     * @return {deferred} a promise object
      */
     endDocumentChange: function(id) {
       return stateUpdate(id, 'done');
@@ -348,6 +276,79 @@ DocumentService.prototype = (function() {
           return deferred.reject(err);
         }
         deferred.resolve(document);
+      });
+
+      return deferred.promise;
+    },
+
+    /**
+     * remove the files of given folders
+     * @param folders {array} list of folders
+     *
+     * @return {deferred} a promise object - number of files removed
+     */
+    clearFiles: function(folders) {
+      var deferred = q.defer()
+        , numEntries = 0
+        , i = 0
+        , filesToDelete = [];
+
+      if(!folders || folders.length === 0) {
+        return deferred.reject(new Error('No folder paths supplied!'));
+      }
+
+      // sequential approach
+      // 1. collect the files
+      // 2. delete them
+      async.series([
+        // prepare
+        function(callback) {
+          async.eachSeries(folders, function(folder, cb) {
+            fs.readdir(folder, function(error, files) {
+              if(error) {
+                return cb(error);
+              }
+
+              for(i=0; i<files.length; i++) {
+                filesToDelete.push(path.join(folder, files[i]));
+              }
+
+              cb(null);
+            });
+          }, function(err){
+            if(err) {
+              return callback(err);
+            }
+            callback(null);
+          });
+        },
+        // action
+        function(callback) {
+          async.each(filesToDelete, function(file, cb) {
+
+            fs.unlink(file, function(error) {
+              if(error) {
+                return cb(error);
+              }
+
+              numEntries++;
+              cb(null);
+            });
+          }, function(err){
+            if(err) {
+              return callback(err);
+            }
+            callback(null);
+          });
+        }
+      ], function (err, result) {
+          if(err) {
+            console.log('clearFiles: ' + err);
+            console.log(err);
+            return deferred.reject(err);
+          }
+
+          deferred.resolve(numEntries);
       });
 
       return deferred.promise;

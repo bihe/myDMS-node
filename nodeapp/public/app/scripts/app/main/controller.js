@@ -6,6 +6,7 @@
 mydmsApp.controller('MainController', ['$scope'
   , '$rootScope'
   , '$location'
+  , '$timeout'
   , 'backendService'
   , 'stateService'
   , 'storageService'
@@ -13,6 +14,7 @@ mydmsApp.controller('MainController', ['$scope'
   , function ($scope
     , $rootScope
     , $location
+    , $timeout
     , backendService
     , stateService
     , storageService
@@ -22,6 +24,7 @@ mydmsApp.controller('MainController', ['$scope'
   // initialisation
   // ------------------------------------------------------------------------
   var maxResults = 40;
+  var WAIT = 800;
 
   $scope.search = {};
   $scope.documents = [];
@@ -35,7 +38,7 @@ mydmsApp.controller('MainController', ['$scope'
   // ------------------------------------------------------
   // events
   // ------------------------------------------------------
-  
+
   /**
    * perform a search
    */
@@ -59,12 +62,23 @@ mydmsApp.controller('MainController', ['$scope'
     $location.path('/document/' + id);
   };
 
-  // perform a search 
+  // perform a search
   $scope.doSearch = function() {
     $scope.search.skip = 0;
     $scope.page = 0;
     $scope.documents = [];
     $scope._backendSearch($scope.page, $scope.search.skip, false);
+  };
+
+  $scope.doSearchWait = function() {
+    // only search if 3 chars were entered and add 500ms before search
+    console.log($scope.search.term);
+    if($scope.search.term.length >= 3 || $scope.search.term.length === 0) {
+      if($scope.busy === false) {
+        $scope.busy = true;
+        $timeout($scope.doSearch, WAIT);
+      }
+    }
   };
 
   // fetch more results to show
@@ -88,7 +102,8 @@ mydmsApp.controller('MainController', ['$scope'
     } else {
       $scope.busy = $scope.loading = true;
     }
-    
+
+    console.log('Start search ' + $scope.search.term);
     backendService.searchDocuments($scope.search, $scope.selectedTags,
       page, skip, maxResults).success( function(data) {
       if(data && data.length > 0) {
@@ -109,7 +124,7 @@ mydmsApp.controller('MainController', ['$scope'
 
   // ------------------------------------------------------------------------
   // startup - fetch remote data
-  // ------------------------------------------------------------------------  
+  // ------------------------------------------------------------------------
 
   if(stateService.getInit() === true) {
     var state = stateService.get(),
@@ -155,7 +170,7 @@ mydmsApp.controller('MainController', ['$scope'
     });
 
   } else {
-  
+
     // retrieve the documents on load
     // $scope.busy = $scope.loading = true;
     // backendService.getDocuments().success( function(data) {
