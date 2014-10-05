@@ -5,6 +5,7 @@ services:
   - mongodb
 before_install:
   - "cd nodeapp"
+  - "mkdir upload"
   - "cp app/config/_security_template.js app/config/security.js"
   - "cp app/config/_google_template.js app/config/google.js"
   - "cp app/config/_database_template.js app/config/database.js"
