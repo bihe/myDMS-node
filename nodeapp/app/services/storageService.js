@@ -70,6 +70,39 @@ StorageService.prototype = (function() {
     return false;
   };
 
+  /**
+   * check if the access_token needs to be refreshed
+   * @param credentials {object}
+   *
+   * @return {promise} a promise object - returning the oauth credentials
+   */
+  var checkTokenRefresh = function(credentials) {
+    var deferred = q.defer()
+      , oauth2client
+      , expiryDate
+      , isTokenExpired;
+
+    oauth2client = authClientUse(credentials);
+    expiryDate = oauth2client.credentials.expiry_date;
+    isTokenExpired = expiryDate ? expiryDate <= (new Date()).getTime() : false;
+
+    // seems to be expired
+    if (isTokenExpired) {
+      console.log('Refresh the access_token!');
+      oauth2client.refreshAccessToken(function(err, newCredentials) {
+        if(err) {
+          return deferred.rejec(err);
+        }
+        return deferred.resolve(newCredentials);
+      });
+    } else {
+      console.log('Use existing token!');
+      deferred.resolve(credentials);
+    }
+    return deferred.promise;
+  };
+
+
   // public section
   return {
 
@@ -103,7 +136,7 @@ StorageService.prototype = (function() {
           return deferred.resolve(tokens);
 
         } catch (error) {
-          return q.reject(error);
+          return deferred.reject(error);
         }
       });
 
@@ -117,7 +150,8 @@ StorageService.prototype = (function() {
      * @return {promise} a promise object 
      */
     revokeToken: function(credentials) {
-      var deferred = q.defer();
+      var deferred = q.defer()
+        , error = {};
 
       if(checkCredentials(credentials) === false) {
         error = new Error('credentials not valid!');
@@ -156,16 +190,20 @@ StorageService.prototype = (function() {
       }
 
       try {
-        drive.files.list({
-          corpus: 'DEFAULT',
-          'q': query,
-          auth: authClientUse(credentials)
-        }, function(err, response) {
-          if(err) {
-            return deferred.reject(err);
-          }
-          return deferred.resolve(response);
-        });
+        checkTokenRefresh(credentials).then(function(cred) {
+          drive.files.list({
+            corpus: 'DEFAULT',
+            'q': query,
+            auth: authClientUse(cred)
+          }, function(err, response) {
+            if(err) {
+              return deferred.reject(err);
+            }
+            return deferred.resolve(response);
+          });
+        }).catch(function(error) {
+          return deferred.reject(error);
+        }).done();
       } catch(err) {
         return deferred.reject(err);
       }
@@ -195,30 +233,37 @@ StorageService.prototype = (function() {
       }
 
       try {
-        drive.files.list({
-          corpus: 'DEFAULT',
-          'q': query,
-          auth: authClientUse(credentials)
-        }, function(err, response) {
-          if(err) {
-            return deferred.reject(err);
-          }
+        checkTokenRefresh(credentials).then(function(cred) {
 
-          result.exists = false;
-          // check the response object
-          // title must match, parent must match
-          if(response.items && response.items.length === 1) {
-            if(response.items[0].title === folderName && response.items[0].parents[0].id === parent) {
-              result.exists = true;
-              result.id = response.items[0].id;
-              result.title = response.items[0].title;
-              result.parent = response.items[0].parents[0].id;
-
+          drive.files.list({
+            corpus: 'DEFAULT',
+            'q': query,
+            auth: authClientUse(cred)
+          }, function(err, response) {
+            if(err) {
+              return deferred.reject(err);
             }
-          }
-          return deferred.resolve(result);
-        });
+
+            result.exists = false;
+            // check the response object
+            // title must match, parent must match
+            if(response.items && response.items.length === 1) {
+              if(response.items[0].title === folderName && response.items[0].parents[0].id === parent) {
+                result.exists = true;
+                result.id = response.items[0].id;
+                result.title = response.items[0].title;
+                result.parent = response.items[0].parents[0].id;
+
+              }
+            }
+            return deferred.resolve(result);
+          });
+        }).catch(function(error) {
+          return deferred.reject(error);
+        }).done();
       } catch(err) {
+        console.log('error!');
+        console.log(err.stack);
         return deferred.reject(err);
       }
       return deferred.promise;
@@ -234,7 +279,8 @@ StorageService.prototype = (function() {
     createFolder: function(folderName, parent, credentials) {
       var deferred = q.defer()
         , error = {}
-        , result = {};
+        , result = {}
+        , self;
 
       if(checkCredentials(credentials) === false) {
         error = new Error('credentials not valid!');
@@ -244,8 +290,10 @@ StorageService.prototype = (function() {
       }
 
       try {
-
-        this.folderExists(folderName, parent, credentials).then(function(response) {
+        self = this;
+        checkTokenRefresh(credentials).then(function(cred) {
+          return this.folderExists(folderName, parent, cred);
+        }).then(function(response) {
           if(response.exists === false) {
             drive.files.insert({
               resource: {
@@ -291,7 +339,8 @@ StorageService.prototype = (function() {
       var deferred = q.defer()
         , error = {}
         , query = ''
-        , result = {};
+        , result = {}
+        , self;
 
       if(checkCredentials(credentials) === false) {
         error = new Error('credentials not valid!');
@@ -301,12 +350,13 @@ StorageService.prototype = (function() {
       }
 
       try {
+        self = this;
         query = '"' + parent + '" in parents and title = "' + fileName
           + '" and explicitlyTrashed = false';
-        this.listfiles(query, credentials).then(function(response) {
+        checkTokenRefresh(credentials).then(function(cred) {
+          return self.listfiles(query, cred);
+        }).then(function(response) {
           result.exists = false;
-
-          console.log(response);
 
           // check the response object
           // title must match, parent must match
@@ -365,57 +415,67 @@ StorageService.prototype = (function() {
 
         // check if the file exists
         that.getFile(file.name, parent, credentials).then(function(res) {
-          // just update the payload
+
           if(res.exists === true) {
-            drive.files.update({
-              fileId: res.id,
-              media: {
-                mimeType: file.mimeType,
-                body: data
-              },
-              auth: authClientUse(credentials)
-            }, function(err, response) {
-              if(err) {
-                return deferred.reject(err);
-              }
+            // just update the payload
+            checkTokenRefresh(credentials).then(function(cred) {
+              drive.files.update({
+                fileId: res.id,
+                media: {
+                  mimeType: file.mimeType,
+                  body: data
+                },
+                auth: authClientUse(cred)
+              }, function(err, response) {
+                if(err) {
+                  return deferred.reject(err);
+                }
 
-              result.exists = true; // was overwritten
-              result.id = response.id;
-              result.title = response.title;
-              result.parent = response.parents[0].id;
-
-              return deferred.resolve(result);
-            });
-          // create a new one
-          } else {
-            drive.files.insert({
-              resource: {
-                title: file.name,
-                mimeType: file.mimeType,
-                parents: [ { id: parent } ]
-              },
-              media: {
-                mimeType: file.mimeType,
-                body: data
-              },
-
-              auth: authClientUse(credentials)
-            }, function(err, response) {
-              if(err) {
-                return deferred.reject(err);
-              }
-
-              if(response) {
-                result.exists = false; // was created
+                result.exists = true; // was overwritten
                 result.id = response.id;
                 result.title = response.title;
                 result.parent = response.parents[0].id;
 
                 return deferred.resolve(result);
-              } else {
-                return deferred.reject(new Error('Got no result from drive api!'));
-              }
-            });
+              });
+            }).catch(function(error) {
+              return deferred.reject(error);
+            }).done();
+
+          // create a new one
+          } else {
+            checkTokenRefresh(credentials).then(function(cred) {
+              drive.files.insert({
+                resource: {
+                  title: file.name,
+                  mimeType: file.mimeType,
+                  parents: [ { id: parent } ]
+                },
+                media: {
+                  mimeType: file.mimeType,
+                  body: data
+                },
+
+                auth: authClientUse(cred)
+              }, function(err, response) {
+                if(err) {
+                  return deferred.reject(err);
+                }
+
+                if(response) {
+                  result.exists = false; // was created
+                  result.id = response.id;
+                  result.title = response.title;
+                  result.parent = response.parents[0].id;
+
+                  return deferred.resolve(result);
+                } else {
+                  return deferred.reject(new Error('Got no result from drive api!'));
+                }
+              });
+            }).catch(function(error) {
+              return deferred.reject(error);
+            }).done();
           }
 
         }).catch(function (err) {
@@ -423,6 +483,25 @@ StorageService.prototype = (function() {
         }).done();
 
       });
+
+      return deferred.promise;
+    },
+
+    /**
+     * check for token expiry. if expired, fetch a new one
+     * and return the new credentials
+     * @param {object} credentials
+     *
+     * @returns {Promise.promise|*}
+     */
+    handleTokenRefresh: function(credentials) {
+      var deferred = q.defer();
+
+      checkTokenRefresh(credentials).then(function(cred) {
+        return deferred.resolve(cred);
+      }).catch(function(error) {
+        return deferred.reject(error);
+      }).done();
 
       return deferred.promise;
     }

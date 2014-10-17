@@ -214,6 +214,12 @@ exports.saveDocument = function( req, res, next ) {
     // get the user-id and retrieve the necessary token
     userService.getTokenFromUser(req.user).then(function(token) {
       credentials = token;
+      return storageService.handleTokenRefresh(credentials);
+    }).then(function(cred) {
+      // new credentials, refreshed if expired
+      credentials = cred;
+      return userService.setToken(req.user, cred);
+    }).then(function() {
       return masterDataService.createAndGetTags(document.tags, true);
     }).then(function(list) {
       tagList = list;
@@ -284,7 +290,14 @@ exports.documentDownload = function( req, res, next ) {
   userService.getTokenFromUser(req.user).then(function(token) {
     // got the user credentials to access the backend-system
     credentials = token;
-
+    return storageService.handleTokenRefresh(credentials);
+  }).then(function(cred) {
+    // new credentials, refreshed if expired
+    credentials = cred;
+    console.log('new token');
+    console.log(cred);
+    return userService.setToken(req.user, cred);
+  }).then(function() {
     return documentService.getDocumentById(id);
   }).then(function(doc) {
     document = doc;
@@ -311,18 +324,6 @@ exports.documentDownload = function( req, res, next ) {
       // use the folder-id to search for the specific file
       return storageService.getFile(searchFileName, result.id, credentials);
     } else {
-      // // perform a local search for the document
-      // documentService.getBinary(id).then(function (filePath) {
-      //   // send the file to the requesting client
-      //   res.sendFile(filePath, function (error) {
-      //     if (error) {
-      //       return res.status(500).send('Could not download file ' + error);
-      //     }
-      //   });
-      // }).catch(function (error) {
-      //   return res.status(404).send('Document not found! ' + error);
-      // }).done();
-
       return res.status(404).send('Document not found! ');
     }
   }).then(function(result) {
