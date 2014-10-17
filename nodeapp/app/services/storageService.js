@@ -405,12 +405,16 @@ StorageService.prototype = (function() {
                 return deferred.reject(err);
               }
 
-              result.exists = false; // was created
-              result.id = response.id;
-              result.title = response.title;
-              result.parent = response.parents[0].id;
+              if(response) {
+                result.exists = false; // was created
+                result.id = response.id;
+                result.title = response.title;
+                result.parent = response.parents[0].id;
 
-              return deferred.resolve(result);
+                return deferred.resolve(result);
+              } else {
+                return deferred.reject(new Error('Got no result from drive api!'));
+              }
             });
           }
 

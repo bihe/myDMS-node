@@ -14,7 +14,7 @@
     "cookie-session": "~1.0.2",
     "csurf": "~1.6.1",
     "express": "~4.8.3",
-    "googleapis": "~1.0.9",
+    "googleapis": "~1.0.17",
     "iron": "~2.1.2",
     "jade": "*",
     "lodash": "~2.4.1",
