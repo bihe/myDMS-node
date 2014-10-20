@@ -196,7 +196,8 @@ exports.saveDocument = function( req, res, next ) {
       credentials,
       userService = new UserService(),
       masterDataService = new MasterDataService(),
-      documentService = new DocumentService();
+      documentService = new DocumentService(),
+      storageService = new StorageService();
 
   try {
 

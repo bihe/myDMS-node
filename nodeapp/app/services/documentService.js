@@ -352,8 +352,25 @@ DocumentService.prototype = (function() {
       });
 
       return deferred.promise;
-    }
+    },
 
+    /**
+     * clean all database entries which are left-overs from save attemptes
+     * @returns {Promise.promise|*}
+     */
+    cleanStaleDatabaseEntries: function() {
+      var deferred = q.defer()
+        ;
+  
+      Document.remove({ state: 'dirty' }, function(err, numberRemoved) {
+        if(err) {
+          return deferred.reject(err);
+        }
+        deferred.resolve(numberRemoved);
+      });
+
+      return deferred.promise;
+    }
   };
 })();
 
