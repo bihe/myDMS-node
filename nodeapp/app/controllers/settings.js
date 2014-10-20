@@ -230,10 +230,10 @@ exports.doMaintenance = function(req, res) {
         // clear the temp-files in the upload folder
         if(options.deletedirtydbentries && options.deletedirtydbentries === true) {
           documentService.cleanStaleDatabaseEntries().then(function(numEntries) {
-            if(message != '') {
+            if(message !== '') {
               message += '<br/>';
             }
-            message = 'Removed ' + numEntries + ' stale database entries.';
+            message += 'Removed ' + numEntries + ' stale database entries.';
             callback(null);
           }).catch(function(error) {
              return callback(error);
