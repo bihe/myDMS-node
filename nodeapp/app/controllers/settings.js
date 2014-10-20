@@ -231,7 +231,7 @@ exports.doMaintenance = function(req, res) {
         if(options.deletedirtydbentries && options.deletedirtydbentries === true) {
           documentService.cleanStaleDatabaseEntries().then(function(numEntries) {
             if(message !== '') {
-              message += '<br/>';
+              message += ' / ';
             }
             message += 'Removed ' + numEntries + ' stale database entries.';
             callback(null);
