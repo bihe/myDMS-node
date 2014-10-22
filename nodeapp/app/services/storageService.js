@@ -80,8 +80,10 @@ StorageService.prototype = (function() {
     var deferred = q.defer()
       , oauth2client
       , expiryDate
-      , isTokenExpired;
+      , isTokenExpired
+      , resolve = {};
 
+    resolve.isNew = false;
     oauth2client = authClientUse(credentials);
     expiryDate = oauth2client.credentials.expiry_date;
     isTokenExpired = expiryDate ? expiryDate <= (new Date()).getTime() : false;
@@ -91,13 +93,14 @@ StorageService.prototype = (function() {
       console.log('Refresh the access_token!');
       oauth2client.refreshAccessToken(function(err, newCredentials) {
         if(err) {
-          return deferred.rejec(err);
+          return deferred.reject(err);
         }
-        return deferred.resolve(newCredentials);
+        resolve.credentials = newCredentials;
+        resolve.isNew = true;
+        return deferred.resolve(resolve);
       });
     } else {
-      console.log('Use existing token!');
-      deferred.resolve(credentials);
+      deferred.resolve(resolve);
     }
     return deferred.promise;
   };

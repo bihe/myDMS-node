@@ -85,8 +85,6 @@ exports.index = function( req, res, next ) {
     filter.$and = logicalAnd;
   }
 
-  logger.dump(filter);
-
   Document.find(filter).sort({created: -1, title: 1})
   .skip(skip)
   .limit(limit)
@@ -217,9 +215,14 @@ exports.saveDocument = function( req, res, next ) {
       credentials = token;
       return storageService.handleTokenRefresh(credentials);
     }).then(function(cred) {
-      // new credentials, refreshed if expired
-      credentials = cred;
-      return userService.setToken(req.user, cred);
+      if(cred.isNew) {
+        // new credentials, refreshed if expired
+        credentials = cred.credentials;
+        return userService.setToken(req.user, credentials);
+      } else {
+        return userService.chainable();
+      }
+
     }).then(function() {
       return masterDataService.createAndGetTags(document.tags, true);
     }).then(function(list) {
@@ -293,11 +296,14 @@ exports.documentDownload = function( req, res, next ) {
     credentials = token;
     return storageService.handleTokenRefresh(credentials);
   }).then(function(cred) {
-    // new credentials, refreshed if expired
-    credentials = cred;
-    console.log('new token');
-    console.log(cred);
-    return userService.setToken(req.user, cred);
+    if(cred.isNew) {
+      console.log('Will use new credentials!');
+      // new credentials, refreshed if expired
+      credentials = cred.credentials;
+      return userService.setToken(req.user, credentials);
+    } else {
+      return userService.chainable();
+    }
   }).then(function() {
     return documentService.getDocumentById(id);
   }).then(function(doc) {

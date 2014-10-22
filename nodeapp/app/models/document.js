@@ -23,16 +23,16 @@ var documentSchema = new Schema({
   alternativeId: {
 		type: String,
 		trim: true,
-		default: '',
+		default: ''
   },
   previewLink: {
 		type: String,
 		trim: true,
-		default: '',
+		default: ''
   },
   amount: {
     type: Number,
-    default: 0,
+    default: 0
   },
   created: {
 		type: Date,
