@@ -173,16 +173,6 @@ UserService.prototype = (function() {
       });
 
       return deferred.promise;
-    },
-
-    /**
-     * no logic at all - just used for promise chaining
-     * @return {deferred} promise
-     */
-    chainable: function() {
-      var deferred = q.defer();
-      deferred.resolve();
-      return deferred.promise;
     }
   };
 

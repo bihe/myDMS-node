@@ -6,6 +6,7 @@
 var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
+var q = require('q');
 var base = require('./base');
 var logger = require('../util/logger' );
 var utils = require('../util/utils' );
@@ -220,7 +221,7 @@ exports.saveDocument = function( req, res, next ) {
         credentials = cred.credentials;
         return userService.setToken(req.user, credentials);
       } else {
-        return userService.chainable();
+        return q();
       }
 
     }).then(function() {
@@ -302,7 +303,8 @@ exports.documentDownload = function( req, res, next ) {
       credentials = cred.credentials;
       return userService.setToken(req.user, credentials);
     } else {
-      return userService.chainable();
+      console.log('reuse the token!');
+      return q();
     }
   }).then(function() {
     return documentService.getDocumentById(id);
