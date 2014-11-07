@@ -227,7 +227,7 @@ exports.doMaintenance = function(req, res) {
         }
       },
       function(callback) {
-        // clear the temp-files in the upload folder
+        // clear stale entries in the database
         if(options.deletedirtydbentries && options.deletedirtydbentries === true) {
           documentService.cleanStaleDatabaseEntries().then(function(numEntries) {
             if(message !== '') {
