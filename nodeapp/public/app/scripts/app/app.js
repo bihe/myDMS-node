@@ -12,7 +12,6 @@ var mydmsApp = angular.module('mydmsApp', ['ngResource'
     , 'hb.infiniScroll'                   // infinite scrolling plugin
     , 'frapontillo.bootstrap-switch'      // switch-buttons
     , 'mgcrea.ngStrap'                    // bootstrap directives: modal
-    , 'base64'
   ]);
 
 mydmsApp

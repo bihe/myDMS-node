@@ -13,7 +13,6 @@ mydmsApp.controller('SettingsController', ['$scope'
   , '_'
   , '$modal'
   , '$window'
-  , '$base64'
   , function ($scope
     , $rootScope
     , backendService
@@ -22,7 +21,7 @@ mydmsApp.controller('SettingsController', ['$scope'
     , _
     , $modal
     , $window
-    , base64) {
+    ) {
 
     // ------------------------------------------------------------------------
     // scope variables
