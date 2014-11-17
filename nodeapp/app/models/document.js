@@ -36,11 +36,11 @@ var documentSchema = new Schema({
   },
   created: {
 		type: Date,
-		default: new Date()
+		default: Date.now
 	},
   modified: {
     type: Date,
-    default: new Date()
+    default: Date.now
   },
 	senders: [{ type: Schema.Types.ObjectId, ref: 'Sender' }],
 	tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],

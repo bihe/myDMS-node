@@ -26,7 +26,7 @@ var userSchema = new Schema({
   },
   created: {
     type: Date,
-    default: new Date()
+    default: Date.now
   },
   token: Schema.Types.Mixed,
   profile: Schema.Types.Mixed

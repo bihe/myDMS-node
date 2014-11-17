@@ -288,7 +288,7 @@ ul.items li
    position:absolute;
    top:-2px;
    right:-2px;
-   z-index: 99;
+   z-index: 1;
 }
 
 .download-icon {
