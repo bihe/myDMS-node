@@ -71,26 +71,6 @@ module.exports = function (grunt) {
         dirs: ['<%= base.dist %>']
       }
     },
-    imagemin: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: 'app/images',
-          src: '{,*/}*.{png,jpg,jpeg}',
-          dest: '<%= base.dist %>/images'
-        }]
-      }
-    },
-    svgmin: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: 'app/images',
-          src: '{,*/}*.svg',
-          dest: '<%= base.dist %>/images'
-        }]
-      }
-    },
     cssmin: {
       // By default, your `index.html` <!-- Usemin Block --> will take care of
       // minification. This option is pre-configured if you do not wish to use
@@ -250,8 +230,6 @@ module.exports = function (grunt) {
       ],
       dist: [
         'copy:styles',
-        'svgmin',
-        'imagemin',
         'htmlmin',
         'copy:fonts',
         'copy:i18n',
