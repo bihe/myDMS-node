@@ -104,7 +104,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: 'app',
-          src: ['*.html', 'views/*.html'],
+          src: ['*.html', 'app/views/*.html'],
           dest: '<%= base.dist %>'
         }]
       }
@@ -210,6 +210,26 @@ module.exports = function (grunt) {
           },
         ]
       },
+      images: {
+        files: [
+          {
+            expand: true,
+            cwd: 'app/images',
+            dest: '<%= base.dist %>/images',
+            src: '{,*/}*.jpg'
+          },
+        ]
+      },
+      views: {
+        files: [
+          {
+            expand: true,
+            cwd: 'app/views',
+            dest: '<%= base.dist %>/views',
+            src: '{,*/}*.html'
+          },
+        ]
+      },
       images4styles: {
         files: [
           {
@@ -233,6 +253,8 @@ module.exports = function (grunt) {
         'htmlmin',
         'copy:fonts',
         'copy:i18n',
+        'copy:views',
+        'copy:images',
         'copy:images4styles'
       ]
     },
