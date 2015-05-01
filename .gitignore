@@ -114,8 +114,8 @@ nodeapp/config/application.js
 .DS_Store
 nodeapp/node_modules/
 nodeapp/.DS_Store
-nodeapp/public/dist/
-nodeapp/public/node_modules/
+nodeapp/ui/dist/
+nodeapp/ui/bower_components
 
 *.sublime-project
 *.sublime-workspace
@@ -123,9 +123,6 @@ nodeapp/public/node_modules/
 data
 nodeapp/debug-tests.sh
 nodeapp/start_prod.sh
-nodeapp/public/app/bower_components/
-nodeapp/public/app/dist/
-nodeapp/public/node_modules
 nodeapp/upload/
 nodeapp/tmp
 nodeapp/files

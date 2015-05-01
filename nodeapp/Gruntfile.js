@@ -1,21 +1,16 @@
-// Generated on 2014-01-03 using generator-jhipster 0.6.1
 'use strict';
-
-// # Globbing
-// for performance reasons we're only matching one level down:
-// 'test/spec/{,*/}*.js'
-// use this if you want to recursively match all subfolders:
-// 'test/spec/**/*.js'
 
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
 
+  grunt.loadNpmTasks('grunt-contrib-compress');
+
   grunt.initConfig({
     base: {
       // configurable paths
       app: require('./bower.json').appPath || 'app',
-      dist: 'app/dist'
+      dist: 'ui/dist'
     },
     autoprefixer: {
       options: ['last 1 version'],
@@ -41,11 +36,6 @@ module.exports = function (grunt) {
       },
       server: '.tmp'
     },
-    // not used since Uglify task does concat,
-    // but still available if needed
-    /*concat: {
-      dist: {}
-    },*/
     rev: {
       dist: {
         files: {
@@ -59,7 +49,7 @@ module.exports = function (grunt) {
       }
     },
     useminPrepare: {
-      html: 'app/index.html',
+      html: 'ui/index.html',
       options: {
         dest: '<%= base.dist %>'
       }
@@ -103,8 +93,8 @@ module.exports = function (grunt) {
         },
         files: [{
           expand: true,
-          cwd: 'app',
-          src: ['*.html', 'app/views/*.html'],
+          cwd: 'ui',
+          src: ['*.html', 'views/*.html'],
           dest: '<%= base.dist %>'
         }]
       }
@@ -115,7 +105,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           dot: true,
-          cwd: 'app',
+          cwd: 'ui',
           dest: '<%= base.dist %>',
           src: [
             '*.{ico,png,txt}',
@@ -136,49 +126,49 @@ module.exports = function (grunt) {
         files: [
           {
             expand: true,
-            cwd: 'app/styles',
+            cwd: 'ui/styles',
             dest: '.tmp/styles/',
             src: '{,*/}*.css'
           },
           {
             expand: true,
-            cwd: 'app/bower_components/bootstrap/dist/css',
+            cwd: 'ui/bower_components/bootstrap/dist/css',
             dest: '.tmp/bower_components/bootstrap/dist/css',
             src: 'bootstrap.css'
           },
           {
             expand: true,
-            cwd: 'app/bower_components/bootstrap-datepicker/css',
+            cwd: 'ui/bower_components/bootstrap-datepicker/css',
             dest: '.tmp/bower_components/bootstrap-datepicker/css',
             src: 'datepicker.css'
           },
           {
             expand: true,
-            cwd: 'app/bower_components/famfamfam-flags-sprite/src',
+            cwd: 'ui/bower_components/famfamfam-flags-sprite/src',
             dest: '.tmp/bower_components/famfamfam-flags-sprite/src',
             src: 'flags-sprite.css'
           },
           {
             expand: true,
-            cwd: 'app/bower_components/font-awesome/css',
+            cwd: 'ui/bower_components/font-awesome/css',
             dest: '.tmp/bower_components/font-awesome/css',
             src: 'font-awesome.min.css'
           },
           {
             expand: true,
-            cwd: 'app/bower_components/angular-loading-bar/build',
+            cwd: 'ui/bower_components/angular-loading-bar/build',
             dest: '.tmp/bower_components/angular-loading-bar/build',
             src: 'loading-bar.css'
           },
           {
             expand: true,
-            cwd: 'app/bower_components/selectize/dist/css',
+            cwd: 'ui/bower_components/selectize/dist/css',
             dest: '.tmp/bower_components/selectize/dist/css',
             src: 'selectize.bootstrap3.css'
           },
           {
             expand: true,
-            cwd: 'app/bower_components/bootstrap-switch/dist/css/bootstrap3',
+            cwd: 'ui/bower_components/bootstrap-switch/dist/css/bootstrap3',
             dest: '.tmp/bower_components/bootstrap-switch/dist/css/bootstrap3',
             src: 'bootstrap-switch.css'
           }
@@ -188,33 +178,17 @@ module.exports = function (grunt) {
         files: [
           {
             expand: true,
-            cwd: 'app/bower_components/bootstrap/dist/fonts/',
-            dest: '<%= base.dist %>/fonts',
-            src: '{,*/}*.*'
-          },
-          {
-            expand: true,
-            cwd: 'app/bower_components/font-awesome/fonts/',
+            cwd: 'ui/bower_components/bootstrap/dist/fonts/',
             dest: '<%= base.dist %>/fonts',
             src: '{,*/}*.*'
           }
-        ]
-      },
-      i18n: {
-        files: [
-          {
-            expand: true,
-            cwd: 'app/i18n',
-            dest: '<%= base.dist %>/i18n',
-            src: '{,*/}*.json'
-          },
         ]
       },
       images: {
         files: [
           {
             expand: true,
-            cwd: 'app/images',
+            cwd: 'ui/images',
             dest: '<%= base.dist %>/images',
             src: '{,*/}*.jpg'
           },
@@ -224,38 +198,20 @@ module.exports = function (grunt) {
         files: [
           {
             expand: true,
-            cwd: 'app/views',
+            cwd: 'ui/views',
             dest: '<%= base.dist %>/views',
             src: '{,*/}*.html'
-          },
-        ]
-      },
-      images4styles: {
-        files: [
-          {
-            expand: true,
-            cwd: 'app/bower_components/famfamfam-flags-sprite/src',
-            dest: '<%= base.dist %>/styles',
-            src: '{,*/}*.png'
           },
         ]
       }
     },
     concurrent: {
-      server: [
-        'copy:styles'
-      ],
-      test: [
-        'copy:styles'
-      ],
       dist: [
         'copy:styles',
         'htmlmin',
         'copy:fonts',
-        'copy:i18n',
         'copy:views',
-        'copy:images',
-        'copy:images4styles'
+        'copy:images'
       ]
     },
     ngAnnotate: {
@@ -276,6 +232,18 @@ module.exports = function (grunt) {
           ]
         }
       }
+    },
+    // gzip assets 1-to-1 for production
+    compress: {
+      main: {
+        options: {
+          archive: 'ui-dist.zip'
+        },
+        expand: true,
+        cwd: 'ui/dist/',
+        src: ['**/*'],
+        dest: './'
+      }
     }
   });
 
@@ -290,7 +258,8 @@ module.exports = function (grunt) {
     'cssmin',
     'uglify',
     'rev',
-    'usemin'
+    'usemin',
+    'compress'
   ]);
 
   grunt.registerTask('default', [

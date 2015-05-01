@@ -115,7 +115,7 @@ UserService.prototype = (function() {
             return deferred.reject(err);
           }
 
-          if(numberAffected === 1) {
+          if(numberAffected.ok === 1) {
             return deferred.resolve();
           }
 
@@ -140,7 +140,7 @@ UserService.prototype = (function() {
           return deferred.reject(err);
         }
 
-        if(numberAffected === 1) {
+        if(numberAffected.ok === 1) {
           return deferred.resolve();
         }
 
@@ -165,7 +165,7 @@ UserService.prototype = (function() {
           return deferred.reject(err);
         }
 
-        if(numberAffected === 1) {
+        if(numberAffected.ok === 1) {
           return deferred.resolve();
         }
 

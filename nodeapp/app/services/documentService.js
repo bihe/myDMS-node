@@ -366,7 +366,7 @@ DocumentService.prototype = (function() {
         if(err) {
           return deferred.reject(err);
         }
-        deferred.resolve(numberRemoved);
+        deferred.resolve(numberRemoved.ok);
       });
 
       return deferred.promise;

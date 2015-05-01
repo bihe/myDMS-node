@@ -6,7 +6,7 @@ var google = {};
 
 google.CLIENT_ID = '';
 google.CLIENT_SECRET = '';
-google.SCOPE = ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'];
+google.SCOPE = ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/userinfo.email'];
 google.RETURN_URL = 'http://localhost:3000/auth/google/return';
 
 // drive logic and IDs

@@ -74,10 +74,10 @@ app.use(csrf());
 app.use(multer({ dest: path.join(__dirname, 'tmp') }));
 
 if(env === 'development') {
-  app.use('/static/', express.static(path.join(__dirname, 'public/app'), {maxAge: '5d'}));
+  app.use('/static/', express.static(path.join(__dirname, 'ui'), {maxAge: '5d'}));
   app.use(favicon(__dirname + '/public/app/html5.ico'));
 } else if(env === 'production') {
-  app.use('/static', express.static(path.join(__dirname, 'public/app/dist'), {maxAge: '5d'}));
+  app.use('/static', express.static(path.join(__dirname, 'ui/dist'), {maxAge: '5d'}));
   app.use(favicon(__dirname + '/public/app/dist/html5.ico'));
 }
 app.disable('x-powered-by');

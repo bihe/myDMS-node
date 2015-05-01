@@ -36,7 +36,7 @@ SecurityService.prototype = (function() {
       var userService = new UserService()
         , foundUser = null;
 
-      userService.findUserByEmail(profile._json.email).then(function(user) {
+      userService.findUserByEmail(profile.emails[0].value).then(function(user) {
         if (!user) {
           console.info('Could not find the user!');
           return callback(null, false, { message: 'The supplied Google account is not allowed to use this service!' });
