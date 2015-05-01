@@ -40,11 +40,11 @@
 				    </div>
 
 					<div id="fileUpload"
-						ng-file-drop="onFileSelect($files)"
-						ng-file-change="onFileSelect($files)"
-						ng-file-drag-over-class="upload-drop-area-drag"
+						ngf-drop
+						ngf-change="onFileSelect($files)"
+						ngf-drag-over-class="upload-drop-area-drag"
 		    			ng-show="dropSupported"
-		    			ng-file-drop-available="dropSupported=true"
+		    			ngf-drop-available="dropSupported=true"
 		    			ng-model="myModelObj"
 		    			class="upload-drop-area" 
 		    			ng-class="{'upload-drop-area-invalid': (!document.fileName || document.fileName === '') && formValidationError}">
@@ -52,11 +52,11 @@
 		        	</div>
 		        	<br/>
 		        	<button class="btn btn-primary"
-		        		ng-file-select="" 
+		        		ngf-select 
 		        		ng-model="myModelObj" 
-		        		ng-file-change="onFileSelect($files)"
-		        		ng-accept="'image/*,application/pdf'"
-		        		ng-multiple="false"><span translate="document.upload.title">Select File</span></button>
+		        		ngf-change="onFileSelect($files)"
+		        		ngf-accept="'image/*,application/pdf'"
+		        		ngf-multiple="false"><span translate="document.upload.title">Select File</span></button>
 
 		        	<input type="hidden" name="fileName" id="fileName" ng-model="document.fileName" required />
 

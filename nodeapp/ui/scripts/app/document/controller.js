@@ -5,7 +5,7 @@
 /*
  * handle the documents
  */
-mydmsApp.controller('DocumentController', ['$scope', 'backendService', '$location', '$routeParams', '_', '$upload', '$timeout', function ($scope, backendService, $location, $routeParams, _, $upload, $timeout) {
+mydmsApp.controller('DocumentController', ['$scope', 'backendService', '$location', '$routeParams', '_', 'Upload', '$timeout', function ($scope, backendService, $location, $routeParams, _, Upload, $timeout) {
   
   // ------------------------------------------------------------------------
   // initialisation
@@ -174,7 +174,7 @@ mydmsApp.controller('DocumentController', ['$scope', 'backendService', '$locatio
     //$files: an array of files selected, each file has name, size, and type.
     for (var i = 0; i < $files.length; i++) {
       var file = $files[i];
-      $scope.upload = $upload.upload({
+      $scope.upload = Upload.upload({
         url: '/api/1.0/document/upload', //upload.php script, node.js route, or servlet url
         // method: POST or PUT,
         // headers: {'header-key': 'header-value'},

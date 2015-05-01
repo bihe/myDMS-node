@@ -138,8 +138,8 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
-            cwd: 'ui/bower_components/bootstrap-datepicker/css',
-            dest: '.tmp/bower_components/bootstrap-datepicker/css',
+            cwd: 'ui/bower_components/bootstrap-datepicker/dist/css',
+            dest: '.tmp/bower_components/bootstrap-datepicker/dist/css',
             src: 'datepicker.css'
           },
           {
@@ -181,6 +181,12 @@ module.exports = function (grunt) {
             cwd: 'ui/bower_components/bootstrap/dist/fonts/',
             dest: '<%= base.dist %>/fonts',
             src: '{,*/}*.*'
+          },
+          {
+            expand: true,
+            cwd: 'ui/bower_components/font-awesome/fonts/',
+            dest: '<%= base.dist %>/fonts',
+            src: '{,*/}*.*'
           }
         ]
       },
@@ -203,6 +209,16 @@ module.exports = function (grunt) {
             src: '{,*/}*.html'
           },
         ]
+      },
+      i18n: {
+        files: [
+          {
+            expand: true,
+            cwd: 'ui/i18n',
+            dest: '<%= base.dist %>/i18n',
+            src: '{,*/}*.json'
+          },
+        ]
       }
     },
     concurrent: {
@@ -211,7 +227,8 @@ module.exports = function (grunt) {
         'htmlmin',
         'copy:fonts',
         'copy:views',
-        'copy:images'
+        'copy:images',
+        'copy:i18n',
       ]
     },
     ngAnnotate: {

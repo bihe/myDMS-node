@@ -7,7 +7,7 @@ var mydmsApp = angular.module('mydmsApp', ['ngResource'
     , 'ngCookies'
     , 'ngAnimate'                         // use animation
     , 'pascalprecht.translate'            // translate angular elements
-    , 'angularFileUpload'                 // handel file-upload the angular way
+    , 'ngFileUpload'                 	  // handel file-upload the angular way
     , 'chieffancypants.loadingBar'        // loading indicator for xhr requests
     , 'hb.infiniScroll'                   // infinite scrolling plugin
     , 'frapontillo.bootstrap-switch'      // switch-buttons
