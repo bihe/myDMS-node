@@ -75,10 +75,10 @@ app.use(multer({ dest: path.join(__dirname, 'tmp') }));
 
 if(env === 'development') {
   app.use('/static/', express.static(path.join(__dirname, 'ui'), {maxAge: '5d'}));
-  app.use(favicon(__dirname + '/public/app/html5.ico'));
+  app.use(favicon(__dirname + '/ui/html5.ico'));
 } else if(env === 'production') {
   app.use('/static', express.static(path.join(__dirname, 'ui/dist'), {maxAge: '5d'}));
-  app.use(favicon(__dirname + '/public/app/dist/html5.ico'));
+  app.use(favicon(__dirname + '/ui/dist/html5.ico'));
 }
 app.disable('x-powered-by');
 app.enable('trust proxy');
