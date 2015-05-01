@@ -19,14 +19,14 @@ var Tag = require('../models/tag');
 function MasterDataService() {
 }
 
-/* 
+/*
  * method, logic implementation
  */
 MasterDataService.prototype = (function() {
-  
+
   /**
    * Supply a list of objects. The list contains __existing objects__
-   * and __new__ object. The new objects are created, the existing 
+   * and __new__ object. The new objects are created, the existing
    * objects are verified, if they are correct.
    * return a list of resulting sender-objects
    *
@@ -85,7 +85,7 @@ MasterDataService.prototype = (function() {
                     // use this one
                     items.push( s );
 
-                    cb( null ); // done                  
+                    cb( null ); // done
                   } else {
                     // aah: no entry found - create a new one
                     if( type === 'sender' ) {
@@ -93,7 +93,7 @@ MasterDataService.prototype = (function() {
                     } else if( type === 'tag') {
                       item = new Tag( { name: object.name } );
                     }
-                    
+
                     item.save(function( err, s ) {
                       if( err ) {
                         // indicate an error
@@ -105,7 +105,7 @@ MasterDataService.prototype = (function() {
                       }
 
                       items.push( s );
-                      
+
                       cb( null ); // done
                     });
                   }
@@ -114,7 +114,7 @@ MasterDataService.prototype = (function() {
 
               } else {
 
-                // existing entries supplied by UI 
+                // existing entries supplied by UI
                 // I am not sure of that - check again if those entries are real!
                 model.findById( object._id ).exec(function ( err, s ) {
                   if( err ) {
@@ -126,14 +126,14 @@ MasterDataService.prototype = (function() {
                     return cb(new Error('No entry found'));
                   }
                   items.push( s );
-                  
+
                   cb( null ); // done
                 });
               }
             }, function( err ) {
               if( err) {
                 console.log(err);
-                return callback( err );  
+                return callback( err );
               }
               callback( null ); // done
             });

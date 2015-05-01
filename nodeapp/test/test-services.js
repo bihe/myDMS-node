@@ -1,3 +1,4 @@
+/// <reference path="../typings/mocha/mocha.d.ts"/>
 // test the models
 
 'use strict';
@@ -16,6 +17,8 @@ var logger = require('../app/util/logger');
 var MasterDataService = require('../app/services/masterDataService');
 var DocumentService = require('../app/services/documentService');
 var UserService = require('../app/services/userService');
+
+var logger = require('../app/util/logger');
 
 var uristring = database.uri + '_integration';
 
@@ -434,7 +437,7 @@ describe('Backend', function() {
 
 
           console.log('\n' + doc);
-          logger.dump(doc);
+
 
           done();
         })
@@ -453,12 +456,17 @@ describe('Backend', function() {
           tagList,
           senderList;
 
-      Document.findOne({title: 'TEST'}).exec(function (err, foundDoc) {
+
+
+      Document.findOne({title: 'TEST'}).populate('tags senders').exec(function (err, foundDoc) {
+
         assert(!err, err);
 
-        testDocument._id = foundDoc._id;
-        testDocument.title = foundDoc.title;
-        testDocument.amount = foundDoc.amount;
+        testDocument = foundDoc;
+        testDocument.amount = 2;
+
+        console.log('#### testdocument #### ' + testDocument);
+        logger.dump(testDocument);
 
         dataService.createAndGetTags(testDocument.tags).then(function(list) {
           tagList = list;
@@ -481,7 +489,7 @@ describe('Backend', function() {
           assert(doc, 'No document returned !' );
           assert.equal(doc.title, 'TEST', 'Wrong title');
           assert.equal(doc.senders.length, 1, 'Wrong number of senders');
-
+          assert.equal(doc.amount, 2, 'Wrong amount');
 
           console.log('\n' + doc);
           logger.dump(doc);
@@ -515,6 +523,8 @@ describe('Backend', function() {
           assert(!err, 'Error thrown!');
 
           documentService.clearFiles(folders).then(function(numFiles) {
+            //console.log('deletedFiles: ' + numFiles);
+
             assert.equal(numFiles, 2, 'Wrong number of files deleted!');
 
             done();
