@@ -120,6 +120,8 @@ nodeapp/ui/bower_components
 *.sublime-project
 *.sublime-workspace
 
+nodeapp/ui-dist.zip
+
 data
 nodeapp/debug-tests.sh
 nodeapp/start_prod.sh
