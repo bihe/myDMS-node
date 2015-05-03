@@ -1,17 +1,91 @@
-'use strict';
+(function() {
+  'use strict';
 
-/*
- * handel the main screen
- */
-mydmsApp.controller('MainController', ['$scope'
-  , '$rootScope'
-  , '$location'
-  , '$timeout'
-  , 'backendService'
-  , 'stateService'
-  , 'storageService'
-  , '_'
-  , function ($scope
+  // module
+  angular
+    .module('mydms.main')
+    .controller('MainController', ['$scope'
+      , '$rootScope'
+      , '$location'
+      , '$timeout'
+      , 'backendService'
+      , 'stateService'
+      , 'storageService'
+      , '_'
+      , mainController
+    ])
+    .controller('LanguageController', ['$location'
+      , '$translate'
+      , languageController
+    ])
+    .controller('AccountController', ['$location'
+      , 'backendService'
+      , accountController
+    ])
+    ;
+
+  /**
+   * logic for account handling
+   */
+  function accountController($location, backendService) {
+    var vm = this;
+
+    // init
+    vm.user = {};
+
+    load();
+
+
+    //////////////////
+
+    /**
+     * startup
+     */
+    function load() {
+      backendService.getUser().success(function (data, status, headers, config) {
+        vm.user = data;
+      }).error(function (data, status, headers, config) {
+        console.log('Error: ' + data);
+      });
+    }
+
+
+    //////////////////
+    // actions
+    //////////////////
+
+
+    vm.logout = function() {
+      backendService.logoutUser().success(function (data, status, headers, config) {
+        //$location.path('/');
+        window.location = '/';
+        return;
+      }).error(function (data, status, headers, config) {
+        console.log('Error: ' + data);
+        alert('Error: ' + data);
+      });
+    };
+
+  }
+
+  /**
+   * perform the translation
+   */
+  function languageController($ocation, $translate) {
+    var vm = this;
+
+    /**
+     * perform the actual translation
+     */
+    vm.changeLanguage = function (languageKey) {
+      $translate.use(languageKey);
+    };
+  }
+
+  /**
+   * logic of the "main-form"
+   */
+  function mainController($scope
     , $rootScope
     , $location
     , $timeout
@@ -20,181 +94,201 @@ mydmsApp.controller('MainController', ['$scope'
     , storageService
     , _) {
 
-  // ------------------------------------------------------------------------
-  // initialisation
-  // ------------------------------------------------------------------------
-  var maxResults = 40;
-  var WAIT = 800;
-
-  $scope.search = {};
-  $scope.documents = [];
-  $scope.senders = [];
-  $scope.tags = [];
-  $scope.page = 0;
-  $scope.busy = false;
-  $scope.loading = false;
-  $scope.toggleShowOptions = false;
-
-  // ------------------------------------------------------
-  // events
-  // ------------------------------------------------------
-
-  /**
-   * perform a search
-   */
-  var unbind = $rootScope.$on('::doSearch::', function(args){
-    $scope.doSearch();
-     args.stopPropagation(); // ok - done here
-  });
-  $scope.$on('$destroy', unbind);
+      var vm = this;
+      var maxResults = 40;
+      var WAIT = 800;
 
 
-  // ------------------------------------------------------------------------
-  // actions
-  // ------------------------------------------------------------------------
+      ////////////
 
-  $scope.showMoreSearchOptions = function() {
-    $scope.toggleShowOptions = !$scope.toggleShowOptions;
-  };
+      /**
+       * initialisation
+       */
+      function init() {
+        vm.search = {};
+        vm.documents = [];
+        vm.senders = [];
+        vm.tags = [];
+        vm.page = 0;
+        vm.busy = false;
+        vm.loading = false;
+        vm.toggleShowOptions = false;
 
-  $scope.editDocument = function(id) {
-    stateService.set($scope);
-    $location.path('/document/' + id);
-  };
 
-  // perform a search
-  $scope.doSearch = function() {
-    $scope.search.skip = 0;
-    $scope.page = 0;
-    $scope.documents = [];
-    $scope._backendSearch($scope.page, $scope.search.skip, false);
-  };
+        // events
+        var unbind = $rootScope.$on('::doSearch::', function(args){
+          vm.doSearch();
+          args.stopPropagation(); // ok - done here
+        });
+        $scope.$on('$destroy', unbind);
 
-  $scope.doSearchWait = function() {
-    // only search if 3 chars were entered and add 500ms before search
-    console.log($scope.search.term);
-    if($scope.search.term.length >= 3 || $scope.search.term.length === 0) {
-      if($scope.busy === false) {
-        $scope.busy = true;
-        $timeout($scope.doSearch, WAIT);
       }
-    }
-  };
 
-  // fetch more results to show
-  $scope.moreResults = function() {
-    if ($scope.busy) {
-      return;
-    }
-    $scope.busy = $scope.loading = true;
 
-    console.log('fetching more results for page ' + $scope.page);
+      /**
+       * load data
+       */
+      function loadData() {
 
-    $scope.search.skip = $scope.page * maxResults;
-    $scope._backendSearch($scope.page, $scope.search.skip);
-  };
+        // ------------------------------------------------------------------------
+        // startup - fetch remote data
+        // ------------------------------------------------------------------------
 
-  // internal logic - query the backend system
-  $scope._backendSearch = function(page, skip, showLoading) {
-    if(showLoading === false) {
-      $scope.busy = true;
-      $scope.loading = false;
-    } else {
-      $scope.busy = $scope.loading = true;
-    }
+        if(stateService.getInit() === true) {
+          var state = stateService.get(),
+              index = -1;
 
-    console.log('Start search ' + $scope.search.term);
-    backendService.searchDocuments($scope.search, $scope.selectedTags,
-      page, skip, maxResults).success( function(data) {
-      if(data && data.length > 0) {
-        for (var i = 0; i < data.length; i++) {
-          $scope.documents.push(data[i]);
+          // retrieve the senders on load
+          backendService.getSenders().success( function(data) {
+            vm.senders = data;
+
+            // retrieve the tags on load
+            backendService.getTags().success( function(data) {
+              vm.tags = data;
+
+              vm.search = state.search;
+
+              // find the selected entry of senders
+              if(vm.search.sender) {
+                index = _.findIndex(vm.senders, function(sender) {
+                  return sender._id === vm.search.sender._id;
+                });
+                vm.search.sender = vm.senders[index];
+              }
+
+              // find the selected entry of tags
+              if(vm.search.tag) {
+                index = _.findIndex(vm.tags, function(tag) {
+                  return tag._id === vm.search.tag._id;
+                });
+                vm.search.tag = vm.tags[index];
+              }
+
+              vm.documents = [];
+              vm.page = state.page;
+              vm.busy = vm.loading = false;
+              $rootScope.$emit('::doSearch::');
+
+            }).error( function(data, status, headers) {
+              alert('Error: ' + data + '\nHTTP-Status: ' + status);
+            });
+
+          }).error( function(data, status, headers) {
+            alert('Error: ' + data + '\nHTTP-Status: ' + status);
+          });
+
+        } else {
+
+          // retrieve the documents on load
+          // $scope.busy = $scope.loading = true;
+          // backendService.getDocuments().success( function(data) {
+          //   $scope.documents = data;
+          //   $scope.page = 1;
+          //   $scope.busy = $scope.loading = false;
+          // }).error( function(data, status, headers) {
+          //   alert('Error: ' + data + '\nHTTP-Status: ' + status);
+          // });
+          $rootScope.$emit('::doSearch::');
+
+          // retrieve the senders on load
+          backendService.getSenders().success( function(data) {
+            vm.senders = data;
+          }).error( function(data, status, headers) {
+            alert('Error: ' + data + '\nHTTP-Status: ' + status);
+          });
+
+          // retrieve the tags on load
+          backendService.getTags().success( function(data) {
+            vm.tags = data;
+          }).error( function(data, status, headers) {
+            alert('Error: ' + data + '\nHTTP-Status: ' + status);
+          });
         }
-        $scope.page = page + 1;
-        $scope.busy = $scope.loading = false; // operation done
-      } else {
-        $scope.busy = $scope.loading = false;
+
       }
-    }).error( function(data, status, headers) {
-      $scope.busy = $scope.loading = false; // also done
-      alert('Error: ' + data + '\nHTTP-Status: ' + status);
-    });
-  };
 
 
-  // ------------------------------------------------------------------------
-  // startup - fetch remote data
-  // ------------------------------------------------------------------------
+      ////////////
+      // actions
+      ////////////
 
-  if(stateService.getInit() === true) {
-    var state = stateService.get(),
-        index = -1;
+      vm.showMoreSearchOptions = function() {
+        vm.toggleShowOptions = !vm.toggleShowOptions;
+      };
 
-    // retrieve the senders on load
-    backendService.getSenders().success( function(data) {
-      $scope.senders = data;
+      vm.editDocument = function(id) {
+        stateService.set(vm);
+        $location.path('/document/' + id);
+      };
 
-      // retrieve the tags on load
-      backendService.getTags().success( function(data) {
-        $scope.tags = data;
+      // perform a search
+      vm.doSearch = function() {
+        vm.search.skip = 0;
+        vm.page = 0;
+        vm.documents = [];
+        vm._backendSearch(vm.page, vm.search.skip, false);
+      };
 
-        $scope.search = state.search;
+      vm.doSearchWait = function() {
+        // only search if 3 chars were entered and add 500ms before search
+        console.log(vm.search.term);
+        if(vm.search.term.length >= 3 || vm.search.term.length === 0) {
+          if(vm.busy === false) {
+            vm.busy = true;
+            $timeout(vm.doSearch, WAIT);
+          }
+        }
+      };
 
-        // find the selected entry of senders
-        if($scope.search.sender) {
-          index = _.findIndex($scope.senders, function(sender) {
-            return sender._id == $scope.search.sender._id;
-          });
-          $scope.search.sender = $scope.senders[index];
+      // fetch more results to show
+      vm.moreResults = function() {
+        if (vm.busy) {
+          return;
+        }
+        vm.busy = vm.loading = true;
+
+        console.log('fetching more results for page ' + vm.page);
+
+        vm.search.skip = vm.page * maxResults;
+        vm._backendSearch(vm.page, vm.search.skip);
+      };
+
+      // internal logic - query the backend system
+      vm._backendSearch = function(page, skip, showLoading) {
+        if(showLoading === false) {
+          vm.busy = true;
+          vm.loading = false;
+        } else {
+          vm.busy = vm.loading = true;
         }
 
-        // find the selected entry of tags
-        if($scope.search.tag) {
-          index = _.findIndex($scope.tags, function(tag) {
-            return tag._id == $scope.search.tag._id;
-          });
-          $scope.search.tag = $scope.tags[index];
-        }
+        console.log('Start search ' + vm.search.term);
+        backendService.searchDocuments(vm.search, vm.selectedTags,
+          page, skip, maxResults).success( function(data) {
+          if(data && data.length > 0) {
+            for (var i = 0; i < data.length; i++) {
+              vm.documents.push(data[i]);
+            }
+            vm.page = page + 1;
+            vm.busy = vm.loading = false; // operation done
+          } else {
+            vm.busy = vm.loading = false;
+          }
+        }).error( function(data, status, headers) {
+          vm.busy = vm.loading = false; // also done
+          alert('Error: ' + data + '\nHTTP-Status: ' + status);
+        });
+      };
 
-        $scope.documents = [];
-        $scope.page = state.page;
-        $scope.busy = $scope.loading = false;
-        $rootScope.$emit('::doSearch::');
 
-      }).error( function(data, status, headers) {
-        alert('Error: ' + data + '\nHTTP-Status: ' + status);
-      });
 
-    }).error( function(data, status, headers) {
-      alert('Error: ' + data + '\nHTTP-Status: ' + status);
-    });
+      //////////////////
 
-  } else {
 
-    // retrieve the documents on load
-    // $scope.busy = $scope.loading = true;
-    // backendService.getDocuments().success( function(data) {
-    //   $scope.documents = data;
-    //   $scope.page = 1;
-    //   $scope.busy = $scope.loading = false;
-    // }).error( function(data, status, headers) {
-    //   alert('Error: ' + data + '\nHTTP-Status: ' + status);
-    // });
-    $rootScope.$emit('::doSearch::');
+      init();
+      loadData();
 
-    // retrieve the senders on load
-    backendService.getSenders().success( function(data) {
-      $scope.senders = data;
-    }).error( function(data, status, headers) {
-      alert('Error: ' + data + '\nHTTP-Status: ' + status);
-    });
-
-    // retrieve the tags on load
-    backendService.getTags().success( function(data) {
-      $scope.tags = data;
-    }).error( function(data, status, headers) {
-      alert('Error: ' + data + '\nHTTP-Status: ' + status);
-    });
   }
 
-}]);
+
+})();

@@ -19,7 +19,7 @@
     "express": "~4.12.1",
     "iron": "^2.1.2",
     "jade": "1.9.x",
-    "lodash": "^3.4.0",
+    "lodash": "^3.8.0",
     "moment": "^2.9.0",
     "mongoose": "4.0.x",
     "morgan": "~1.5.x",

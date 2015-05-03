@@ -1,205 +1,221 @@
-'use strict';
+(function() {
+  'use strict';
 
-/* Controllers */
+  // module
+  angular
+    .module('mydms.settings')
+    .controller('SettingsController', ['$scope'
+      , '$rootScope'
+      , 'backendService'
+      , '$location'
+      , '$routeParams'
+      , '_'
+      , '$modal'
+      , '$window'
+      , settingsController
+    ])
+    ;
 
-/*
- * handle settings
- */
-mydmsApp.controller('SettingsController', ['$scope'
-  , '$rootScope'
-  , 'backendService'
-  , '$location'
-  , '$routeParams'
-  , '_'
-  , '$modal'
-  , '$window'
-  , function ($scope
+
+  function settingsController($scope
     , $rootScope
     , backendService
     , $location
     , $routeParams
     , _
     , $modal
-    , $window
-    ) {
+    , $window) {
 
-    // ------------------------------------------------------------------------
-    // scope variables
-    // ------------------------------------------------------------------------
-    $scope.activeTab = 'tabImport';
-    $scope.input = {};
-    $scope.rawSendersValid = true;
-    $scope.rawTagsValid = true;
-    $scope.rawDocumentsValid = true;
-    $scope.saveSuccess = true;
-    $scope.action = false;
-    $scope.saveMessage = '';
-    $scope.saveErrorMessage = '';
-    $scope.connection = 0;
-    $scope.googleDrive = {};
-    $scope.googleDrive.isActive = false;
-    $scope.googleDrive.isProvided = false;
-    $scope.maintenance = {};
-    $scope.maintenance.deletetempfiles = false;
-    $scope.maintenance.deletedirtydbentries = false;
-
-    var myModal = $modal({ scope: $scope
-      , title: 'Connect Drive'
-      , contentTemplate: 'views/connectDrive.html'
-      , show: false
-      , prefixEvent: 'settings'
-    });
-
-    // ------------------------------------------------------------------------
-    // startup actions / events
-    // ------------------------------------------------------------------------
-
-    backendService.getUser().success(function (data, status, headers, config) {
-      if(data.hasToken) {
-        $scope.googleDrive.isProvided = true;
-        $scope.googleDrive.isActive = true;
-        $scope.connection = 1;
-      }
-    }).error(function (data, status, headers, config) {
-      console.log('Error: ' + data);
-    });
-
-    if($routeParams && $routeParams.connection) {
-      $scope.activeTab = 'tabDrive';
-    }
-
-    // ------------------------------------------------------------------------
-    // actions
-    // ------------------------------------------------------------------------
-
-    // show a specific tab
-    $scope.showTab = function(tab) {
-      $scope.activeTab = tab;
-    };
-
-    // navigate back to main screen
-    $scope.cancel = function(path) {
-      $location.path(path);
-    };
-
-    // use the raw-json and post it to the backend service
-    $scope.save = function() {
-      var payLoad = {}, postData;
-
-      $scope.action = true;
-
-      // setup structure - the payload are just strings
-      $scope.rawTagsValid = $scope.rawSendersValid = $scope.rawDocumentsValid = true;
-      try {
-        if($scope.input.rawTags && $scope.input.rawTags !== '') {
-          $scope.rawTagsValid = false;
-          payLoad.tags = JSON.parse($scope.input.rawTags);
-          $scope.rawTagsValid = true;
-        }
-        if($scope.input.rawSenders && $scope.input.rawSenders !== '') {
-          $scope.rawSendersValid = false;
-          payLoad.senders = JSON.parse($scope.input.rawSenders);
-          $scope.rawSendersValid = true;
-        }
-        if($scope.input.rawDocuments && $scope.input.rawDocuments !== '') {
-          $scope.rawDocumentsValid = false;
-          payLoad.documents = JSON.parse($scope.input.rawDocuments);
-          $scope.rawDocumentsValid = true;
-        }
-
-      } catch(err) {
-        // cannot parse
-        console.log(err);
-        $scope.saveSuccess = false;
-        $scope.saveErrorMessage = err.message;
-        return;
-      }
-
-      postData = JSON.stringify(payLoad);
-
-      // POST
-      // create a new entry
-      backendService.processSettings(postData).success(function (data, status, headers, config) {
-        $scope.saveSuccess = true;
-        $scope.saveMessage = data;
-        $scope.input = {}; // clear input
-
-      }).error(function (data, status, headers, config) {
-        $scope.saveSuccess = false;
-        $scope.saveErrorMessage = data;
+      var vm = this;
+      var myModal = $modal({ scope: vm
+        , title: 'Connect Drive'
+        , contentTemplate: 'views/connectDrive.html'
+        , show: false
+        , prefixEvent: 'settings'
       });
-    };
 
-    // start the google drive connection
-    $scope.startConnect = function() {
-      if(!$scope.googleDrive.isProvided) {
-        myModal.$promise.then(myModal.show);
+      init();
+      load();
+
+
+      //////////////////
+
+
+      /**
+       * setup environment
+       */
+      function init() {
+        vm.activeTab = 'tabImport';
+        vm.input = {};
+        vm.rawSendersValid = true;
+        vm.rawTagsValid = true;
+        vm.rawDocumentsValid = true;
+        vm.saveSuccess = true;
+        vm.action = false;
+        vm.saveMessage = '';
+        vm.saveErrorMessage = '';
+        vm.connection = 0;
+        vm.googleDrive = {};
+        vm.googleDrive.isActive = false;
+        vm.googleDrive.isProvided = false;
+        vm.maintenance = {};
+        vm.maintenance.deletetempfiles = false;
+        vm.maintenance.deletedirtydbentries = false;
+
+
+        // setup events
+
+        // actions based on the hide setting modal
+        var unbind = $rootScope.$on('settings.hide', function(args){
+          console.log('modal closed!');
+          args.stopPropagation(); // ok - done here
+        });
+        $scope.$on('$destroy', unbind);
+
+
+        $scope.$watch('vm.googleDrive.isActive', function() {
+          console.info('Google Drive switch selected: ' + vm.googleDrive.isActive);
+          if(vm.googleDrive.isActive === true) {
+            vm.startConnect();
+          } else {
+            vm.startDisconnect();
+          }
+        });
+
       }
-    };
 
-    // disconnect google drive
-    $scope.startDisconnect = function() {
-      if($scope.googleDrive.isProvided) {
-        myModal.$promise.then(myModal.show);
+      /**
+       * startup actions / events
+       */
+      function load() {
+        backendService.getUser().success(function (data, status, headers, config) {
+          if(data.hasToken) {
+            vm.googleDrive.isProvided = true;
+            vm.googleDrive.isActive = true;
+            vm.connection = 1;
+          }
+        }).error(function (data, status, headers, config) {
+          console.log('Error: ' + data);
+        });
+
+        if($routeParams && $routeParams.connection) {
+          vm.activeTab = 'tabDrive';
+        }
       }
-    };
 
-    // create google drive connection
-    $scope.connect = function() {
-      console.log('connect google drive!');
-      // redirect to start the oauth logic
-      $window.location.href = '/drive/connect';
-    };
 
-    // create google drive connection
-    $scope.disconnect = function() {
-      console.log('disconnect google drive!');
-      // redirect to start the oauth logic
-      $window.location.href = '/drive/disconnect';
-    };
+      //////////////////
+      // actions
+      //////////////////
 
-    // start the maintenance work stuff
-    $scope.dowork = function() {
-      if($scope.maintenance.deletetempfiles ||  $scope.maintenance.deletedirtydbentries) {
-        backendService.doMaintenance($scope.maintenance).success(function (data, status, headers, config) {
-          $scope.actionSuccess = true;
-          $scope.actionError = false;
-          $scope.actionMessage = data;
+      // show a specific tab
+      vm.showTab = function(tab) {
+        vm.activeTab = tab;
+      };
 
-          $scope.maintenance.deletetempfiles = $scope.maintenance.deletedirtydbentries = false;
+      // navigate back to main screen
+      vm.cancel = function(path) {
+        $location.path(path);
+      };
+
+      // use the raw-json and post it to the backend service
+      vm.save = function() {
+        var payLoad = {}, postData;
+
+        vm.action = true;
+
+        // setup structure - the payload are just strings
+        vm.rawTagsValid = vm.rawSendersValid = vm.rawDocumentsValid = true;
+        try {
+          if(vm.input.rawTags && vm.input.rawTags !== '') {
+            vm.rawTagsValid = false;
+            payLoad.tags = JSON.parse(vm.input.rawTags);
+            vm.rawTagsValid = true;
+          }
+          if(vm.input.rawSenders && vm.input.rawSenders !== '') {
+            vm.rawSendersValid = false;
+            payLoad.senders = JSON.parse(vm.input.rawSenders);
+            vm.rawSendersValid = true;
+          }
+          if(vm.input.rawDocuments && vm.input.rawDocuments !== '') {
+            vm.rawDocumentsValid = false;
+            payLoad.documents = JSON.parse(vm.input.rawDocuments);
+            vm.rawDocumentsValid = true;
+          }
+
+        } catch(err) {
+          // cannot parse
+          console.log(err);
+          vm.saveSuccess = false;
+          vm.saveErrorMessage = err.message;
+          return;
+        }
+
+        postData = JSON.stringify(payLoad);
+
+        // POST
+        // create a new entry
+        backendService.processSettings(postData).success(function (data, status, headers, config) {
+          vm.saveSuccess = true;
+          vm.saveMessage = data;
+          vm.input = {}; // clear input
 
         }).error(function (data, status, headers, config) {
-          $scope.actionError = true;
-          $scope.actionSuccess = false;
-          $scope.actionMessage = data;
+          vm.saveSuccess = false;
+          vm.saveErrorMessage = data;
         });
-      } else {
-        return;
-      }
-    };
+      };
 
-    // ------------------------------------------------------------------------
-    // watch scope elements
-    // ------------------------------------------------------------------------
+      // start the google drive connection
+      vm.startConnect = function() {
+        if(!vm.googleDrive.isProvided) {
+          myModal.$promise.then(myModal.show);
+        }
+      };
 
-    $scope.$watch('googleDrive.isActive', function() {
-      console.info('Google Drive switch selected: ' + $scope.googleDrive.isActive);
-      if($scope.googleDrive.isActive === true) {
-        $scope.startConnect();
-      } else {
-        $scope.startDisconnect();
-        //$scope.googleDrive.isProvided = false;
-      }
-    });
+      // disconnect google drive
+      vm.startDisconnect = function() {
+        if(vm.googleDrive.isProvided) {
+          myModal.$promise.then(myModal.show);
+        }
+      };
 
-    // ------------------------------------------------------------------------
-    // events
-    // ------------------------------------------------------------------------
+      // create google drive connection
+      vm.connect = function() {
+        console.log('connect google drive!');
+        // redirect to start the oauth logic
+        $window.location.href = '/drive/connect';
+      };
 
-    // actions based on the hide setting modal
-    var unbind = $rootScope.$on('settings.hide', function(args){
-      console.log('modal closed!');
-      args.stopPropagation(); // ok - done here
-    });
-    $scope.$on('$destroy', unbind);
-}]);
+      // create google drive connection
+      vm.disconnect = function() {
+        console.log('disconnect google drive!');
+        // redirect to start the oauth logic
+        $window.location.href = '/drive/disconnect';
+      };
+
+      // start the maintenance work stuff
+      vm.dowork = function() {
+        if(vm.maintenance.deletetempfiles ||  vm.maintenance.deletedirtydbentries) {
+          backendService.doMaintenance(vm.maintenance).success(function (data, status, headers, config) {
+            vm.actionSuccess = true;
+            vm.actionError = false;
+            vm.actionMessage = data;
+
+            vm.maintenance.deletetempfiles = vm.maintenance.deletedirtydbentries = false;
+
+          }).error(function (data, status, headers, config) {
+            vm.actionError = true;
+            vm.actionSuccess = false;
+            vm.actionMessage = data;
+          });
+        } else {
+          return;
+        }
+      };
+
+
+
+    }
+
+})();

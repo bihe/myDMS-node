@@ -1,62 +1,94 @@
-'use strict';
+(function() {
+  'use strict';
 
-/* App Module */
+  angular
+    .module('mydmsApp', ['ui.router'
+      , 'ngCookies'                         // angular cookie handling
+      , 'pascalprecht.translate'            // translate angular elements
+      , 'ngFileUpload'                 	    // handel file-upload the angular way
+      , 'chieffancypants.loadingBar'        // loading indicator for xhr requests
+      , 'hb.infiniScroll'                   // infinite scrolling plugin
+      , 'frapontillo.bootstrap-switch'      // switch-buttons
+      , 'mgcrea.ngStrap'                    // bootstrap directives: modal
+      , 'mydms.main'
+      , 'mydms.document'
+      , 'mydms.settings'
 
-var mydmsApp = angular.module('mydmsApp', ['ngResource'
-    , 'ngRoute'
-    , 'ngCookies'
-    , 'ngAnimate'                         // use animation
-    , 'pascalprecht.translate'            // translate angular elements
-    , 'ngFileUpload'                 	  // handel file-upload the angular way
-    , 'chieffancypants.loadingBar'        // loading indicator for xhr requests
-    , 'hb.infiniScroll'                   // infinite scrolling plugin
-    , 'frapontillo.bootstrap-switch'      // switch-buttons
-    , 'mgcrea.ngStrap'                    // bootstrap directives: modal
-  ]);
-
-mydmsApp
+    ])
     .constant('_', window._)
-    .config(['$routeProvider', '$httpProvider', '$translateProvider',
-        function ($routeProvider, $httpProvider, $translateProvider) {
-            $routeProvider
-                .when('/document/add', {
-                    templateUrl: 'views/document.html',
-                    controller: 'DocumentController'
-                })
-                .when('/document/:documentId', {
-                    templateUrl: 'views/document.html',
-                    controller: 'DocumentController'
-                })
-                .when('/settings', {
-                    templateUrl: 'views/settings.html',
-                    controller: 'SettingsController'
-                })
-                .when('/settings/:connection', {
-                  templateUrl: 'views/settings.html',
-                  controller: 'SettingsController'
-                })
-                .otherwise({
-                    templateUrl: 'views/main.html',
-                    controller: 'MainController'
-                })
+    .constant('moment', window.moment)
+    .config(['$stateProvider'
+      , '$urlRouterProvider'
+      , '$compileProvider'
+      , '$translateProvider'
+      , function ($stateProvider
+        , $urlRouterProvider
+        , $compileProvider
+        , $translateProvider
+        ) {
+          //
+          // for any unmatched url, redirect to /state1
+          $urlRouterProvider.otherwise('/');
 
-            // Initialize angular-translate
-            $translateProvider.useStaticFilesLoader({
-                prefix: './i18n/',
-                suffix: '.json'
-            });
+          //
+          // defined states
+          $stateProvider
+          .state('initial', {
+            url: '/',
+            templateUrl: 'views/main.html',
+            controller: 'MainController',
+            controllerAs: 'vm'
+          })
+          .state('documentAdd', {
+            url: '/document/add',
+            templateUrl: 'views/document.html',
+            controller: 'DocumentController',
+            controllerAs: 'vm'
+          })
+          .state('documentId', {
+            url: '/document/:documentId',
+            templateUrl: 'views/document.html',
+            controller: 'DocumentController',
+            controllerAs: 'vm'
+          })
+          .state('settings', {
+            url: '/settings',
+            templateUrl: 'views/settings.html',
+            controller: 'SettingsController',
+            controllerAs: 'vm'
+          })
+          .state('settingsConnection', {
+            url: '/settings/:connection',
+            templateUrl: 'views/settings.html',
+            controller: 'SettingsController',
+            controllerAs: 'vm'
+          })
+          ;
 
-            $translateProvider.preferredLanguage('de');
+          //
+          // Initialize angular-translate
+          $translateProvider.useStaticFilesLoader({
+              prefix: './i18n/',
+              suffix: '.json'
+          });
 
-            // remember language
-            $translateProvider.useCookieStorage();
+          $translateProvider.preferredLanguage('de');
+
+          // remember language
+          $translateProvider.useCookieStorage();
+
+          // sanitize
+          $translateProvider.useSanitizeValueStrategy('escaped');
+
+          //
+          // speedup
+          $compileProvider.debugInfoEnabled(false);
+
         }])
-        .run(['$rootScope', '$location',
-            function($rootScope, $location) {
-            $rootScope.$on("$routeChangeStart", function(event, next, current) {
-                // Check if the status of the user. Is it authenticated or not?
-                // AuthenticationSharedService.authenticate({}, function() {
-                //     $rootScope.authenticated = true;
-                // });
-            });
-        }]);
+    .run(['$rootScope', '$location',
+      function($rootScope, $location) {
+        $rootScope.$on('$routeChangeStart', function(event, next, current) {
+
+        });
+      }]);
+})();

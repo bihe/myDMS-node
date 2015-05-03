@@ -2,6 +2,7 @@ body {
   min-height: 1000px;
   padding-top: 70px;
   overflow-y: hidden;
+  background-color: rgb(241, 242, 246)
 }
 
 
@@ -321,59 +322,167 @@ ul.items li
     display: none !important;
 }
 
-
-
-.userProfile {
-    background-size: 25px 25px;
-    border-radius: 50%;
-    display: block;
-    margin: -1px;
-    height: 25px;
-    width: 25px;
-}
-
 .width-80 {
   width: 80%;
 }
 
 
-/**
- * animation stuff
+/*
+ * Global add-ons
  */
 
-.animate-repeat {
-
+.sub-header {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
 }
 
-.animate-repeat.ng-move,
-.animate-repeat.ng-enter,
-.animate-repeat.ng-leave {
-  /*-webkit-transition:all linear 0.1s;
-  transition:all linear 0.1s;
-  */
-
-  -webkit-transition: 150ms cubic-bezier(0.250, 0.100, 0.250, 1.000) all;
-  -moz-transition: 150ms cubic-bezier(0.250, 0.100, 0.250, 1.000) all;
-  -ms-transition: 150ms cubic-bezier(0.250, 0.100, 0.250, 1.000) all;
-  -o-transition: 150ms cubic-bezier(0.250, 0.100, 0.250, 1.000) all;
-  transition: 150ms cubic-bezier(0.250, 0.100, 0.250, 1.000) all;
-  position: relative;
-  display: block;
-  overflow: hidden;
-  text-overflow: clip;
-  white-space:nowrap;
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+    border: 0;
 }
 
-.animate-repeat.ng-leave.ng-leave-active,
-.animate-repeat.ng-move,
-.animate-repeat.ng-enter {
-  opacity:0;
-  max-height:0;
+.stats {
+    display: inline-block;
 }
 
-.animate-repeat.ng-leave,
-.animate-repeat.ng-move.ng-move-active,
-.animate-repeat.ng-enter.ng-enter-active {
-  opacity:1;
-  max-height:40px;
+@media (min-width: 768px) {
+    .stats {
+        display: none;
+    }
+}
+
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.sidebar {
+    display: none;
+}
+@media (min-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 51px;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        display: block;
+        padding: 0px;
+        overflow-x: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+        background-color: #f5f5f5;
+        border-right: 1px solid #eee;
+    }
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+    margin-right: -21px; /* 20px padding + 1px border */
+    margin-bottom: 20px;
+    margin-left: -20px;
+}
+.nav-sidebar > li > a {
+    padding-right: 20px;
+    padding-left: 20px;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+    color: #fff;
+    background-color: #428bca;
+}
+
+
+/*
+ * Main content
+ */
+
+.main {
+    padding: 20px;
+}
+@media (min-width: 768px) {
+    .main {
+        padding-right: 40px;
+        padding-left: 40px;
+    }
+}
+.main .page-header {
+    margin-top: 0;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.cardsection {
+    margin-bottom: 30px;
+    text-align: center;
+}
+.cardsection h4 {
+    margin-bottom: 0;
+}
+.cardsection {
+    margin-bottom: 20px;
+}
+
+
+.navbar-inverse {
+    background-color: #656D78;
+    border-color: #656D78;
+}
+
+.navbar-inverse a.navbar-brand {
+    color:  white;
+}
+
+.navbar-inverse .navbar-toggle .icon-bar {
+    background-color: #656D78;
+}
+
+.navbar-inverse .navbar-toggle {
+    background-color: #AAB2BD;
+    border-color: #AAB2BD;
+}
+
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form {
+    border-color: #AAB2BD;
+}
+.navbar-inverse .navbar-toggle:hover, .navbar-inverse .navbar-toggle:focus {
+    background-color: #AAB2BD;
+    border-color: #AAB2BD;
+}
+
+.navbar-inverse .navbar-text, .navbar-inverse .navbar-nav > li > a {
+    color: white;
+}
+
+.alert-indicator {
+    position: absolute;
+    top: -2px;
+    right: 10px;
+    z-index: 1;
+}
+
+.alert-indicator-value {
+    font-size: smaller;
+}
+
+.userProfile {
+  background-size: 25px 25px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: -1px;
+  height: 25px;
+  width: 25px;
+  position: absolute;
+}
+
+.navbar-brand > img.logo {
+  display: inline;
+  width: 20px;
 }
