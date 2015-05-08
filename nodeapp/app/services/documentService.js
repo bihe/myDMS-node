@@ -109,7 +109,7 @@ DocumentService.prototype = (function() {
         // 1) check the supplied documentId
         function(callback) {
           try {
-            if(document._id === -1) {
+            if(!document._id || document._id === -1) {
               doc = new Document({title: document.title});
               callback(null);
             } else {
@@ -361,7 +361,7 @@ DocumentService.prototype = (function() {
     cleanStaleDatabaseEntries: function() {
       var deferred = q.defer()
         ;
-  
+
       Document.remove({ state: 'dirty' }, function(err, numberRemoved) {
         if(err) {
           return deferred.reject(err);

@@ -6,7 +6,7 @@
     .module('mydms.document')
     .controller('DocumentController', ['backendService'
       , '$location'
-      , '$routeParams'
+      , '$stateParams'
       , '_'
       , 'Upload'
       , '$timeout'
@@ -19,7 +19,7 @@
    */
   function documentController(backendService
     , $location
-    , $routeParams
+    , $stateParams
     , _
     , Upload
     , $timeout) {
@@ -51,8 +51,8 @@
       vm.document.senders = [];
       vm.document.tags = [];
 
-      if($routeParams && $routeParams.documentId) {
-        vm.document._id = $routeParams.documentId;
+      if($stateParams && $stateParams.documentId) {
+        vm.document._id = $stateParams.documentId;
       }
     }
 

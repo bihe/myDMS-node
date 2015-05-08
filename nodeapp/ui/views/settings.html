@@ -3,19 +3,19 @@
     <h2 translate="settings.title">Settings</h2>
 
     <ul class="nav nav-tabs nav-justified">
-      <li ng-class="{'active': activeTab == 'tabImport'}" ><a href="" ng-click="showTab('tabImport')" >Import</a></li>
-      <li ng-class="{'active': activeTab == 'tabExport'}" ><a href="" ng-click="showTab('tabExport')">Export</a></li>
-      <li ng-class="{'active': activeTab == 'tabDrive'}" ><a href="" ng-click="showTab('tabDrive')" translate="settings.storage">Storage</a></li>
-      <li ng-class="{'active': activeTab == 'tabMaintenance'}" ><a href="" ng-click="showTab('tabMaintenance')" translate="settings.maintenance">Maintenance</a></li>
+      <li ng-class="{'active': vm.activeTab == 'tabImport'}" ><a href="" ng-click="vm.showTab('tabImport')" >Import</a></li>
+      <li ng-class="{'active': vm.activeTab == 'tabExport'}" ><a href="" ng-click="vm.showTab('tabExport')">Export</a></li>
+      <li ng-class="{'active': vm.activeTab == 'tabDrive'}" ><a href="" ng-click="vm.showTab('tabDrive')" translate="settings.storage">Storage</a></li>
+      <li ng-class="{'active': vm.activeTab == 'tabMaintenance'}" ><a href="" ng-click="vm.showTab('tabMaintenance')" translate="settings.maintenance">Maintenance</a></li>
     </ul>
 
-    <div class="alert alert-danger" ng-if="saveSuccess === false" style="margin-top: 10px">
+    <div class="alert alert-danger" ng-if="vm.saveSuccess === false" style="margin-top: 10px">
       <span class="fa fa-flash form-control-feedback"></span>
       <strong translate="global.saveError">Form Error!</strong>
       <p>{{ saveErrorMessage }}</p>
     </div>
 
-    <div class="alert alert-success" ng-if="saveSuccess && action" style="margin-top: 10px">
+    <div class="alert alert-success" ng-if="vm.saveSuccess && vm.action" style="margin-top: 10px">
       <span class="fa fa-check-circle-o form-control-feedback"></span>
       <strong translate="global.saveSuccess">Success!</strong>
       <span translate="settings.save">Seetings saved</span>
@@ -24,14 +24,14 @@
 
     <!-- Tab panes -->
     <div style="padding: 5px">
-      <div  ng-if="activeTab == 'tabImport'">
+      <div  ng-if="vm.activeTab == 'tabImport'">
         <h4 translate="settings.import">Import</h4>
 
         <div class="panel panel-default">
           <div class="panel-heading" translate="settings.tags">Tags</div>
-          <div class="panel-body" ng-class="{'has-error': rawTagsValid == false}">
+          <div class="panel-body" ng-class="{'has-error': vm.rawTagsValid == false}">
 
-            <textarea class="form-control" rows="3" id="tags" ng-model="input.rawTags" placeholder='["tag1","tag2"]' ></textarea>
+            <textarea class="form-control" rows="3" id="tags" ng-model="vm.input.rawTags" placeholder='["tag1","tag2"]' ></textarea>
             <div class="alert alert-info alert-small" translate="settings.json">Use valid JSON format</div>
 
           </div>
@@ -39,16 +39,16 @@
 
         <div class="panel panel-default">
           <div class="panel-heading" translate="settings.senders">Senders</div>
-          <div class="panel-body" ng-class="{'has-error': rawSendersValid == false}">
-            <textarea class="form-control" rows="3" id="senders" ng-model="input.rawSenders" placeholder='["sender1","sender2"]'></textarea>
+          <div class="panel-body" ng-class="{'has-error': vm.rawSendersValid == false}">
+            <textarea class="form-control" rows="3" id="senders" ng-model="vm.input.rawSenders" placeholder='["sender1","sender2"]'></textarea>
             <div class="alert alert-info alert-small" translate="settings.json">Use valid JSON format</div>
           </div>
         </div>
 
         <div class="panel panel-default">
           <div class="panel-heading" translate="settings.documents">Documents</div>
-          <div class="panel-body" ng-class="{'has-error': rawDocumentsValid == false}">
-            <textarea class="form-control" rows="5" id="documents" ng-model="input.rawDocuments" placeholder='[{
+          <div class="panel-body" ng-class="{'has-error': vm.rawDocumentsValid == false}">
+            <textarea class="form-control" rows="5" id="documents" ng-model="vm.input.rawDocuments" placeholder='[{
   "fileName" : "2011_01_14/max_kindergarten_122010.pdf",
   "title" : "Kindergarten Max Dez. 2010",
   "previewLink" : null,
@@ -62,77 +62,76 @@
         </div>
 
         <div class="pull-right">
-        <button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave" ng-click="save()">Save</button>
+        <button type="button" class="btn btn-success btn-lg" translate="global.save" id="btnSave" ng-click="vm.save()">Save</button>
         </div>
 
       </div>
-      <div  ng-if="activeTab == 'tabExport'">
+      <div  ng-if="vm.activeTab == 'tabExport'">
         <h4 translate="settings.export">Export</h4>
 
 
       </div>
-        <div  ng-if="activeTab == 'tabDrive'">
+        <div  ng-if="vm.activeTab == 'tabDrive'">
             <h4 translate="settings.drive">Drive</h4>
 
             <p translate="settings.drivestory">Google Drive is used to store the physical documents. It is a cloud based storage system from Google. To access the files in Google Drive first
             an authentication is needed. This is done via OAuth.</p>
 
-            <p translate="settings.drivestatus">Currently Google Drive is ...</p>
 
             <p>
-            <input
-                bs-switch
-                ng-model="googleDrive.isActive"
-                type="checkbox"
-                switch-on-text="ON"
-                switch-off-text="OFF"
-                switch-size="large"
-                ng-click="startConnect()"
-                />
+
+
+            <div ng-if="vm.googleDrive.isActive">
+              <button class="btn btn-danger btn-lg" ng-click="vm.startDisconnect()" translate="settings.startDisconnect">Google</button>
+            </div>
+
+            <div ng-if="!vm.googleDrive.isActive">
+              <button class="btn btn-success btn-lg" ng-click="vm.startConnect()" translate="settings.startConnect">Google</button>
+            </div>
 
             </p>
 
         </div>
 
 
-        <div  ng-if="activeTab == 'tabMaintenance'">
+        <div  ng-if="vm.activeTab == 'tabMaintenance'">
             <h4 translate="settings.maintenance">Maintenance</h4>
 
             <p translate="settings.maintenancejobs">Maintenance Jobs</p>
 
 
-            <div class="alert alert-success" ng-if="actionSuccess" style="margin-top: 10px">
+            <div class="alert alert-success" ng-if="vm.actionSuccess" style="margin-top: 10px">
               <span class="fa fa-check-circle-o "></span>
               <strong translate="global.actionSuccess">Success!</strong>
 
-              <p>{{ actionMessage }}</p>
+              <p>{{ vm.actionMessage }}</p>
             </div>
 
-            <div class="alert alert-danger" ng-if="actionError" style="margin-top: 10px">
+            <div class="alert alert-danger" ng-if="vm.actionError" style="margin-top: 10px">
               <span class="fa fa fa-flash"></span>
               <strong translate="global.actionError">Error!</strong>
 
-              <p>{{ actionMessage }}</p>
+              <p>{{ vm.actionMessage }}</p>
             </div>
 
 
             <form role="form" name="form1" id="form1" novalidate>
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" ng-model="maintenance.deletetempfiles"> <span translate="settings.deletetempfiles">deletetemp</span>
+                  <input type="checkbox" ng-model="vm.maintenance.deletetempfiles"> <span translate="settings.deletetempfiles">deletetemp</span>
                 </label>
               </div>
 
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" ng-model="maintenance.deletedirtydbentries"> <span translate="settings.deletedirtydbentries">deletedirtydbentries</span>
+                  <input type="checkbox" ng-model="vm.maintenance.deletedirtydbentries"> <span translate="settings.deletedirtydbentries">deletedirtydbentries</span>
                 </label>
               </div>
 
 
 
               <div class="pull-right">
-              <button type="button" class="btn btn-success btn-lg" translate="global.dowork" ng-disabled="!maintenance.deletetempfiles && !maintenance.deletedirtydbentries" id="btnDoWork" ng-click="dowork()">Start</button>
+              <button type="button" class="btn btn-success btn-lg" translate="global.dowork" ng-disabled="!vm.maintenance.deletetempfiles && !vm.maintenance.deletedirtydbentries" id="btnDoWork" ng-click="vm.dowork()">Start</button>
               </div>
             </form>
 

@@ -8,7 +8,6 @@
       , 'ngFileUpload'                 	    // handel file-upload the angular way
       , 'chieffancypants.loadingBar'        // loading indicator for xhr requests
       , 'hb.infiniScroll'                   // infinite scrolling plugin
-      , 'frapontillo.bootstrap-switch'      // switch-buttons
       , 'mgcrea.ngStrap'                    // bootstrap directives: modal
       , 'mydms.main'
       , 'mydms.document'

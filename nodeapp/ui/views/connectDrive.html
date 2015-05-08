@@ -1,9 +1,11 @@
 <div>
     <p><strong translate="settings.driveConnect">Connect to Google Drive</strong></p>
-    <p class="text-muted" translate="settings.headingDrive">Click the link to connect to the Google Drive Account.</p>
+
+    <p class="text-muted" ng-show="vm.connection == 0" translate="settings.headingDrive">Click the link to connect to the Google Drive Account.</p>
+    <p class="text-muted" ng-show="vm.connection == 1" translate="settings.headingDriveDisconnect">Click the link to connect to the Google Drive Account.</p>
     <p>
 
-        <button type="button" ng-show="connection == 0" class="btn btn-success btn-lg" translate="settings.connect" ng-click="connect()">Connect</button>
-        <button type="button" ng-show="connection == 1" class="btn btn-danger btn-lg" translate="settings.disconnect" ng-click="disconnect()">Disconnect</button>
+        <button type="button" ng-show="vm.connection == 0" class="btn btn-success btn-lg" translate="settings.connect" ng-click="vm.connect()">Connect</button>
+        <button type="button" ng-show="vm.connection == 1" class="btn btn-danger btn-lg" translate="settings.disconnect" ng-click="vm.disconnect()">Disconnect</button>
     </p>
 </div>

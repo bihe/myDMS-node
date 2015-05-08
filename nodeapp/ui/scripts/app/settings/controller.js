@@ -8,7 +8,7 @@
       , '$rootScope'
       , 'backendService'
       , '$location'
-      , '$routeParams'
+      , '$stateParams'
       , '_'
       , '$modal'
       , '$window'
@@ -21,13 +21,13 @@
     , $rootScope
     , backendService
     , $location
-    , $routeParams
+    , $stateParams
     , _
     , $modal
     , $window) {
 
       var vm = this;
-      var myModal = $modal({ scope: vm
+      var myModal = $modal({ scope: $scope
         , title: 'Connect Drive'
         , contentTemplate: 'views/connectDrive.html'
         , show: false
@@ -72,16 +72,6 @@
         });
         $scope.$on('$destroy', unbind);
 
-
-        $scope.$watch('vm.googleDrive.isActive', function() {
-          console.info('Google Drive switch selected: ' + vm.googleDrive.isActive);
-          if(vm.googleDrive.isActive === true) {
-            vm.startConnect();
-          } else {
-            vm.startDisconnect();
-          }
-        });
-
       }
 
       /**
@@ -98,7 +88,7 @@
           console.log('Error: ' + data);
         });
 
-        if($routeParams && $routeParams.connection) {
+        if($stateParams && $stateParams.connection) {
           vm.activeTab = 'tabDrive';
         }
       }
