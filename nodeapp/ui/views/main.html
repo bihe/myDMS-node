@@ -1,105 +1,106 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" >
+    <div class="row" >
+        <div class="col-xs-12 col-sm-12 col-md-12">
 
-<div class="row" >
-    <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="row" style="margin-top:25px;margin-bottom:20px;">
+              <div class="col-md-12">
+                <div class="center-block width-80">
+                    <div>
+                      <div class="input-group input-group-lg">
+                        <input type="text" class="form-control" placeholder="{{ 'main.search' | translate }}" id="search" ng-model="search.term" ng-change="vm.doSearchWait()">
+                        <div class="input-group-btn">
+                          <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
+                          <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                            <li><a href="#" translate="main.search" ng-click="vm.doSearch()">Search!</a></li>
+                            <li ng-show="!vm.toggleShowOptions"><a href="#" translate="main.more_search" ng-click="vm.showMoreSearchOptions()">more</a></li>
+                            <li ng-show="vm.toggleShowOptions"><a href="#" translate="main.less_search" ng-click="vm.showMoreSearchOptions()">more</a></li>
+                          </ul>
+                        </div><!-- /btn-group -->
+                      </div><!-- /input-group -->
+                    </div>
 
-        <div class="row" style="margin-top:25px;margin-bottom:20px;">
-          <div class="col-md-12">
-            <div class="center-block width-80">
-                <div>
-                  <div class="input-group input-group-lg">
-                    <input type="text" class="form-control" placeholder="{{ 'main.search' | translate }}" id="search" ng-model="search.term" ng-change="vm.doSearchWait()">
-                    <div class="input-group-btn">
-                      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
-                      <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                        <li><a href="#" translate="main.search" ng-click="vm.doSearch()">Search!</a></li>
-                        <li ng-show="!vm.toggleShowOptions"><a href="#" translate="main.more_search" ng-click="vm.showMoreSearchOptions()">more</a></li>
-                        <li ng-show="vm.toggleShowOptions"><a href="#" translate="main.less_search" ng-click="vm.showMoreSearchOptions()">more</a></li>
-                      </ul>
-                    </div><!-- /btn-group -->
-                  </div><!-- /input-group -->
+                    <div style="text-align:center" ng-show="vm.toggleShowOptions">
+                      <br/>
+                      <form class="form-inline" role="form" id="filterForm">
+                          <div class="form-group">
+                            <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="vm.search.dateFrom" ng-change="vm.doSearch()">
+                          </div>
+                          <div class="form-group">
+                            <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="vm.search.dateTo" ng-change="vm.doSearch()">
+                          </div>
+                          <div class="form-group">
+                              <select class="form-control" id="senders" ng-options="sender.name for sender in vm.senders" ng-model="vm.search.sender" ng-change="vm.doSearch()">
+                                  <option value="" translate="main.selectsender">Select a sender</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                              <select class="form-control" id="tags" ng-options="tag.name for tag in vm.tags" ng-model="vm.search.tag" ng-change="vm.doSearch()">
+                                  <option value="" translate="main.selecttag">Select a tag</option>
+                              </select>
+                          </div>
+                      </form>
+                      <hr/>
+                    </div>
                 </div>
-
-                <div style="text-align:center" ng-show="vm.toggleShowOptions">
-                  <br/>
-                  <form class="form-inline" role="form" id="filterForm">
-                      <div class="form-group">
-                        <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="vm.search.dateFrom" ng-change="vm.doSearch()">
-                      </div>
-                      <div class="form-group">
-                        <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="vm.search.dateTo" ng-change="vm.doSearch()">
-                      </div>
-                      <div class="form-group">
-                          <select class="form-control" id="senders" ng-options="sender.name for sender in vm.senders" ng-model="vm.search.sender" ng-change="vm.doSearch()">
-                              <option value="" translate="main.selectsender">Select a sender</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <select class="form-control" id="tags" ng-options="tag.name for tag in vm.tags" ng-model="vm.search.tag" ng-change="vm.doSearch()">
-                              <option value="" translate="main.selecttag">Select a tag</option>
-                          </select>
-                      </div>
-                  </form>
-                  <hr/>
-                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <div class="row">
-          <div class="col-md-12" >
+            <div class="row">
+              <div class="col-md-12" >
 
-              <!-- infinite scroll plugin area -->
-              <div ng-cloak infini-scroll="vm.moreResults" scroll-threshold="50" id="documentContainer" style="padding-top:10px; " >
-                <div class="document" ng-repeat="doc in vm.documents" style="position:relative;">
+                  <!-- infinite scroll plugin area -->
+                  <div ng-cloak infini-scroll="vm.moreResults" scroll-threshold="50" id="documentContainer" style="padding-top:10px; " >
+                    <div class="document" ng-repeat="doc in vm.documents" style="position:relative;">
 
-                  <div class="price-badge">
-                    <span ng-if="doc.amount > 0" class="amount label label-danger" >
-                      <i class="fa fa-euro"></i> <strong>{{ doc.amount }}</strong>
-                    </span>
-                  </div>
+                      <div class="price-badge">
+                        <span ng-if="doc.amount > 0" class="amount label label-danger" >
+                          <i class="fa fa-euro"></i> <strong>{{ doc.amount }}</strong>
+                        </span>
+                      </div>
 
-                  <div class="card" style="position:relative" >
+                      <div class="card" style="position:relative" >
 
-                      <div class="card-image transparent-back">
-                          <h2 ng-click="vm.editDocument(doc._id)" id="{{ doc._id }}" title="{{ doc.fileName }}"> {{ doc.title }} </h2>
+                          <div class="card-image transparent-back">
+                              <h2 ng-click="vm.editDocument(doc._id)" id="{{ doc._id }}" title="{{ doc.fileName }}"> {{ doc.title }} </h2>
 
-                          <div class="download-button">
-                            <a href="/api/1.0/document/download/{{ doc._id }}" id="{{ doc._id }}" target="_blank"> <i class="fa fa-cloud-download download-icon"></i> </a>
+                              <div class="download-button">
+                                <a href="/api/1.0/document/download/{{ doc._id }}" id="{{ doc._id }}" target="_blank"> <i class="fa fa-cloud-download download-icon"></i> </a>
+                              </div>
+
+                          </div>
+
+                          <p>
+
+                              <span ng-repeat="sender in doc.senders" >
+                                <span class="label label-info"><i class="fa fa-truck"></i> {{ sender.name }}</span>
+                              </span>
+
+                              <span ng-repeat="tag in doc.tags" >
+                                <span class="label label-primary"><i class="fa fa-tag"></i> {{ tag.name }}</span>
+                              </span>
+
+                          </p>
+
+                          <div class="creation-date info-text">
+                            <span  class="document-meta">c</span>:{{ doc.created | date : 'dd.MM.yyyy' }}
+                          </div>
+
+                          <div class="modification-date info-text">
+                            <span class="document-meta">m</span>:{{ doc.modified | date : 'dd.MM.yyyy' }}
                           </div>
 
                       </div>
 
-                      <p>
-
-                          <span ng-repeat="sender in doc.senders" >
-                            <span class="label label-info"><i class="fa fa-truck"></i> {{ sender.name }}</span>
-                          </span>
-
-                          <span ng-repeat="tag in doc.tags" >
-                            <span class="label label-primary"><i class="fa fa-tag"></i> {{ tag.name }}</span>
-                          </span>
-
-                      </p>
-
-                      <div class="creation-date info-text">
-                        <span  class="document-meta">c</span>:{{ doc.created | date : 'dd.MM.yyyy' }}
-                      </div>
-
-                      <div class="modification-date info-text">
-                        <span class="document-meta">m</span>:{{ doc.modified | date : 'dd.MM.yyyy' }}
-                      </div>
+                    </div>
 
                   </div>
-
-                </div>
+                  <span ng-show="vm.loading" id="loading" class="ng-hide" translate="main.loading">Loading ...</span>
+                  <!-- end of infinte scroll plugin -->
 
               </div>
-              <span ng-show="vm.loading" id="loading" class="ng-hide" translate="main.loading">Loading ...</span>
-              <!-- end of infinte scroll plugin -->
-
           </div>
-      </div>
 
-    </div>
+        </div>
 
-</div><!--/row-->
+    </div><!--/row-->
+</div>

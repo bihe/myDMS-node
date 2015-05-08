@@ -2,7 +2,8 @@ body {
   min-height: 1000px;
   padding-top: 70px;
   overflow-y: hidden;
-  background-color: rgb(241, 242, 246)
+  background-color: rgb(241, 242, 246);
+  color: #999999;
 }
 
 
@@ -33,7 +34,7 @@ ul.items li
 
 .label-normal {
   font-weight: normal;
-  font-size: inhert;
+  font-size: inherit;
 }
 
 .double-line {
@@ -485,4 +486,12 @@ ul.items li
 .navbar-brand > img.logo {
   display: inline;
   width: 20px;
+}
+
+.searchfields {
+    padding: 5px;
+}
+
+.form-group {
+    margin-bottom: 8px;
 }

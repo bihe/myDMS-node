@@ -1,36 +1,35 @@
-<!doctype html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>myDMS :: simple document management system</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="manage documents, invoices with a index database">
-        <meta name="author" content="Henrik Binggl">
-        <link rel="shortcut icon" href="html5.ico">
+<!DOCTYPE html>
+<html lang="en" ng-app="mydmsApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="manage documents, invoices with a index database">
+    <meta name="author" content="Henrik Binggl">
+    <link rel="shortcut icon" href="html5.ico">
 
-        <!-- build:css(.tmp) styles/main.css -->
-        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
-        <link rel="stylesheet" href="styles/main.css">
-        <link rel="stylesheet" href="bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css">
-        <link rel="stylesheet" href="bower_components/famfamfam-flags-sprite/src/flags-sprite.css">
-        <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.css">
-        <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.bootstrap3.css">
-        <!-- endbuild -->
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="bower_components/Bootflat/bootflat/css/bootflat.css">
 
-    </head>
-    <body ng-app="mydmsApp" >
-        <!--[if lt IE 10]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+    <link rel="stylesheet" href="bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css">
+    <link rel="stylesheet" href="bower_components/famfamfam-flags-sprite/src/flags-sprite.css">
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.css">
+    <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.bootstrap3.css">
+
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+
+</head>
+<body>
 
 
 
-        <!-- Fixed navbar -->
+
+
+
+    <!-- Fixed navbar -->
     <div class="navbar navbar-default navbar-fixed-top">
         <div class="full-container">
             <div class="navbar-header">
@@ -101,62 +100,104 @@
     </div>
 
 
-    <div class="full-container">
 
-        <!-- content section -->
-        <div ui-view></div>
-        <!-- /content section -->
+    <div class="container-fluid">
+        <div class="row">
 
-        <hr/>
+            <!-- navigation sidebar -->
+            <div class="col-sm-3 col-md-2 sidebar">
 
-        <footer>
-            <small>myDMS application <i class="fa fa-html5"></i> implemented with <i class="fa fa-heart "></i> &amp; node &amp; mongodb</small>
-        </footer>
+                <ul class="list-group" >
+                    <li class="list-group-item">Search:</li>
+                </ul>
 
+                <div class="form-group searchfields" >
+                    <input type="text" class="form-control" placeholder="{{ 'main.search' | translate }}" id="search" ng-model="vm.search.term" ng-change="vm.doSearchWait()">
+                </div>
+
+                <div class="form-group searchfields">
+                    <select class="form-control" id="senders" ng-options="sender.name for sender in vm.senders" ng-model="vm.search.sender" ng-change="vm.doSearch()">
+                        <option value="" translate="main.selectsender">Select a sender</option>
+                    </select>
+                </div>
+                <div class="form-group searchfields">
+                    <select class="form-control" id="tags" ng-options="tag.name for tag in vm.tags" ng-model="vm.search.tag" ng-change="vm.doSearch()">
+                        <option value="" translate="main.selecttag">Select a tag</option>
+                    </select>
+                </div>
+
+                <div class="form-group searchfields">
+                    <input type="text" class="form-control datepicker" id="daterangeFrom" placeholder="Date from" data-provide="datepicker" ng-model="vm.search.dateFrom" ng-change="vm.doSearch()">
+                </div>
+                <div class="form-group searchfields">
+                    <input type="text" class="form-control datepicker" id="daterangeTo" placeholder="Date to" data-provide="datepicker" ng-model="vm.search.dateTo" ng-change="vm.doSearch()">
+                </div>
+
+
+
+            </div>
+            <!-- /navigation sidebar -->
+
+            <!-- content section -->
+            <div ui-view></div>
+            <!-- /content section -->
+
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+                <div class="row">
+
+                    <footer>
+                        <small>myDMS application <i class="fa fa-html5"></i> implemented with <i class="fa fa-heart "></i> &amp; node &amp; mongodb</small>
+                    </footer>
+
+                </div>
+            </div>
+
+        </div>
     </div>
 
 
-        <!-- build:js scripts/scripts.js -->
-        <script src="bower_components/jquery/dist/jquery.js"></script>
-        <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="bower_components/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-        <script src="bower_components/bootstrap-datepicker/js/locales/bootstrap-datepicker.de.js"></script>
-        <script src="bower_components/lodash/lodash.js"></script>
-        <script src="bower_components/ng-file-upload/ng-file-upload-shim.js"></script>
+    <!-- build:js scripts/scripts.js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="bower_components/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="bower_components/bootstrap-datepicker/js/locales/bootstrap-datepicker.de.js"></script>
+    <script src="bower_components/lodash/lodash.js"></script>
+    <script src="bower_components/ng-file-upload/ng-file-upload-shim.js"></script>
 
-        <script src="bower_components/angular/angular.js"></script>
-        <script src="bower_components/angular-cookies/angular-cookies.js"></script>
-        <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-        <script src="bower_components/ng-file-upload/ng-file-upload.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/ng-file-upload/ng-file-upload.js"></script>
 
 
-        <script src="bower_components/angular-translate/angular-translate.js"></script>
-        <script src="bower_components/angular-translate-storage-cookie/angular-translate-storage-cookie.js"></script>
-        <script src="bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
+    <script src="bower_components/angular-translate/angular-translate.js"></script>
+    <script src="bower_components/angular-translate-storage-cookie/angular-translate-storage-cookie.js"></script>
+    <script src="bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
 
-        <script src="bower_components/angular-loading-bar/build/loading-bar.js"></script>
-        <script src="bower_components/selectize/dist/js/standalone/selectize.js"></script>
-        <script src="bower_components/angular-strap/dist/angular-strap.js"></script>
-        <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
+    <script src="bower_components/angular-loading-bar/build/loading-bar.js"></script>
+    <script src="bower_components/selectize/dist/js/standalone/selectize.js"></script>
+    <script src="bower_components/angular-strap/dist/angular-strap.js"></script>
+    <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
 
-        <script src="scripts/index.js"></script>
+    <script src="scripts/index.js"></script>
 
-        <script src="scripts/app/modules/infiniScroll.js"></script>
-        <script src="scripts/app/modules/bootstrapSwitch.js"></script>
+    <script src="scripts/app/modules/infiniScroll.js"></script>
+    <script src="scripts/app/modules/bootstrapSwitch.js"></script>
 
-        <script src="scripts/app/app.js"></script>
+    <script src="scripts/app/app.js"></script>
 
-        <script src="scripts/app/main/module.js"></script>
-        <script src="scripts/app/main/controller.js"></script>
-        <script src="scripts/app/main/services.js"></script>
-        <script src="scripts/app/main/directives.js"></script>
+    <script src="scripts/app/main/module.js"></script>
+    <script src="scripts/app/main/controller.js"></script>
+    <script src="scripts/app/main/services.js"></script>
+    <script src="scripts/app/main/directives.js"></script>
 
-        <script src="scripts/app/document/module.js"></script>
-        <script src="scripts/app/document/controller.js"></script>
+    <script src="scripts/app/document/module.js"></script>
+    <script src="scripts/app/document/controller.js"></script>
 
-        <script src="scripts/app/settings/module.js"></script>
-        <script src="scripts/app/settings/controller.js"></script>
+    <script src="scripts/app/settings/module.js"></script>
+    <script src="scripts/app/settings/controller.js"></script>
+    <!-- endbuild -->
 
-        <!-- endbuild -->
 </body>
 </html>
