@@ -32,9 +32,11 @@
         "dowork": "Go!"
     },
     "main": {
+        "filter": "Filter results ...",
         "title": "Welcome, myDMS!",
         "subtitle": "This is your homepage",
-        "search": "Search!",
+        "search_title": "Search:",
+        "search": "Search in text!",
         "more_search": "more ...",
         "less_search": "less ...",
         "addDoc": "Add Document",

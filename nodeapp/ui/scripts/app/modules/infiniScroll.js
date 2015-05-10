@@ -23,11 +23,13 @@
           }
 
           // bind to the window, watch the body
-          //element = ng.element('body');
-          //ng.element($window)
-          element.bind('scroll', function () {
-            var
-              remaining = element[0].scrollHeight - (element[0].clientHeight + element[0].scrollTop);
+          var bindElement = ng.element($window);
+          var compareElement = ng.element('body');
+
+          bindElement.bind('scroll', function () {
+
+            var remaining =
+              compareElement[0].scrollHeight - (bindElement.height() + compareElement[0].scrollTop);
 
             //if we have reached the threshold and we scroll down
             if (remaining < lengthThreshold && (remaining - lastRemaining) < 0) {

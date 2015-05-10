@@ -32,9 +32,11 @@
         "dowork": "Los!"
     },
     "main": {
+        "filter": "Ergebnisse filtern ...",
         "title": "Willkommen, myDMS!",
         "subtitle": "Dies ist Ihre Hauptseite",
-        "search": "Suche!",
+        "search_title": "Suchen:",
+        "search": "Suche im Text!",
         "more_search": "mehr ...",
         "less_search": "weniger ...",
         "addDoc": "Neues Dokument",

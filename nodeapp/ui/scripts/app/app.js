@@ -12,6 +12,7 @@
       , 'mydms.main'
       , 'mydms.document'
       , 'mydms.settings'
+      , 'mydms.ui'
 
     ])
     .constant('_', window._)

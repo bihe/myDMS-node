@@ -282,11 +282,16 @@
 
 
 
+
+
       //////////////////
 
 
       init();
       loadData();
+
+      // not the best-thing but I do not care!
+      $('#documentContainer').css({ 'height' : ($(window).height() - 50) + 'px', 'overflow': 'auto' });
 
   }
 

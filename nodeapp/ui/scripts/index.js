@@ -6,6 +6,6 @@ $(function() {
   $.fn.datepicker.defaults.todayHighlight = true;
   $.fn.datepicker.defaults.todayBtn = "linked";
   $.fn.datepicker.defaults.language = "de";
-  $.fn.datepicker.defaults.calendarWeeks = true;  
+  $.fn.datepicker.defaults.calendarWeeks = true;
 
 });
