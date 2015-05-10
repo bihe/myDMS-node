@@ -165,12 +165,6 @@ module.exports = function (grunt) {
             cwd: 'ui/bower_components/selectize/dist/css',
             dest: '.tmp/bower_components/selectize/dist/css',
             src: 'selectize.bootstrap3.css'
-          },
-          {
-            expand: true,
-            cwd: 'ui/bower_components/bootstrap-switch/dist/css/bootstrap3',
-            dest: '.tmp/bower_components/bootstrap-switch/dist/css/bootstrap3',
-            src: 'bootstrap-switch.css'
           }
         ]
       },
@@ -196,7 +190,7 @@ module.exports = function (grunt) {
             expand: true,
             cwd: 'ui/images',
             dest: '<%= base.dist %>/images',
-            src: '{,*/}*.jpg'
+            src: '{,*/}*.*'
           },
         ]
       },
