@@ -192,6 +192,12 @@ module.exports = function (grunt) {
             dest: '<%= base.dist %>/images',
             src: '{,*/}*.*'
           },
+	  {
+            expand: true,
+            cwd: 'ui/bower_components/famfamfam-flags-sprite/src',
+            dest: '<%= base.dist %>/styles',
+            src: '{,*/}*.png'
+          }
         ]
       },
       views: {
@@ -201,7 +207,7 @@ module.exports = function (grunt) {
             cwd: 'ui/views',
             dest: '<%= base.dist %>/views',
             src: '{,*/}*.html'
-          },
+          }
         ]
       },
       i18n: {
