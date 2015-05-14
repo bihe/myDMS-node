@@ -71,6 +71,20 @@ SecurityService.prototype = (function() {
     },
 
     /**
+     * check if the user is authenticated. if not send a 403 status
+     * @param req
+     * @param res
+     * @param next
+     * @returns {*}
+     */
+    authRequiredApi: function(req, res, next) {
+      if (req.isAuthenticated()) {
+        return next();
+      }
+      return res.status(403).send('User is not logged in!');
+    },
+
+    /**
      * To support persistent login sessions, Passport needs to be able to
      * serialize users into and deserialize users out of the session.
      * @param user

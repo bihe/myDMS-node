@@ -142,7 +142,7 @@ app.use(function(req, res, next) {
 // --------------------------------------------------------------------------
 
 app.use('/auth', authRoutes);
-app.use('/api', secService.authRequired, apiRoutes);
+app.use('/api', secService.authRequiredApi, apiRoutes);
 app.use('/drive', secService.authRequired, driveRoutes);
 app.use('/', secService.authRequired, routes);
 

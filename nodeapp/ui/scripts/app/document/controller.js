@@ -10,6 +10,7 @@
       , '_'
       , 'Upload'
       , '$timeout'
+      , '$rootScope'
       , documentController
     ])
     ;
@@ -22,7 +23,8 @@
     , $stateParams
     , _
     , Upload
-    , $timeout) {
+    , $timeout
+    , $rootScope) {
 
     var vm = this;
 
@@ -79,8 +81,16 @@
 
         })
         .error( function(data, status, headers) {
-          alert('Error: ' + data + '\nHTTP-Status: ' + status);
-          return $location.path('/');
+
+            if(status === 403) {
+              $rootScope.$emit('::authError::');
+              return;
+            }
+
+            alert('Error: ' + data + '\nHTTP-Status: ' + status);
+            return $location.path('/');
+
+
         });
       } else {
         vm.selectedSenders = [];
@@ -110,6 +120,11 @@
       }).error( function(data, status, headers) {
         vm.saveSuccess = false;
         vm.saveErrorMessage = data;
+
+        if(status === 403) {
+          $rootScope.$emit('::authError::');
+          return;
+        }
       });
     };
 
@@ -142,6 +157,11 @@
         }).error(function (data, status, headers, config) {
           vm.saveSuccess = false;
           vm.saveErrorMessage = data;
+
+          if(status === 403) {
+            $rootScope.$emit('::authError::');
+            return;
+          }
         });
       } else {
         // POST
@@ -153,6 +173,11 @@
         }).error(function (data, status, headers, config) {
           vm.saveSuccess = false;
           vm.saveErrorMessage = data;
+
+          if(status === 403) {
+            $rootScope.$emit('::authError::');
+            return;
+          }
         });
       }
 
@@ -194,6 +219,11 @@
         }).error(function(data, status, headers, config) {
           console.log(data);
           vm.uploadError = data;
+
+          if(status === 403) {
+            $rootScope.$emit('::authError::');
+            return;
+          }
         });
         //.then(success, error, progress);
         //.xhr(function(xhr){xhr.upload.addEventListener(...)})// access and attach any event listener to XMLHttpRequest.

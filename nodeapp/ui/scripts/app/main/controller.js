@@ -16,10 +16,14 @@
     ])
     .controller('LanguageController', ['$location'
       , '$translate'
+      , '$rootScope'
       , languageController
     ])
-    .controller('AccountController', ['$location'
+    .controller('AccountController', ['$scope'
+      , '$location'
       , 'backendService'
+      , '$rootScope'
+      , '$window'
       , accountController
     ])
     ;
@@ -27,7 +31,7 @@
   /**
    * logic for account handling
    */
-  function accountController($location, backendService) {
+  function accountController($scope, $location, backendService, $rootScope, $window) {
     var vm = this;
 
     // init
@@ -46,6 +50,11 @@
         vm.user = data;
       }).error(function (data, status, headers, config) {
         console.log('Error: ' + data);
+
+        if(status === 403) {
+          $rootScope.$emit('::authError::');
+          return;
+        }
       });
     }
 
@@ -63,15 +72,38 @@
       }).error(function (data, status, headers, config) {
         console.log('Error: ' + data);
         alert('Error: ' + data);
+
+        if(status === 403) {
+          $rootScope.$emit('::authError::');
+          return;
+        }
       });
     };
+
+    //////////////////
+    // events
+    //////////////////
+
+    // act on authentication error event
+    // redirect the user to a login screen
+    var unbindAuth = $rootScope.$on('::authError::', function(args){
+      console.log('Authentication error - redirect to login!');
+      $window.location.href = '/auth/login';
+      args.stopPropagation(); // ok - done here
+      return;
+    });
+
+    // cleanup
+    $scope.$on('$destroy', function() {
+     unbindAuth();
+    });
 
   }
 
   /**
    * perform the translation
    */
-  function languageController($ocation, $translate) {
+  function languageController($ocation, $translate, $rootScope) {
     var vm = this;
 
     /**
@@ -92,7 +124,8 @@
     , backendService
     , stateService
     , storageService
-    , _) {
+    , _
+    ) {
 
       var vm = this;
       var maxResults = 40;
@@ -120,8 +153,10 @@
           vm.doSearch();
           args.stopPropagation(); // ok - done here
         });
-        $scope.$on('$destroy', unbind);
-
+        // cleanup
+        $scope.$on('$destroy', function() {
+          unbind();
+        });
       }
 
 
@@ -170,10 +205,22 @@
               $rootScope.$emit('::doSearch::');
 
             }).error( function(data, status, headers) {
+
+              if(status === 403) {
+                $rootScope.$emit('::authError::');
+                return;
+              }
+
               alert('Error: ' + data + '\nHTTP-Status: ' + status);
             });
 
           }).error( function(data, status, headers) {
+
+            if(status === 403) {
+              $rootScope.$emit('::authError::');
+              return;
+            }
+
             alert('Error: ' + data + '\nHTTP-Status: ' + status);
           });
 
@@ -194,6 +241,12 @@
           backendService.getSenders().success( function(data) {
             vm.senders = data;
           }).error( function(data, status, headers) {
+
+            if(status === 403) {
+              $rootScope.$emit('::authError::');
+              return;
+            }
+
             alert('Error: ' + data + '\nHTTP-Status: ' + status);
           });
 
@@ -201,6 +254,12 @@
           backendService.getTags().success( function(data) {
             vm.tags = data;
           }).error( function(data, status, headers) {
+
+            if(status === 403) {
+              $rootScope.$emit('::authError::');
+              return;
+            }
+
             alert('Error: ' + data + '\nHTTP-Status: ' + status);
           });
         }
@@ -275,6 +334,12 @@
             vm.busy = vm.loading = false;
           }
         }).error( function(data, status, headers) {
+
+          if(status === 403) {
+            $rootScope.$emit('::authError::');
+            return;
+          }
+
           vm.busy = vm.loading = false; // also done
           alert('Error: ' + data + '\nHTTP-Status: ' + status);
         });
@@ -291,7 +356,7 @@
       loadData();
 
       // not the best-thing but I do not care!
-      $('#documentContainer').css({ 'height' : ($(window).height() - 50) + 'px', 'overflow': 'auto' });
+      //$('#documentContainer').css({ 'height' : ($(window).height() - 50) + 'px', 'overflow': 'auto' });
 
   }
 

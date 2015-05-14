@@ -86,6 +86,11 @@
           }
         }).error(function (data, status, headers, config) {
           console.log('Error: ' + data);
+
+          if(status === 403) {
+            $rootScope.$emit('::authError::');
+            return;
+          }
         });
 
         if($stateParams && $stateParams.connection) {
@@ -153,6 +158,11 @@
         }).error(function (data, status, headers, config) {
           vm.saveSuccess = false;
           vm.saveErrorMessage = data;
+
+          if(status === 403) {
+            $rootScope.$emit('::authError::');
+            return;
+          }
         });
       };
 
@@ -198,6 +208,11 @@
             vm.actionError = true;
             vm.actionSuccess = false;
             vm.actionMessage = data;
+
+            if(status === 403) {
+              $rootScope.$emit('::authError::');
+              return;
+            }
           });
         } else {
           return;

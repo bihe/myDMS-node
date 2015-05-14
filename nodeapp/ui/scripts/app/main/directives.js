@@ -77,8 +77,8 @@
       }
     ])
     // found here: https://github.com/paolodm/angular-selectize/blob/master/angular-selectize.js
-    .directive('selectize', ['$timeout', '$http', '_',
-      function ($timeout, $http, _) {
+    .directive('selectize', ['$timeout', '$http', '_', '$rootScope',
+      function ($timeout, $http, _, $rootScope) {
         return {
           // Restrict it to be an attribute in this case
           restrict: 'A',
@@ -127,6 +127,12 @@
                         callback(data);
                       })
                       .error(function (data, status, headers, config) {
+
+                        if(status === 403) {
+                          $rootScope.$emit('::authError::');
+                          return;
+                        }
+
                         // called asynchronously if an error occurs
                         // or server returns response with an error status.
                         callback();
