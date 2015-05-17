@@ -40,7 +40,7 @@
           <!-- infinite scroll plugin area -->
           <div ng-cloak infini-scroll="vm.moreResults" scroll-threshold="50" id="documentContainer1" >
 
-              <div class="col-xs-6 col-sm-3 col-md-2" ng-repeat="doc in vm.documents">
+              <div class="col-xs-12 col-sm-3 col-md-2" ng-repeat="doc in vm.documents">
 
                   <div class="price-badge">
                     <span ng-if="doc.amount && doc.amount != 0" class="amount label label-danger" >
@@ -58,7 +58,6 @@
                   <div class="thumbnail thumbnail-card">
                       <div class="caption text-center">
                           <div class="heading">
-
                               <h2 ng-click="vm.editDocument(doc._id)" id="{{ doc._id }}" title="{{ doc.fileName }}"> {{ doc.title | limitTo:35 }} </h2>
                           </div>
 

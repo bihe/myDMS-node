@@ -138,6 +138,12 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
+            cwd: 'ui/bower_components/Bootflat/bootflat/css',
+            dest: '.tmp/bower_components/Bootflat/bootflat/css',
+            src: 'bootflat.css'
+          },
+          {
+            expand: true,
             cwd: 'ui/bower_components/bootstrap-datepicker/dist/css',
             dest: '.tmp/bower_components/bootstrap-datepicker/dist/css',
             src: 'datepicker.css'

@@ -302,11 +302,11 @@ ul.items li
 
 .download-icon {
     color: black;
-    font-size: 28pt
+    font-size: 36pt
 }
 
 .thumbnail .caption h2 {
-    font-size: 14pt;
+    font-size: 16pt;
 }
 
 .thumbnail .tags_senders {
@@ -314,21 +314,20 @@ ul.items li
 }
 
 .thumbnail .tags_senders {
-    font-size: 11pt;
+    font-size: 14pt;
 }
 
 @media (min-width: 768px) {
 
     .thumbnail .tags_senders {
-        font-size: 10pt;
+        font-size: 9pt;
     }
 }
-
 
 @media (min-width: 768px) {
 
     .thumbnail .caption h2 {
-        font-size: 12pt;
+        font-size: 10pt;
     }
 }
 
@@ -340,10 +339,16 @@ ul.items li
     }
 }
 
-
 .thumbnail-card {
     min-height: 170px;
 }
+
+@media (min-width: 1692px) {
+    .thumbnail-card {
+        min-height: 120px;
+    }
+}
+
 
 .thumbnail .heading {
     /*height: 50px;*/
