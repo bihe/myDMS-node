@@ -4,8 +4,10 @@
 	<div class="col-xs-12 col-sm-12 col-md-12">
 
 		<div class="page-header">
-  		<h2 ng-if="vm.document._id === -1" translate="document.new">Create a new document</h2>
-			<h2 ng-if="vm.document._id !== -1"><span translate="document.edit">Edit the document</span><small> {{ vm.document.title }}</small></h2>
+  			<small ng-if="vm.document._id === -1" translate="document.new">Create a new document</small>
+			<small ng-if="vm.document._id !== -1"><span translate="document.edit">Edit the document</span>
+				<h2> {{ vm.document.title }}</h2>
+			</small>
 		</div>
 
 		<div class="alert alert-warning" ng-if="vm.formValidationError" style="margin-top: 10px">
@@ -38,7 +40,7 @@
 				    <label for="fileUpload" translate="document.upload.title">File input</label>
 
 				    <div style="margin-top: 10px;margin-bottom: 20px;" ng-if="vm.document.fileName !== ''">
-						<span class="label label-info label-big" ng-if="vm.document.fileName"> <i class="fa fa-file"></i> {{ vm.document.fileName }} </span>
+						<span class="label label-info label-big" ng-if="vm.document.fileName"> <i class="fa fa-file"></i> {{ vm.document.fileName  | limitTo:25 }} </span>
 				    </div>
 
 					<div id="fileUpload"

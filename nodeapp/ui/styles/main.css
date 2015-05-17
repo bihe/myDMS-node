@@ -264,13 +264,7 @@ ul.items li
     /*background-image:url('http://farm8.staticflickr.com/7383/9899900453_4540cf9de6_c.jpg');*/
 }
 
-.download-button {
-   position:absolute;
-   bottom:0;
-   right:0;
-   padding-top:6px;
-   padding-right:6px;
-}
+
 .creation-date {
   position:absolute;
   bottom:0;
@@ -292,10 +286,73 @@ ul.items li
    z-index: 1;
 }
 
-.download-icon {
-  color:white;
-  font-size:14pt
+.modified-badge {
+    position:absolute;
+    top:-10px;
+    left: 10px;
+    z-index: 1;
 }
+
+.download-button {
+    position:absolute;
+    bottom:10px;
+    right: 6px;
+    z-index: 1;
+}
+
+.download-icon {
+    color: black;
+    font-size: 28pt
+}
+
+.thumbnail .caption h2 {
+    font-size: 14pt;
+}
+
+.thumbnail .tags_senders {
+    text-align: left;
+}
+
+.thumbnail .tags_senders {
+    font-size: 11pt;
+}
+
+@media (min-width: 768px) {
+
+    .thumbnail .tags_senders {
+        font-size: 10pt;
+    }
+}
+
+
+@media (min-width: 768px) {
+
+    .thumbnail .caption h2 {
+        font-size: 12pt;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .download-icon {
+        color: black;
+        font-size: 28pt;
+    }
+}
+
+
+.thumbnail-card {
+    min-height: 170px;
+}
+
+.thumbnail .heading {
+    /*height: 50px;*/
+}
+
+.thumbnail .tags_senders {
+    padding-top: 5px;
+}
+
 
 .info-text {
   font-size: 6pt;
@@ -421,6 +478,19 @@ ul.items li
 }
 .main .page-header {
     margin-top: 0;
+}
+
+.page-header {
+    margin: 0px;
+}
+
+.page-header h2 {
+    font-size: 16pt;
+    color:#999999;
+}
+
+.page-header small {
+    font-weight: bold;
 }
 
 

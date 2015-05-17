@@ -3,7 +3,7 @@
         "title": "myDMS",
         "browsehappy": "Sie benutzen einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/\">aktualisieren Sie Ihren Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
         "menu": {
-            "home": "Startseite",
+            "home": "myDMS",
             "account": {
                 "main": "Zugang",
                 "login": "Anmelden",
@@ -32,7 +32,7 @@
         "dowork": "Los!"
     },
     "main": {
-        "filter": "Ergebnisse filtern ...",
+        "filter": "Filtern ...",
         "title": "Willkommen, myDMS!",
         "subtitle": "Dies ist Ihre Hauptseite",
         "search_title": "Suchen:",

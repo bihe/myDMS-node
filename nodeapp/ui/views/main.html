@@ -34,51 +34,52 @@
 
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" >
 
-
     <div class="row" id="contentContainer">
       <div class="col-md-12" >
 
           <!-- infinite scroll plugin area -->
           <div ng-cloak infini-scroll="vm.moreResults" scroll-threshold="50" id="documentContainer1" >
-            <div class="document" ng-repeat="doc in vm.documents" style="position:relative;">
 
-              <div class="price-badge">
-                <span ng-if="doc.amount > 0" class="amount label label-danger" >
-                  <i class="fa fa-euro"></i> <strong>{{ doc.amount }}</strong>
-                </span>
-              </div>
+              <div class="col-xs-6 col-sm-3 col-md-2" ng-repeat="doc in vm.documents">
 
-              <div class="card" style="position:relative" >
+                  <div class="price-badge">
+                    <span ng-if="doc.amount && doc.amount != 0" class="amount label label-danger" >
+                      <i class="fa fa-euro"></i> <strong>{{ doc.amount }}</strong>
+                    </span>
+                  </div>
 
-                  <div class="card-image transparent-back">
-                      <h2 ng-click="vm.editDocument(doc._id)" id="{{ doc._id }}" title="{{ doc.fileName }}"> {{ doc.title }} </h2>
+                  <div class="modified-badge">
+                    <span class="amount label " title=" created: {{ doc.created | date : 'dd.MM.yyyy' }}, modified: {{ doc.modified | date : 'dd.MM.yyyy' }}">
+                      <i class="fa fa-calendar"></i> <strong>{{ doc.modified | date : 'dd.MM.yyyy' }}</strong>
+                    </span>
+                  </div>
 
-                      <div class="download-button">
-                        <a href="/api/1.0/document/download/{{ doc._id }}" id="{{ doc._id }}" target="_blank"> <i class="fa fa-cloud-download download-icon"></i> </a>
+
+                  <div class="thumbnail thumbnail-card">
+                      <div class="caption text-center">
+                          <div class="heading">
+
+                              <h2 ng-click="vm.editDocument(doc._id)" id="{{ doc._id }}" title="{{ doc.fileName }}"> {{ doc.title | limitTo:35 }} </h2>
+                          </div>
+
+                          <div class="tags_senders">
+
+                              <span ng-repeat="sender in doc.senders" >
+                                <span class="label label-info"><i class="fa fa-truck"></i> {{ sender.name | limitTo:15 }}</span>
+                              </span>
+
+                              <span ng-repeat="tag in doc.tags" >
+                                <span class="label label-primary"><i class="fa fa-tag"></i> {{ tag.name  | limitTo:15 }}</span>
+                              </span>
+
+                          </div>
+
+                          <div class="download-button">
+                              <a href="/api/1.0/document/download/{{ doc._id }}" id="{{ doc._id }}" target="_blank"> <i class="fa fa-cloud-download download-icon"></i> </a>
+                          </div>
+
                       </div>
-
                   </div>
-
-                  <p>
-
-                      <span ng-repeat="sender in doc.senders" >
-                        <span class="label label-info"><i class="fa fa-truck"></i> {{ sender.name }}</span>
-                      </span>
-
-                      <span ng-repeat="tag in doc.tags" >
-                        <span class="label label-primary"><i class="fa fa-tag"></i> {{ tag.name }}</span>
-                      </span>
-
-                  </p>
-
-                  <div class="creation-date info-text">
-                    <span  class="document-meta">c</span>:{{ doc.created | date : 'dd.MM.yyyy' }}
-                  </div>
-
-                  <div class="modification-date info-text">
-                    <span class="document-meta">m</span>:{{ doc.modified | date : 'dd.MM.yyyy' }}
-                  </div>
-
               </div>
 
             </div>
