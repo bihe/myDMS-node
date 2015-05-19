@@ -29,7 +29,11 @@
         "saveSuccess": "Speichern erfolgreich!",
         "actionSuccess": "Die Aktion war erfolgreich!",
         "actionError": "Fehler während der Ausführung!",
-        "dowork": "Los!"
+        "dowork": "Los!",
+        "confirmLogout": "Benutzer abmelden",
+        "confirmLogoutText": "Wollen Sie sich wirklich abmelden?",
+        "confirmLogoutAction": "Ja, abmelden!"
+
     },
     "main": {
         "filter": "Filtern ...",

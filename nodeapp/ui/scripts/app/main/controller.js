@@ -24,6 +24,8 @@
       , 'backendService'
       , '$rootScope'
       , '$window'
+      , 'sweet'
+      , '$translate'
       , accountController
     ])
     ;
@@ -31,7 +33,7 @@
   /**
    * logic for account handling
    */
-  function accountController($scope, $location, backendService, $rootScope, $window) {
+  function accountController($scope, $location, backendService, $rootScope, $window, sweet, $translate) {
     var vm = this;
 
     // init
@@ -65,19 +67,41 @@
 
 
     vm.logout = function() {
-      backendService.logoutUser().success(function (data, status, headers, config) {
-        //$location.path('/');
-        window.location = '/';
-        return;
-      }).error(function (data, status, headers, config) {
-        console.log('Error: ' + data);
-        alert('Error: ' + data);
 
-        if(status === 403) {
-          $rootScope.$emit('::authError::');
-          return;
-        }
+      $translate(['global.confirmLogout', 'global.confirmLogoutText', 'global.confirmLogoutAction']).then(function (translations) {
+
+        sweet.show({
+              title: translations['global.confirmLogout'],
+              text: translations['global.confirmLogoutText'],
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#DD6B55',
+              confirmButtonText: translations['global.confirmLogoutAction'],
+              animation: false,
+              closeOnConfirm: false
+          }, function() {
+            backendService.logoutUser().success(function (data, status, headers, config) {
+              //$location.path('/');
+              window.location = '/';
+              return;
+            }).error(function (data, status, headers, config) {
+              console.log('Error: ' + data);
+              sweet.show('Oops...', 'Got an error: ' + data, 'error');
+
+              if(status === 403) {
+                $rootScope.$emit('::authError::');
+                return;
+              }
+            });
+        });
+
+
+        return;
       });
+
+
+
+
     };
 
     //////////////////
@@ -203,6 +227,8 @@
               vm.page = state.page;
               vm.busy = vm.loading = false;
               $rootScope.$emit('::doSearch::');
+
+
 
             }).error( function(data, status, headers) {
 

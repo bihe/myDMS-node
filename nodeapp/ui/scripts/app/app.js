@@ -9,6 +9,7 @@
       , 'chieffancypants.loadingBar'        // loading indicator for xhr requests
       , 'hb.infiniScroll'                   // infinite scrolling plugin
       , 'mgcrea.ngStrap'                    // bootstrap directives: modal
+      , 'hSweetAlert'                       // sweet alert: native alert replacement
       , 'mydms.main'
       , 'mydms.document'
       , 'mydms.settings'

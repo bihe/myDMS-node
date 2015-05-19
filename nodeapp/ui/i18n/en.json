@@ -29,7 +29,10 @@
         "saveSuccess": "Save success!",
         "actionSuccess": "Action success!",
         "actionError": "Action error!",
-        "dowork": "Go!"
+        "dowork": "Go!",
+        "confirmLogout": "Logout user",
+        "confirmLogoutText": "Do you really want to logout?",
+        "confirmLogoutAction": "Yes, logout!"
     },
     "main": {
         "filter": "Filter ...",

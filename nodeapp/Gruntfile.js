@@ -171,6 +171,12 @@ module.exports = function (grunt) {
             cwd: 'ui/bower_components/selectize/dist/css',
             dest: '.tmp/bower_components/selectize/dist/css',
             src: 'selectize.bootstrap3.css'
+          },
+          {
+            expand: true,
+            cwd: 'ui/bower_components/sweetalert/lib',
+            dest: '.tmp/bower_components/sweetalert/lib',
+            src: 'sweet-alert.css'
           }
         ]
       },
