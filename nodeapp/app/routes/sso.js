@@ -11,6 +11,6 @@ var baseController = require('../controllers/base');
 
 // setup the routes and delegate logic to the controllers
 // --------------------------------------------------------------------------
-router.get('/', baseController.index);
+router.get('/', baseController.token);
 
 module.exports = router;

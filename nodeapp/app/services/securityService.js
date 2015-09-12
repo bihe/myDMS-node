@@ -6,7 +6,9 @@
  */
 
 var UserService = require('./userService')
-  , logger = require('../util/logger');
+  , logger = require('../util/logger')
+  , security = require('../config/security')
+  ;
 
 /**
  * @constructor
@@ -64,60 +66,13 @@ SecurityService.prototype = (function() {
      * @returns {*}
      */
     authRequired: function(req, res, next) {
-      if (req.isAuthenticated()) {
-        return next();
-      }
-      res.redirect('/auth/login')
-    },
-
-    /**
-     * check if the user is authenticated. if not send a 403 status
-     * @param req
-     * @param res
-     * @param next
-     * @returns {*}
-     */
-    authRequiredApi: function(req, res, next) {
-      if (req.isAuthenticated()) {
-        return next();
-      }
-      return res.status(403).send('User is not logged in!');
-    },
-
-    /**
-     * To support persistent login sessions, Passport needs to be able to
-     * serialize users into and deserialize users out of the session.
-     * @param user
-     * @param callback
-     */
-    serializeUser: function(user, callback) {
-      // simple logic, just use the id of the user!
-      callback(null, user._id);
-    },
-
-    /**
-     * deserialize the user from the session
-     * @param obj
-     * @param callback
-     */
-    deserializeUser: function(obj, callback) {
-      // just return the id
-      callback(null, obj);
-
-      /* rather resource hungry, only load the user when needed!
-
-      // in the session the user-id was serialized
-      // use the id to load the user again
-      var userService = new UserService();
-      userService.findUserById(obj).then(function(user) {
-        callback(null, user);
-      }).catch(function(error) {
-        console.error('Could not find the user! ' + error);
-        callback(error, null);
-      }).done();
-
-      */
+      // the necessary jwt token is held in a cookie
+      // retrieve the token validate the token.
+      // otherwie redirect to the login service
+      
+      res.redirect(security.ssoUrl + '?token=' + security.ssoToken + '&redirect=' + encodeURIComponent(security.ssoReturnUrl));
     }
+ 
   };
 
 })();

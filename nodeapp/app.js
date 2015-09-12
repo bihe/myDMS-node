@@ -16,12 +16,10 @@ var multer  = require('multer');
 var csrf = require('csurf');
 var mongoose = require('mongoose');
 var flash = require('connect-flash');
-var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var routes = require('./app/routes');
+var ssoRoutes = require('./app/routes/sso');
 var apiRoutes = require('./app/routes/api');
-var authRoutes = require('./app/routes/auth');
 var driveRoutes = require('./app/routes/drive');
 var config = require('./app/config/application');
 var google = require('./app/config/google');
@@ -31,22 +29,7 @@ var SecurityService = require('./app/services/securityService');
 var app = express();
 var env = app.get('env') || 'development';
 
-
-// --------------------------------------------------------------------------
-// Passport setup
-// --------------------------------------------------------------------------
 var secService = new SecurityService();
-
-passport.serializeUser(secService.serializeUser);
-passport.deserializeUser(secService.deserializeUser);
-passport.use(new GoogleStrategy({
-    clientID: google.CLIENT_ID,
-    clientSecret: google.CLIENT_SECRET,
-    callbackURL: google.RETURN_URL
-  },
-  secService.findOAuthUser
-));
-
 
 // --------------------------------------------------------------------------
 // Application setup
@@ -68,8 +51,6 @@ app.use(bodyParser.urlencoded({
 app.use(session({name: 'mydms', secret: config.application.secret}));
 app.use(flash());
 app.use(cookieParser(config.application.secret));
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(csrf());
 app.use(multer({ dest: path.join(__dirname, 'tmp') }));
 
@@ -141,9 +122,9 @@ app.use(function(req, res, next) {
 // Route handling
 // --------------------------------------------------------------------------
 
-app.use('/auth', authRoutes);
-app.use('/api', secService.authRequiredApi, apiRoutes);
+app.use('/api', secService.authRequired, apiRoutes);
 app.use('/drive', secService.authRequired, driveRoutes);
+app.use('/sso', ssoRoutes);
 app.use('/', secService.authRequired, routes);
 
 // --------------------------------------------------------------------------

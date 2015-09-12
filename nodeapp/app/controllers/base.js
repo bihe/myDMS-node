@@ -7,35 +7,32 @@
 var version = require('../config/version')
   , UserService = require('../services/userService');
 
-// the index path just redirects to /static
-exports.index = function(req, res) {
+// handle the jwt token 
+exports.token = function(req, res) {
+  var token = req.query.token;
+  if(!token) {
+    console.log('No token supplied!');
+    return res.status(400).send('No token supplied in request!');
+  }
+  
   res.redirect('/static');
 };
 
-// the index path - render the mustache template
-exports.login = function(req, res) {
-  res.locals.errors = req.flash();
-  console.log(res.locals.errors);
-  res.render('login', { messages: res.locals.errors });
-};
-
-// logout the current user
-exports.logout = function(req, res) {
-  var result = {};
-  result.success = true;
-  try {
-    req.logout();
-  } catch(error) {
-    result.success = false;
-    result.error = error;
-  }
-  res.json(result);
+// the index path just redirects to /static
+exports.index = function(req, res) {
+  res.redirect('/static');
 };
 
 // return the current version as plain/text
 exports.version = function(req, res) {
 	res.write(version.number);
 	res.end();
+};
+
+exports.logout = function(req, res) {
+  // todo: clear the cookie
+  // redirect
+  res.redirect('/');
 };
 
 // retrieve the user
