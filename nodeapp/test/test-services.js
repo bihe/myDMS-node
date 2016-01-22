@@ -190,48 +190,6 @@ describe('Backend', function() {
       });
     });
 
-    it('update the user token', function(done) {
-      var user = new User({displayName: 'Test User', email: 'test@example.com'});
-
-      user.save(function(err, u) {
-        assert(!err, err);
-
-        var userService = new UserService()
-          , token = {}
-          , profile = {};
-
-        profile.a = 1;
-
-        token.val = 1;
-        token.a = 'b';
-
-        userService.setProfile(u._id, profile).then(function() {
-          return userService.findUserById(u._id);
-        }).then(function(user) {
-          assert(user, 'No user!');
-          logger.logDump('## PROFILE ##', user.profile);
-
-        }).catch(function(error) {
-          console.log(error.stack);
-          // Handle any error from all above steps
-          assert(!error, 'Error thrown!');
-        }).done();
-
-        userService.findUserByEmail('test@example.com').then(function(user) {
-          assert(user, 'No user!');
-          assert.equal(user.email, 'test@example.com', 'Wrong email!');
-          done();
-        })
-          .catch(function(error) {
-            console.log(error.stack);
-            // Handle any error from all above steps
-            assert(!error, 'Error thrown!');
-          })
-          .done();
-
-      });
-    });
-
   });
 
   describe('Senders', function() {
