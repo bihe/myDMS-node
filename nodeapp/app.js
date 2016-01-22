@@ -18,7 +18,6 @@ var mongoose = require('mongoose');
 var flash = require('connect-flash');
 
 var routes = require('./app/routes');
-var ssoRoutes = require('./app/routes/sso');
 var apiRoutes = require('./app/routes/api');
 var driveRoutes = require('./app/routes/drive');
 var config = require('./app/config/application');
@@ -124,7 +123,6 @@ app.use(function(req, res, next) {
 
 app.use('/api', secService.authRequired, apiRoutes);
 app.use('/drive', secService.authRequired, driveRoutes);
-app.use('/sso', ssoRoutes);
 app.use('/', secService.authRequired, routes);
 
 // --------------------------------------------------------------------------

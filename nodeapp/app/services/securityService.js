@@ -8,7 +8,9 @@
 var UserService = require('./userService')
   , logger = require('../util/logger')
   , security = require('../config/security')
-  ;
+  , UserService = require('../services/userService')
+  , jwt = require('jsonwebtoken')
+  , _ = require('lodash');
 
 /**
  * @constructor
@@ -28,37 +30,6 @@ SecurityService.prototype = (function() {
   return {
 
     /**
-     * find an user by the supplied profile data for oauth
-     * @param accessToken
-     * @param refreshToken
-     * @param profile
-     * @param callback
-     */
-    findOAuthUser: function(accessToken, refreshToken, profile, callback) {
-      var userService = new UserService()
-        , foundUser = null;
-
-      userService.findUserByEmail(profile.emails[0].value).then(function(user) {
-        if (!user) {
-          console.info('Could not find the user!');
-          return callback(null, false, { message: 'The supplied Google account is not allowed to use this service!' });
-        }
-
-        foundUser = user;
-        console.info('Got authenticated user: ' + foundUser.displayName);
-
-        return userService.setProfile(user._id, profile._json);
-
-      }).then(function() {
-
-        callback(null, foundUser);
-      }).catch(function(error) {
-        console.error('Could not find the user! ' + error);
-        callback(error, null);
-      }).done();
-    },
-
-    /**
      * Simple route middleware to ensure user is authenticated
      * @param req
      * @param res
@@ -66,15 +37,93 @@ SecurityService.prototype = (function() {
      * @returns {*}
      */
     authRequired: function(req, res, next) {
-      // the necessary jwt token is held in a cookie
-      // retrieve the token validate the token.
-      // otherwie redirect to the login service
+      /* we need a JWT token as a cookie to procede with the logic
+       * if the cookie is not available redirect to the external
+       * SSO service login.binggl.net with the current path as
+       * a parameter
+       */
+      var cookies = req.cookies;
+       
+      if(req.session.authenticated === true && cookies[security.sso.cookie] 
+      && !_.isEmpty(req.session.user)
+      && !_.isEmpty(cookies[security.sso.cookie])) {
+        // is authenicated and a cookie value is available
+        // but skip the verification
+        // set the user-object in the request
+        req.user = req.session.user;
+        return next();
+      }
       
-      res.redirect(security.ssoUrl + '?token=' + security.ssoToken + '&redirect=' + encodeURIComponent(security.ssoReturnUrl));
+      if(cookies[security.sso.cookie] && !_.isEmpty(cookies[security.sso.cookie])) {
+        var token = cookies[security.sso.cookie];  
+        // this is a JWT token - verify the token
+        jwt.verify(token, security.sso.secret, function(err, decoded) {
+          if(err) {
+            console.log('Could not verify token: ' + err);
+            return res.redirect(security.sso.errorUrl);
+          }
+          if(decoded.Claims && decoded.Claims.length > 0) {
+            var claim = null;
+            var index = _.findIndex(decoded.Claims, function(entry) {
+              // entry syntax: name|url|role
+              var entries = entry.split('|');
+              if(entries && entries.length == 3) {
+                if(entries[0] === security.sso.site) {
+                  claim = {};
+                  claim.role = entries[2];
+                  claim.name = entries[0];
+                  claim.url = entries[1];
+                  return true;
+                }
+              }
+              return false;
+            });
+            
+            if(claim && index > -1) {
+              // get the id of the backend store entry
+              var userService = new UserService();
+              userService.findByName('store').then(function(entry) {
+                req.user = {};
+                req.user.storageId = entry._id;
+                req.user.username = decoded.UserName;
+                req.user.displayName = decoded.DisplayName;
+                req.user.email = decoded.Email;
+                req.user.userId = decoded.UserId;
+                req.user.claim = claim;
+                
+                req.session.authenticated = true;
+                req.session.user = req.user;
+                
+                return next();
+              }).catch(function(error) {
+                logger.dump(error);
+                console.log(error.stack);
+                
+                console.log('No Claims available!');
+                return res.redirect(security.sso.errorUrl);    
+                
+              }).done();
+            }
+          } else {
+            console.log('No Claims available!');
+            return res.redirect(security.sso.errorUrl);    
+          }               
+        });
+      } else {
+        req.session.authenticated = false;
+        // no cookie availalbe - redirect to the authentication system
+        var redirectUrl = security.sso.url 
+          + security.sso.siteparam 
+          + security.sso.site 
+          + '&' 
+          + security.sso.urlparam 
+          + security.sso.returnUrl;
+          
+        console.log('Will send auth request to ' + redirectUrl);
+        res.render('login', { loginUrl: redirectUrl } );
+      }
     }
- 
   };
-
 })();
 
 module.exports = SecurityService;

@@ -212,14 +212,14 @@ exports.saveDocument = function( req, res, next ) {
     // use promises to handle tags, senders, and the document itself
 
     // get the user-id and retrieve the necessary token
-    userService.getTokenFromUser(req.user).then(function(token) {
+    userService.getTokenFromUser(req.user.storageId).then(function(token) {
       credentials = token;
       return storageService.handleTokenRefresh(credentials);
     }).then(function(cred) {
       if(cred.isNew) {
         // new credentials, refreshed if expired
         credentials = cred.credentials;
-        return userService.setToken(req.user, credentials);
+        return userService.setToken(req.user.storageId, credentials);
       } else {
         return q();
       }
@@ -292,7 +292,7 @@ exports.documentDownload = function( req, res, next ) {
   console.log('Got param: ' + id);
 
   // get the user-id and retrieve the necessary token
-  userService.getTokenFromUser(req.user).then(function(token) {
+  userService.getTokenFromUser(req.user.storageId).then(function(token) {
     // got the user credentials to access the backend-system
     credentials = token;
     return storageService.handleTokenRefresh(credentials);
@@ -301,7 +301,7 @@ exports.documentDownload = function( req, res, next ) {
       console.log('Will use new credentials!');
       // new credentials, refreshed if expired
       credentials = cred.credentials;
-      return userService.setToken(req.user, credentials);
+      return userService.setToken(req.user.storageId, credentials);
     } else {
       console.log('reuse the token!');
       return q();

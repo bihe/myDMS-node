@@ -8,19 +8,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-  displayName: {
-    type: String,
-    trim: true,
-    required: 'Displayname cannot be blank'
-  },
-  email: {
-    type: String,
-    trim: true
-  },
-  thumb: {
-    type: String,
-    trim: true
-  },
   tokenDate: {
     type: Date
   },

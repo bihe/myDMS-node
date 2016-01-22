@@ -44,18 +44,18 @@ UserService.prototype = (function() {
 
       return deferred.promise;
     },
-
-    /**
-     * find a user by email
-     * @param email {string} the user email
+    
+     /**
+     * find a user by name
+     * @param name {string} the name
      *
      * @return {deferred} promise with the given user
      */
-    findUserByEmail: function(email) {
+    findByName: function(name) {
       var deferred = q.defer()
         , filter = {};
 
-      filter.email = email;
+      filter.name = name;
       User.findOne( filter ).exec(function (err, user) {
         if(err) {
           return deferred.reject(err);
@@ -147,31 +147,6 @@ UserService.prototype = (function() {
         return deferred.reject(new Error('No update performed!'));
       });
      
-      return deferred.promise;
-    },
-
-    /**
-     * set the profile for the given user
-     * @param userid {objectid} the id of user
-     * @param profile {object} a profile
-     *
-     * @return {deferred} promise
-     */
-    setProfile: function(userid, profile) {
-      var deferred = q.defer();
-
-      User.where({ _id: userid }).update({ $set: { profile: profile }}, function(err, numberAffected) {
-        if(err) {
-          return deferred.reject(err);
-        }
-
-        if(numberAffected.ok === 1) {
-          return deferred.resolve();
-        }
-
-        return deferred.reject(new Error('No update performed!'));
-      });
-
       return deferred.promise;
     }
   };

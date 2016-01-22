@@ -64,21 +64,6 @@
     //////////////////
 
 
-    vm.logout = function() {
-      backendService.logoutUser().success(function (data, status, headers, config) {
-        //$location.path('/');
-        window.location = '/';
-        return;
-      }).error(function (data, status, headers, config) {
-        console.log('Error: ' + data);
-        alert('Error: ' + data);
-
-        if(status === 403) {
-          $rootScope.$emit('::authError::');
-          return;
-        }
-      });
-    };
 
     //////////////////
     // events

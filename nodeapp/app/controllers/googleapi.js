@@ -34,8 +34,8 @@ exports.disconnect = function(req, res, next) {
   try {
 
     // get the user-id and retrieve the necessary token
-    userService.clearToken(req.user).then(function() {
-      return userService.getTokenFromUser(req.user);
+    userService.clearToken(req.user.storageId).then(function() {
+      return userService.getTokenFromUser(req.user.storageId);
     }).then(function(credentials) {
       return storageService.revokeToken(credentials);
     }).then(function(response) {
@@ -70,7 +70,7 @@ exports.callback = function(req, res, next) {
     // get the token and store it with the user
     storageService.exractToken(code).then(function(credentials) {
 
-      return userService.setToken(req.user, credentials);
+      return userService.setToken(req.user.storageId, credentials);
     }).then(function() {
 
       res.redirect('/static/#/settings/connection');
@@ -96,7 +96,7 @@ exports.listfiles = function(req, res, next) {
     , storageService = new StorageService();
 
   // get the user-id and retrieve the necessary token
-  userService.getTokenFromUser(req.user).then(function(token) {
+  userService.getTokenFromUser(req.user.storageId).then(function(token) {
 
     return storageService.folderExists('000 testFolder', '0B_XK0TbSeuZUaEhvTjBlZDI0Zmc', token);
   }).then(function(response) {
@@ -117,7 +117,7 @@ exports.getfile  = function(req, res, next) {
     ;
 
   // get the user-id and retrieve the necessary token
-  userService.getTokenFromUser(req.user).then(function(token) {
+  userService.getTokenFromUser(req.user.storageId).then(function(token) {
 
     return storageService.getFile('versicherung.pdf', '0B_XK0TbSeuZUU2J6NnpuRDBIcTA', token);
   }).then(function(response) {
@@ -138,7 +138,7 @@ exports.uploadfile  = function(req, res, next) {
     ;
 
   // get the user-id and retrieve the necessary token
-  userService.getTokenFromUser(req.user).then(function(token) {
+  userService.getTokenFromUser(req.user.storageId).then(function(token) {
 
     return storageService.upload({path: '/home/henrik/tmp/test.pdf', name: 'test.pdf', mimeType: 'application/pdf'}, '0B_XK0TbSeuZUU2J6NnpuRDBIcTA', token);
   }).then(function(response) {

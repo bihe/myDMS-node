@@ -7,17 +7,6 @@
 var version = require('../config/version')
   , UserService = require('../services/userService');
 
-// handle the jwt token 
-exports.token = function(req, res) {
-  var token = req.query.token;
-  if(!token) {
-    console.log('No token supplied!');
-    return res.status(400).send('No token supplied in request!');
-  }
-  
-  res.redirect('/static');
-};
-
 // the index path just redirects to /static
 exports.index = function(req, res) {
   res.redirect('/static');
@@ -35,25 +24,16 @@ exports.logout = function(req, res) {
   res.redirect('/');
 };
 
-// retrieve the user
+/**
+ * get user profile
+ * @param req
+ * @param res
+ */
 exports.user = function(req, res) {
-  var userService = new UserService();
-  userService.findUserById(req.user).then(function(user) {
-    var viewModel = {};
-    viewModel.hasToken = false;
-    if(user.token && user.token !== '' && user.tokenDate) {
-      viewModel.hasToken = true;
-    }
-    viewModel.thumb = user.thumb;
-    viewModel.displayName = user.displayName;
-    viewModel.email = user.email;
-
-    res.json(viewModel);
-  }).catch(function(error) {
-
-    console.log(error.stack);
-    return res.status(400).send('Cannot find user! ' + error);
-  }).done();
+  if(req.session.user) {
+    return res.json(req.session.user);
+  }
+  return res.status(400).send('Cannot find user!');
 };
 
 // common error handle
