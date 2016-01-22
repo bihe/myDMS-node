@@ -4,17 +4,12 @@
 
 var google = {};
 
-google.CLIENT_ID = '';
-google.CLIENT_SECRET = '';
-google.SCOPE = ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/userinfo.email'];
-google.RETURN_URL = 'http://localhost:3000/auth/google/return';
-
 // drive logic and IDs
 google.drive = {};
 google.drive.CLIENT_ID = '';
 google.drive.CLIENT_SECRET = '';
 google.drive.SCOPE = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file'];
-google.drive.RETURN_URL = '';
+google.drive.RETURN_URL = 'http://localhost:3000/drive/return';
 google.drive.PARENT_ID = '--FOLDER--ID--';
 
 module.exports = google;
