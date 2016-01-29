@@ -167,29 +167,6 @@ describe('Backend', function() {
 
     });
 
-    it('find a user by email', function(done) {
-      var user = new User({displayName: 'Test User', email: 'test@example.com'});
-
-      user.save(function(err) {
-        assert(!err, err);
-
-        var userService = new UserService();
-
-        userService.findUserByEmail('test@example.com').then(function(user) {
-          assert(user, 'No user!');
-          assert.equal(user.email, 'test@example.com', 'Wrong email!');
-          done();
-        })
-        .catch(function(error) {
-          console.log(error.stack);
-          // Handle any error from all above steps
-          assert(!error, 'Error thrown!');
-        })
-        .done();
-
-      });
-    });
-
   });
 
   describe('Senders', function() {
